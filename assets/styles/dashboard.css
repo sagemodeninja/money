@@ -1,0 +1,129 @@
+#accounts_grid {
+    box-sizing: border-box;
+    padding: 12px;
+}
+
+/* Version 2 */
+.account-card {
+    background-image: -webkit-linear-gradient(-45deg, #252A32 50%, #2d343e 50%);
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
+    box-sizing: border-box;
+    color: #FFF;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    height: 160px;
+    margin: 20px 0;
+    max-height: 160px;
+    max-width: 300px;
+    min-height: 160px;
+    min-width: 300px;
+    outline: none;
+    padding: 0 20px;
+    position: relative;
+    user-select: none;
+    width: 300px;
+    
+    /* Version 1 compatability... */
+    display: inline-block;
+    margin: 10px;
+}
+
+.account-card::before {
+    border: solid 3px #4D90FE;
+    border-radius: 13px;
+    box-sizing: border-box;
+    content: "";
+    display: none;
+    height: calc(100% + 6px);
+    left: -3px;
+    position: absolute;
+    top: -3px;
+    width: calc(100% + 6px);
+    z-index: 0;
+}
+
+.account-card:focus::before {
+    display: block;
+}
+
+.account-card-body {
+    border-radius: 10px;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: relative;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+.account-card
+.account-name {
+    font-size: 16px;
+    font-weight: 500;
+    height: 20px;
+    line-height: 20px;
+    margin: 0;
+    margin-top: 15px;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-card
+.account-balance {
+    align-items: flex-start;
+    display: flex;
+    font-size: 18px;
+    height: 18px;
+    line-height: 18px;
+    margin: 28px 0;
+}
+
+.account-card
+.amount-figure {
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+.account-card
+.currency-symbol {
+    color: #ffffff80;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 13px;
+}
+
+.account-card
+.account-number,
+.account-card
+.account-category {
+    color: #ffffffcc;
+    font-size: 13px;
+    height: 13px;
+    line-height: 13px;
+    margin: 0;
+}
+
+.account-card
+.account-number {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.account-card
+.account-number
+span {
+    margin-right: 8px;
+}
+
+.account-card
+.account-bank-icon {
+    bottom: 23px;
+    height: 22px;
+    position: absolute;
+    right: 18px;
+    shape-rendering: geometricPrecision;
+}

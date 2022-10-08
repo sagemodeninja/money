@@ -1,0 +1,259 @@
+#account_balances_root_container,
+#transaction_tab_root_container {
+    background-color: #fff;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
+
+#account_balances_root_container {
+    height: 80px;
+    overflow-y: auto;
+    top: 0;
+}
+
+#transaction_tab_root_container {
+    height: calc(100% - 80px);
+    top: 80px;
+}
+
+#transaction_tab_btn_container {
+    box-sizing: border-box;
+    height: 40px;
+    left: 0;
+    margin: 0 5px;
+    padding: 14px 30px;
+    padding-bottom: 0;
+    position: absolute;
+    top: 0;
+    width: calc(100% - 10px);
+    z-index: 1;
+}
+
+#transaction_tab_container {
+    background-color: white;
+    border: solid 1px #212121;
+    /* border: solid 1px red; */
+    border-radius: 8px;
+    box-sizing: border-box;
+    height: calc(100% - 45px);
+    left: 0;
+    margin: 5px;
+    margin-top: 0;
+    overflow-y: auto;
+    padding: 10px;
+    position: absolute;
+    top: 40px;
+    width: calc(100% - 10px);
+}
+
+.transaction_tab {
+    padding-top: 20px;
+}
+
+.tab_btn {
+    background-color: #E0E0E0;
+    border: solid 1px #CFD8DC;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    line-height: 25px;
+    margin: 0;
+    margin-right: 5px;
+    padding: 0;
+    position: relative;
+    text-align: center;
+    width: 100px;
+    z-index: 0;
+}
+
+.tab_btn.active {
+    background-color: white;
+    border: solid 1px #212121;
+    z-index: 1;
+}
+
+.tab-btn-base {
+    background-color: inherit;
+    border-bottom: solid 1px #212121;
+    box-sizing: border-box;
+    bottom: -1px;
+    display: block;
+    height: 5px;
+    left: -5px;
+    position: absolute;
+    width: calc(100% + 10px);
+    z-index: 0;
+}
+
+.tab_btn.active
+.tab-btn-base {
+    border-bottom: solid 1px white;
+}
+
+.tab_btn::before,
+.tab_btn::after {
+    background-color: #F0F0F0;
+    border-bottom: solid 1px #212121;
+    bottom: -1px;
+    box-sizing: border-box;
+    content: "";
+    display: block;
+    height: 20px;
+    position: absolute;
+    width: 6px;
+    z-index: 1;
+}
+
+.tab_btn::before {
+    border-bottom-right-radius: 5px;
+    border-right: solid 1px;
+    border-color: inherit;
+    right: 100%;
+}
+
+.tab_btn::after {
+    border-bottom-left-radius: 5px;
+    border-left: solid 1px;
+    border-color: inherit;
+    left: 100%;
+}
+
+/* version 20211114_01 */
+
+.transaction-group:not(:nth-last-of-type(1))
+{
+    margin-bottom: 30px;
+}
+
+.transaction-group-header
+{
+    color: #212121;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 10px 10px;
+}
+
+.transaction-group-body
+{
+    box-sizing: border-box;
+    border: solid 1px #E0E0E0;
+    border-radius: 5px;
+}
+
+.transaction-row
+{
+    box-sizing: border-box;
+    display: flex;
+    padding: 10px;
+}
+
+.transaction-row:not(:nth-last-of-type(1))
+{
+    border-bottom: solid 1px #E0E0E0;
+}
+
+.transaction-row:hover
+{
+    background-color: #FAFAFA;
+}
+
+.transaction-row div 
+{
+    flex-grow: 1;
+    padding: 5px;
+}
+
+.transaction-description
+{
+    max-width: 45%;
+}
+
+.transaction-description p
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.transaction-row p
+{
+    margin: 0;
+}
+
+.transaction-summary
+{
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+}
+
+.transaction-summary p
+{
+    text-align: right;
+}
+
+.transaction-summary p:nth-of-type(1)
+{
+    font-weight: 500;
+}
+
+.transaction-summary p:nth-of-type(2)
+{
+    color: #616161;
+    font-size: 14px;
+}
+
+/* Editor and dialogs */
+fluent-dialog::part(control) {
+    --dialog-width: 400px;
+    --dialog-height: fit-content;
+    
+    color: #1b1b1b;
+    overflow: hidden;
+    position: relative;
+}
+
+fluent-dialog::part(positioning-region) {
+    z-index: 1000;
+}
+
+.dialog_content {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.dialog-header {
+    align-items: center;
+    display: flex;
+    height: 36px;
+    padding: 5px;
+    padding-left: 10px;
+}
+
+.dialog-title {
+    font-family: "Segoe UI Variable Display", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.dialog-dismiss-button {
+    margin-left: auto;
+}
+
+.dialog-body {
+    flex-grow: 1;
+    padding: 15px;
+}
+
+.dialog-footer {
+    border-top: solid 1px #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px;
+}
