@@ -4,8 +4,7 @@ include_once "../crud/_db_provider.php";
 
 $code = @$_GET["code"];
 $clientId = "97270275700-k2pa3hcln03s57ohch5a6t5cjfl2cfho.apps.googleusercontent.com";
-# $redirectURI = "http%3A//finance.livehost.com/user/verify_google.php"; # Local...
-$redirectURI = "https%3A//money.garyantier.com/user/verify_google.php"; # Production...
+$redirectURI = "https%3A//money.garyantier.com/user/verify_google.php";
 $clientSecret = "ipTihVgu8mn7di-T9wkpGDIo";
 
 $idToken;
