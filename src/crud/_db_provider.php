@@ -4,8 +4,8 @@
         
         # Local...
         # $user = "root";
-        # $pass = "";
-        # $db = "financial_record";
+        # $pass = "msql_M@1n_@dm1n";
+        # $db = "money";
         
         # Production...
         $user = "u562775109_admin_finance";
