@@ -5,11 +5,10 @@
     $conn = connect();
     
     if($conn) {
-        $periodId = @$_GET["PeriodId"];
         $accountId = @$_GET["AccountId"];
         $status = @$_GET["Status"];
         $posted = $status == "actual" ? 1 : 0;
-        $query = "SELECT Id, `Date`, `Description`, Debit, Credit FROM transaction WHERE PeriodId = $periodId AND AccountId = $accountId AND Posted = $posted AND Status = 1 ORDER BY `Date` ASC, Id ASC;";
+        $query = "SELECT Id, `Date`, `Description`, Debit, Credit FROM transaction WHERE AccountId = $accountId AND Posted = $posted AND Status = 1 ORDER BY `Date` ASC, Id ASC;";
         $data = $conn->query($query);
         
         if($data) {

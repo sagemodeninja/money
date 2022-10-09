@@ -2,15 +2,14 @@ const CREATE = 0;
 const UPDATE = 1;
 
 // BALANCES
-var begBal = 0;
 var runBal = 0;
+var projBal = 0;
 
 // TRANSACTION
 var operation = CREATE;
-var periods = {};
 var tables = {};
 var tabs = {};
-var period, activeTabKey, editor;
+var activeTabKey, editor;
 
 var contextMenu;
 
@@ -29,8 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initContextMenu();
     registerTabs();
 
-    period = $("#period");
-    loadPeriods();
+    // Auto refresh @ start.
+    loadBalances();
 
     refreshCommand.addEventListener("click", () => loadBalances());
     
@@ -57,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $.ajax({
             url: url,
             method: "POST",
-            data: editor.serialize() + `&PeriodId=${period.val()}&AccountId=${ACCOUNT_ID}`,
+            data: editor.serialize() + `&AccountId=${ACCOUNT_ID}`,
             dataType: "JSON",
             success: payload=>{
                 if(payload.state) {
@@ -106,48 +105,9 @@ function initContextMenu() {
     contextMenu.addOptions(updateOption, postOption, deleteOption, cancelOption);
 }
 
-// PERIODS
-function loadPeriods() {
-    axios.get("../period/read.php")
-        .then(response => {
-            const payload = response.data;
-            const content = payload.content;
-            
-            period.empty();
-            
-            if(payload.state) {
-                $.each(content, (idx, data)=>{
-                    let id = data.Id;
-                    let fromDate = data.FromDate.replace(/-/g, "/");
-                    let toDate = data.ToDate.replace(/-/g, "/");
-                    let open = data.Status === "Open";
-            
-                    let text = open ? "(Current Period)" : `${fromDate} - ${toDate}`;
-                    period.append( $(`<option value="${id}">${text}</option>`) );
-            
-                    periods[id] = { open: open };
-                });
-            
-                loadBalances(); // Auto refresh @ start.
-            } else {
-                period.append( $("<option>No Periods...</option>") );
-                alert(`Oops! ${content}`);
-            }
-        })
-        .catch(error => {
-            alert("An error occured.");
-            console.log(error);
-        });
-}
-
 // BALANCES
 function loadBalances() {
-    const periodId = period.val();
-
-    const data = {
-        AccountId: ACCOUNT_ID,
-        PeriodId: periodId
-    };
+    const data = { AccountId: ACCOUNT_ID };
     
     axios.get("../report/balances.php", { params: data })
         .then(response => {
@@ -155,19 +115,12 @@ function loadBalances() {
             const content = payload.content;
             
             if(payload.state) {
-                begBal = content.Beginning;
                 runBal = content.Running;
-                
-                let projBal = content.Projected;
-                let open = periods[periodId].open;
+                projBal = content.Projected;
 
-                $("#beginning_balance").text( toCurrency( begBal.toString() ));
                 $("#running_balance").text( toCurrency( runBal.toString() ) );
-                $("#projected_balance").text( open ? toCurrency( projBal.toString() ) : "-" );
+                $("#projected_balance").text( toCurrency( projBal.toString() ) );
 
-                $("#running_balance_head").text( open ? "Running Balance" : "Ending Balance" );
-
-                createCommand.toggleAttribute("disabled", !open);
                 refreshTable();
             }
             else
@@ -183,8 +136,7 @@ function loadBalances() {
 
 function refreshTable() {
     const data = { 
-        AccountId: ACCOUNT_ID, 
-        PeriodId: period.val(), 
+        AccountId: ACCOUNT_ID,
         Status: activeTabKey
     };
     
@@ -196,7 +148,6 @@ function refreshTable() {
             
             if(payload.state) {
                 tab.empty();
-                let balance = activeTabKey === "actual" ? begBal : runBal;
                 let transactions = groupTransactions(content);
                 
                 $.each(transactions, (idx, data) => {
@@ -224,6 +175,7 @@ function groupTransactions(trans) {
       return g;
     }, {});
     
+    // NOTE: .sort(() => -1) is used to reverse order.
     var sorted = Object.keys(groups).sort(() => -1).reduce((o, k) => {
         o[k] = groups[k].sort(() => -1);
         return o;

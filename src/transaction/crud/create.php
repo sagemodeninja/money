@@ -5,13 +5,12 @@
     $conn = connect();
     
     if($conn) {
-        $periodId = @$_POST["PeriodId"];
         $accountId = @$_POST["AccountId"];
         $date = @$_POST["Date"];
         $description = str_replace("'", "''", @$_POST["Description"]);
         $debit = @$_POST["Debit"];
         $credit = @$_POST["Credit"];
-        $query = "INSERT INTO transaction (PeriodId, AccountId, `Date`, `Description`, Debit, Credit) VALUES ($periodId, $accountId, '$date', '$description', $debit, $credit);";
+        $query = "INSERT INTO transaction (PeriodId, AccountId, `Date`, `Description`, Debit, Credit) VALUES (0, $accountId, '$date', '$description', $debit, $credit);";
         
         if ($conn->query($query) === TRUE) {
             $result = "{'state': true, 'content': 'Transaction created!'}";

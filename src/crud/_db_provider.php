@@ -1,17 +1,7 @@
 <?php
+    require_once $_SERVER['DOCUMENT_ROOT'] . "/secrets.php";
+
     function connect() {
-        $server = "localhost";
-        
-        # Local...
-        # $user = "root";
-        # $pass = "msql_M@1n_@dm1n";
-        # $db = "money";
-        
-        # Production...
-        $user = "u562775109_admin_finance";
-        $pass = "msql_M@1n_@dm1n";
-        $db = "u562775109_finance";
-        
-        return @mysqli_connect($server, $user, $pass, $db);
+        return @mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB);
     }
 ?>

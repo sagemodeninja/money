@@ -29,15 +29,10 @@
         <?php include_once "../assets/layouts/navigation_items.php" ?>
             
         <fluent-navigation-view-header-content style="flex-direction: column; margin-right: 10px; min-width: 0;">
-            <div style="align-self: flex-end; display: flex;">
-                <fluent-command-bar default-label-position="right">
-                    <fluent-app-bar-button id="refresh_command" icon="Refresh" label="Refresh" modifier="Control" key="R"></fluent-app-bar-button>
-                    <fluent-app-bar-button id="create_command" icon="Add" label="Create" modifier="Control" key="A"></fluent-app-bar-button>
-                </fluent-command-bar>
-                <select id="period">
-                    <option>Loading...</option>
-                </select>
-            </div>
+            <fluent-command-bar default-label-position="right" style="align-self: flex-end;">
+                <fluent-app-bar-button id="refresh_command" icon="Refresh" label="Refresh" modifier="Control" key="R"></fluent-app-bar-button>
+                <fluent-app-bar-button id="create_command" icon="Add" label="Create" modifier="Control" key="A"></fluent-app-bar-button>
+            </fluent-command-bar>
         </fluent-navigation-view-header-content>
 
         <fluent-navigation-view-content-frame style="position: relative;">
@@ -47,12 +42,10 @@
                     <div id="account_balances_root_container">
                         <table class="table">
                             <tr>
-                                <th>Beginning Balance</th>
                                 <th id="running_balance_head">Running Balance</th>
                                 <th id="projected_balance_head">Projected Balance</th>
                             <tr>
                             <tr>
-                                <td id="beginning_balance">-</td>
                                 <td id="running_balance">-</td>
                                 <td id="projected_balance">-</td>
                             </tr>
