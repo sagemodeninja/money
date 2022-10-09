@@ -25,11 +25,6 @@
                 $host = $sourceTransformations[$source]($host);
             } 
         }
-    
-        // Remove port number from host
-        if (!str_contains($host, 'localhost')) { 
-            $host = preg_replace('/:\d+$/', '', $host);
-        }
 
         return trim($host);
     }
