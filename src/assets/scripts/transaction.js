@@ -7,10 +7,9 @@ var projBal = 0;
 
 // TRANSACTION
 var operation = CREATE;
-var periods = {};
 var tables = {};
 var tabs = {};
-var period, activeTabKey, editor;
+var activeTabKey, editor;
 
 var contextMenu;
 
@@ -29,8 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initContextMenu();
     registerTabs();
 
-    period = $("#period");
-    loadPeriods();
+    // Auto refresh @ start.
+    loadBalances();
 
     refreshCommand.addEventListener("click", () => loadBalances());
     
@@ -57,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $.ajax({
             url: url,
             method: "POST",
-            data: editor.serialize() + `&PeriodId=${period.val()}&AccountId=${ACCOUNT_ID}`,
+            data: editor.serialize() + `&AccountId=${ACCOUNT_ID}`,
             dataType: "JSON",
             success: payload=>{
                 if(payload.state) {
@@ -104,40 +103,6 @@ function initContextMenu() {
     cancelOption.onClick(d => cancelBtnClicked(d.data.Id));
     
     contextMenu.addOptions(updateOption, postOption, deleteOption, cancelOption);
-}
-
-// PERIODS
-function loadPeriods() {
-    axios.get("../period/read.php")
-        .then(response => {
-            const payload = response.data;
-            const content = payload.content;
-            
-            period.empty();
-            
-            if(payload.state) {
-                $.each(content, (idx, data)=>{
-                    let id = data.Id;
-                    let fromDate = data.FromDate.replace(/-/g, "/");
-                    let toDate = data.ToDate.replace(/-/g, "/");
-                    let open = data.Status === "Open";
-            
-                    let text = open ? "(Current Period)" : `${fromDate} - ${toDate}`;
-                    period.append( $(`<option value="${id}">${text}</option>`) );
-            
-                    periods[id] = { open: open };
-                });
-            
-                loadBalances(); // Auto refresh @ start.
-            } else {
-                period.append( $("<option>No Periods...</option>") );
-                alert(`Oops! ${content}`);
-            }
-        })
-        .catch(error => {
-            alert("An error occured.");
-            console.log(error);
-        });
 }
 
 // BALANCES
