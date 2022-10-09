@@ -1,10 +1,12 @@
 <?php
 session_start();
-include_once "../crud/_db_provider.php";
+include_once $_SERVER['DOCUMENT_ROOT'] . "/crud/_db_provider.php";
+include_once $_SERVER['DOCUMENT_ROOT'] . "/helper.php";
+include_once $_SERVER['DOCUMENT_ROOT'] . "/secrets.php";
 
 $code = @$_GET["code"];
-$client_id =  GOOGLE_CLIENT_ID;
-$redirect_uri = GetHost() . "/user/verify_google.php";
+$clientId =  GOOGLE_CLIENT_ID;
+$redirectURI = getFullHost() . "/user/verify_google.php";
 $clientSecret = GOOGLE_CLIENT_SECRET;
 
 $idToken;
