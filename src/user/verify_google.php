@@ -3,10 +3,9 @@ session_start();
 include_once "../crud/_db_provider.php";
 
 $code = @$_GET["code"];
-$clientId = "97270275700-k2pa3hcln03s57ohch5a6t5cjfl2cfho.apps.googleusercontent.com";
-# $redirectURI = "http%3A//localhost:8081/user/verify_google.php"; # Local
-$redirectURI = "https%3A//money.garyantier.com/user/verify_google.php"; # Production
-$clientSecret = "ipTihVgu8mn7di-T9wkpGDIo";
+$client_id =  GOOGLE_CLIENT_ID;
+$redirect_uri = GetHost() . "/user/verify_google.php";
+$clientSecret = GOOGLE_CLIENT_SECRET;
 
 $idToken;
 $userInfo;
