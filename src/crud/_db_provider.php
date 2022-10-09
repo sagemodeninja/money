@@ -1,13 +1,13 @@
 <?php
     function connect() {
-        $server = "localhost";
-        
         # Local...
+        # $server = "db";
         # $user = "root";
         # $pass = "msql_M@1n_@dm1n";
         # $db = "money";
         
         # Production...
+        $server = "localhost";
         $user = "u562775109_admin_finance";
         $pass = "msql_M@1n_@dm1n";
         $db = "u562775109_finance";

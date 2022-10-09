@@ -47,12 +47,10 @@
                     <div id="account_balances_root_container">
                         <table class="table">
                             <tr>
-                                <th>Beginning Balance</th>
                                 <th id="running_balance_head">Running Balance</th>
                                 <th id="projected_balance_head">Projected Balance</th>
                             <tr>
                             <tr>
-                                <td id="beginning_balance">-</td>
                                 <td id="running_balance">-</td>
                                 <td id="projected_balance">-</td>
                             </tr>

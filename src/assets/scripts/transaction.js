@@ -2,8 +2,8 @@ const CREATE = 0;
 const UPDATE = 1;
 
 // BALANCES
-var begBal = 0;
 var runBal = 0;
+var projBal = 0;
 
 // TRANSACTION
 var operation = CREATE;
@@ -142,12 +142,7 @@ function loadPeriods() {
 
 // BALANCES
 function loadBalances() {
-    const periodId = period.val();
-
-    const data = {
-        AccountId: ACCOUNT_ID,
-        PeriodId: periodId
-    };
+    const data = { AccountId: ACCOUNT_ID };
     
     axios.get("../report/balances.php", { params: data })
         .then(response => {
@@ -155,19 +150,12 @@ function loadBalances() {
             const content = payload.content;
             
             if(payload.state) {
-                begBal = content.Beginning;
                 runBal = content.Running;
-                
-                let projBal = content.Projected;
-                let open = periods[periodId].open;
+                projBal = content.Projected;
 
-                $("#beginning_balance").text( toCurrency( begBal.toString() ));
                 $("#running_balance").text( toCurrency( runBal.toString() ) );
-                $("#projected_balance").text( open ? toCurrency( projBal.toString() ) : "-" );
+                $("#projected_balance").text( toCurrency( projBal.toString() ) );
 
-                $("#running_balance_head").text( open ? "Running Balance" : "Ending Balance" );
-
-                createCommand.toggleAttribute("disabled", !open);
                 refreshTable();
             }
             else
@@ -183,8 +171,7 @@ function loadBalances() {
 
 function refreshTable() {
     const data = { 
-        AccountId: ACCOUNT_ID, 
-        PeriodId: period.val(), 
+        AccountId: ACCOUNT_ID,
         Status: activeTabKey
     };
     
@@ -196,7 +183,6 @@ function refreshTable() {
             
             if(payload.state) {
                 tab.empty();
-                let balance = activeTabKey === "actual" ? begBal : runBal;
                 let transactions = groupTransactions(content);
                 
                 $.each(transactions, (idx, data) => {
@@ -224,6 +210,7 @@ function groupTransactions(trans) {
       return g;
     }, {});
     
+    // NOTE: .sort(() => -1) is used to reverse order.
     var sorted = Object.keys(groups).sort(() => -1).reduce((o, k) => {
         o[k] = groups[k].sort(() => -1);
         return o;
