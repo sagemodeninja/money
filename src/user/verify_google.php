@@ -58,6 +58,7 @@ $lastname;
 $email = @$userInfo->email;
 $aud = @$userInfo->aud;
 $iss = str_replace("https://", "", @$userInfo->iss);
+$picture = @$userInfo->picture;
 $userExists = false;
 
 // User exists
@@ -87,6 +88,7 @@ if($userExists && $aud === $clientId && $iss === "accounts.google.com") {
     $_SESSION["user_firstname"] = $firstname;
     $_SESSION["user_lastname"] = $lastname;
     $_SESSION["user_email"] = $email;
+    $_SESSION["user_picture"] = $picture;
     
     header("location: /"); # Local...
 } else {
