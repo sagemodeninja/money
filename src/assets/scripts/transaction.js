@@ -58,14 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "POST",
             data: editor.serialize() + `&AccountId=${ACCOUNT_ID}`,
             dataType: "JSON",
-            success: payload=>{
+            success: payload => {
                 if(payload.state) {
                     loadBalances();
                 }
 
                 operation = CREATE;
                 editorDialog.hide();
-                alert(payload.content);
             }
         });
     });
@@ -205,7 +204,7 @@ function newGroup(date, trans, status) {
 }
 
 function newRow(status, trans) {
-    var row = $("<div>").addClass("transaction-row");
+    var row = $(`<div class="transaction-row ${status}">`);
 
     var main = $("<div>").addClass("main-content");
     var desc = $(`<div class='transaction-description'><p>${trans.Description}</p></div>`);
@@ -230,12 +229,48 @@ function newRow(status, trans) {
     const actions = $("<div>").addClass("actions-container");
     row.append(actions);
 
+    if (status === "projection") {
+        const editAction = newAction("edit", "Edit");
+        const postAction = newAction("post", "CompletedSolid");
+        const deleteAction = newAction("delete", "Delete");
+
+        editAction.click(() => {
+            collapseActions();
+            updateBtnClicked(trans);
+        });
+
+        postAction.click(() => {
+            collapseActions();
+            postBtnClicked(trans.Id);
+        });
+
+        deleteAction.click(() => {
+            collapseActions();
+            deleteBtnClicked(trans.Id);
+        });
+
+        actions.append(editAction);
+        actions.append(postAction);
+        actions.append(deleteAction);
+    } else {
+        const cancelAction = newAction("delete", "Cancel");
+        actions.append(cancelAction);
+
+        cancelAction.click(() => {
+            collapseActions();
+            cancelBtnClicked(trans.Id);
+        });
+    }
+
     // Touch events...
     let initialTouch;
+    let initialLeft;
 
     main[0].addEventListener("touchstart", e => {
         e.preventDefault();
         initialTouch = e.changedTouches[0];
+
+        initialLeft = parseInt(main.css("left"));
     });
 
     main[0].addEventListener("touchmove", e => {
@@ -249,8 +284,9 @@ function newRow(status, trans) {
             return;
         }
 
-        let delta = Math.min(0, touch.pageX - initialTouch.pageX);
-        main.css({ transform: `translateX(${delta}px)` });
+        const delta = touch.pageX - initialTouch.pageX;
+        const left = Math.min(0, initialLeft + delta);
+        main.css({ left: left });
     });
 
     main[0].addEventListener("touchend", e => {
@@ -264,15 +300,42 @@ function newRow(status, trans) {
             return;
         }
 
-        const finalDelta = Math.max(0, initialTouch.pageX - touch.pageX);
+        const left = parseInt(main.css("left"));
         const actionWidth = actions[0].clientWidth;
         const threshold = actionWidth / 2;
-        const snapPoint = actionWidth * (finalDelta > threshold);
+        const snapPoint = actionWidth * (Math.abs(left) > threshold);
 
-        main.css({ transform: `translateX(${-snapPoint}px)` });
+        anime({
+            targets: main[0],
+            left: -snapPoint,
+            duration: 200,
+            easing: "easeInOutQuad"
+        });
     });
+
+    function collapseActions() {
+        anime({
+            targets: main[0],
+            left: 0,
+            duration: 200,
+            easing: "easeInOutQuad"
+        });
+    }
     
     return row;
+}
+
+function newAction(name, symbol) {
+    const action = $(`<div class="action action-${name}" tabindex="-1">`);
+    const icon = $(`<fluent-symbol-icon></fluent-symbol-icon>`);
+
+    // Icon
+    action.append(icon);
+    icon.attr("symbol", symbol);
+    icon.attr("font-size", 20);
+    icon.attr("foreground", "#fff");
+
+    return action;
 }
 
 function updateBtnClicked(data) {
@@ -292,12 +355,10 @@ function deleteBtnClicked(id) {
         method: "POST",
         data: { Id: id },
         dataType: "JSON",
-        success: payload=>{
+        success: payload => {
             if(payload.state) {
                 loadBalances();
             }
-
-            alert(payload.content);
         }
     });
 }
@@ -308,12 +369,10 @@ function postBtnClicked(id) {
         method: "POST",
         data: { Id: id },
         dataType: "JSON",
-        success: payload=>{
-            if(payload.state) {
+        success: payload => {
+            if (payload.state) {
                 loadBalances();
             }
-
-            alert(payload.content);
         }
     });
 }
@@ -324,12 +383,10 @@ function cancelBtnClicked(id) {
         method: "POST",
         data: { Id: id },
         dataType: "JSON",
-        success: payload=>{
-            if(payload.state) {
+        success: payload => {
+            if (payload.state) {
                 loadBalances();
             }
-
-            alert(payload.content);
         }
     });
 }
