@@ -1,5 +1,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f2f2f2" />
 <link rel="stylesheet" href="/assets/fonts/segoe-fluent-icons/segoe-fluent-icons.css">
 <link rel="stylesheet" href="/assets/fonts/segoe-ui-variable/segoe-ui-variable.css">
 
