@@ -24,7 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Account not set!");
         window.location.href = "../index.php";
     }
-    
+
+    editor = $("#editor");
     initContextMenu();
     registerTabs();
 
@@ -37,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
         operation = CREATE;
         
         editorDialog.show();
-        editor = $("#editor");
         editor.find("input").each((idx, ipt)=>{
             $(ipt).val("");
         });
@@ -206,11 +206,14 @@ function newGroup(date, trans, status) {
 
 function newRow(status, trans) {
     var row = $("<div>").addClass("transaction-row");
+
+    var main = $("<div>").addClass("main-content");
     var desc = $(`<div class='transaction-description'><p>${trans.Description}</p></div>`);
     var summary = $("<div class='transaction-summary'>");
     
-    row.append(desc);
-    row.append(summary);
+    main.append(desc);
+    main.append(summary);
+    row.append(main);
     
     var isDebit = trans.Debit > trans.Credit;
     var transAmount = isDebit ? trans.Debit : trans.Credit;
@@ -223,6 +226,51 @@ function newRow(status, trans) {
     summary.append(ref);
     
     row[0].addContext(contextMenu, { status: status, data: trans });
+
+    const actions = $("<div>").addClass("actions-container");
+    row.append(actions);
+
+    // Touch events...
+    let initialTouch;
+
+    main[0].addEventListener("touchstart", e => {
+        e.preventDefault();
+        initialTouch = e.changedTouches[0];
+    });
+
+    main[0].addEventListener("touchmove", e => {
+        e.preventDefault();
+
+        const touch = Array.from(e.changedTouches)
+                        .find(tch => tch.identifier === initialTouch.identifier);
+
+        if (touch === undefined) {
+            console.log("No matches found of the initial touch.");
+            return;
+        }
+
+        let delta = Math.min(0, touch.pageX - initialTouch.pageX);
+        main.css({ transform: `translateX(${delta}px)` });
+    });
+
+    main[0].addEventListener("touchend", e => {
+        e.preventDefault();
+
+        const touch = Array.from(e.changedTouches)
+                        .find(tch => tch.identifier === initialTouch.identifier);
+
+        if (touch === undefined) {
+            console.log("No matches found of the initial touch.");
+            return;
+        }
+
+        const finalDelta = Math.max(0, initialTouch.pageX - touch.pageX);
+        const actionWidth = actions[0].clientWidth;
+        const threshold = actionWidth / 2;
+        const snapPoint = actionWidth * (finalDelta > threshold);
+
+        main.css({ transform: `translateX(${-snapPoint}px)` });
+    });
     
     return row;
 }
