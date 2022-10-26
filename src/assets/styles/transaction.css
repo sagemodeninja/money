@@ -1,20 +1,17 @@
-#account_balances_root_container,
+#account_card_container,
 #transaction_tab_root_container {
     background-color: #fff;
-    left: 0;
-    position: absolute;
-    width: 100%;
 }
 
-#account_balances_root_container {
-    height: 80px;
-    overflow-y: auto;
-    top: 0;
+#account_card_container {
+    display: flex;
+    justify-content: center;
+    padding: 0 15px;
 }
 
 #transaction_tab_root_container {
-    height: calc(100% - 80px);
-    top: 80px;
+    /* height: calc(100% - 80px);
+    top: 80px; */
 }
 
 #transaction_tab_btn_container {
@@ -180,13 +177,6 @@
     background-color: #FAFAFA;
 }
 
-/* Tablet & Up */
-@media only screen and (min-width: 768px) {
-    .transaction-row .main-content:hover {
-        background-color: #FAFAFA;
-    }
-}
-
 .transaction-row .main-content div 
 {
     flex-grow: 1;
@@ -312,4 +302,15 @@ fluent-dialog::part(positioning-region) {
     display: flex;
     justify-content: flex-end;
     padding: 5px;
+}
+
+/* Tablet & Up */
+@media only screen and (min-width: 768px) {
+    #account_card_container {
+        justify-content: start !important;
+    }
+
+    .transaction-row .main-content:hover {
+        background-color: #FAFAFA;
+    }
 }

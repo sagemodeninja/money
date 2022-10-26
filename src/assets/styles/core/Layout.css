@@ -108,7 +108,7 @@ header {
 
 #layout_body {
     box-sizing: border-box;
-    height: calc(100% - 30px);
+    height: 100%;
     position: absolute;
     width: 100%;
     z-index: 0;
@@ -164,23 +164,6 @@ header {
     background-color: inherit;
     height: calc(100% - 80px);
     position: relative;
-}
-
-#layout_footer {
-    background-color: #fff;
-    bottom: 0;
-    box-sizing: border-box;
-    height: 30px;
-    padding: 0 15px;
-    position: fixed;
-    width: 100%;
-    z-index: 2;
-}
-
-#layout_footer span {
-    font-family: "Segoe UI Variable Text", sans-serif;
-    font-size: 14px;
-    line-height: 30px;
 }
 
 /* Modal... */
