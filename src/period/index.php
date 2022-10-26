@@ -61,8 +61,6 @@
                     </div>
                 </div>
             </div>
-            
-            <?php include_once "../assets/layouts/footer.php" ?>
         </fluent-navigation-view-content-frame>        
     </fluent-navigation-view>
 

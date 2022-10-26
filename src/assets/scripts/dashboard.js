@@ -134,7 +134,7 @@ function refreshBalances(categories, categorized) {
 
 // HELPERS
 function newCard(account, category) {
-    let accountNumber = account.AccountNumber;
+    let accountNumber = account.AccountNumber?.slice(-4) ?? "••••";
     let bankIcon = account.BankIcon;
     
     let card = $("<div>").addClass("account-card");
@@ -153,7 +153,7 @@ function newCard(account, category) {
     accountNoContainer.append($("<span>••••</span>"));
     accountNoContainer.append($("<span>••••</span>"));
     accountNoContainer.append($("<span>••••</span>"));
-    accountNoContainer.append($(`<span>${accountNumber?.slice(-4) ?? "••••"}</span>`));
+    accountNoContainer.append($(`<span>${accountNumber}</span>`));
     
     body.append(title);
     body.append(runningContainer);
@@ -204,7 +204,7 @@ function newCard(account, category) {
     });
     
     card.click(() => {
-        location.href = `transaction/?title=${account.Title}&account_id=${account.Id}`;
+        location.href = `transaction/?title=${account.Title}&id=${account.Id}&number=${accountNumber}&category=${category}`;
     });
 
     return card;

@@ -1,26 +1,17 @@
-#layout_user_avatar,
-#inner_circle {
-    background-color: white;
+.person-picture {
+    align-items: center;
+    background-color: #dcdcdc;
     border-radius: 50%;
-    display: grid;
+    display: flex;
+    height: 28px;
+    justify-content: center;
+    margin: 0 10px;
     overflow: hidden;
-    place-items: center;
+    position: relative;
+    width: 28px;
 }
 
-#layout_user_avatar {
-    border: solid 1.5px #b14dff;
-    box-sizing: border-box;
-    height: 34px;
-    position: absolute;
-    right: 10px;
-    width: 34px;
-}
-
-#inner_circle {
-    height: 30px;
-    width: 30px;
-}
-
-#layout_user_avatar img {
-    height: 110%;
+.person-picture .image {
+    height: 100%;
+    width: 100%;
 }

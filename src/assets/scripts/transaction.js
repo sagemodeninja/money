@@ -267,15 +267,12 @@ function newRow(status, trans) {
     let initialLeft;
 
     main[0].addEventListener("touchstart", e => {
-        e.preventDefault();
         initialTouch = e.changedTouches[0];
 
         initialLeft = parseInt(main.css("left"));
     });
 
     main[0].addEventListener("touchmove", e => {
-        e.preventDefault();
-
         const touch = Array.from(e.changedTouches)
                         .find(tch => tch.identifier === initialTouch.identifier);
 
@@ -290,8 +287,6 @@ function newRow(status, trans) {
     });
 
     main[0].addEventListener("touchend", e => {
-        e.preventDefault();
-
         const touch = Array.from(e.changedTouches)
                         .find(tch => tch.identifier === initialTouch.identifier);
 

@@ -8,7 +8,10 @@
     $userEmail = @$_SESSION["user_email"];
     
     $accountTitle = @$_GET["title"];
-    $accountId = @$_GET["account_id"];
+    $accountId = @$_GET["id"];
+    $accountNumber = @$_GET["number"];
+    $category = @$_GET["category"];
+
     if(!isset($accountId)) {
         $accountId = -1;
     }
@@ -18,6 +21,7 @@
 <head>
     <?php include_once "../assets/layouts/common_head_items.php" ?>
     <link rel="stylesheet" href="../assets/styles/transaction.css">
+    <link rel="stylesheet" href="../assets/styles/dashboard.css">
     <link rel="stylesheet" href="../assets/styles/main.css">
     <link rel="stylesheet" href="../assets/styles/Modal.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
@@ -25,54 +29,44 @@
 </head>
 <body>
     <?php include_once "../assets/layouts/header.php" ?>
-    <fluent-navigation-view id="navigation_view" header="<?php echo $accountTitle; ?>" pane-display-mode="left" header-src="tag" selects-on-load>
+    <fluent-navigation-view id="navigation_view" header="<?php echo $accountTitle; ?>" pane-display-mode="left" header-src="tag" selects-on-load always-show-header="false">
         <?php include_once "../assets/layouts/navigation_items.php" ?>
-            
-        <fluent-navigation-view-header-content style="flex-direction: column; margin-right: 10px; min-width: 0;">
-            <fluent-command-bar default-label-position="right" style="align-self: flex-end;">
-                <fluent-app-bar-button id="refresh_command" icon="Refresh" label="Refresh" modifier="Control" key="R"></fluent-app-bar-button>
-                <fluent-app-bar-button id="create_command" icon="Add" label="Create" modifier="Control" key="A"></fluent-app-bar-button>
-            </fluent-command-bar>
-        </fluent-navigation-view-header-content>
 
         <fluent-navigation-view-content-frame style="position: relative;">
+            <div style="display: flex; flex-direction: column; margin-right: 10px; min-width: 0;">
+                <fluent-command-bar default-label-position="right" style="align-self: flex-end;">
+                    <fluent-app-bar-button id="refresh_command" icon="Refresh" label="Refresh" modifier="Control" key="R"></fluent-app-bar-button>
+                    <fluent-app-bar-button id="create_command" icon="Add" label="Create" modifier="Control" key="A"></fluent-app-bar-button>
+                </fluent-command-bar>
+            </div>
+
             <!-- layout-body-content -->
             <div id="layout_body">
-                <div id="layout_workspace">
-                    <div id="account_balances_root_container">
-                        <table class="table">
-                            <tr>
-                                <th id="running_balance_head">Running Balance</th>
-                                <th id="projected_balance_head">Projected Balance</th>
-                            <tr>
-                            <tr>
-                                <td id="running_balance">-</td>
-                                <td id="projected_balance">-</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div id="transaction_tab_root_container">
-                        <fluent-tabs activeid="actual" id="transaction_tab">
-                            <fluent-tab id="actual">Actual</fluent-tab>
-                            <fluent-tab id="projection">Projection</fluent-tab>
-                            <fluent-tab-panel>
-                                <!--ACTUAL -->
-                                <div class="transaction_tab" data-tab="actual">
-                                    <p class="centered">Press "Refresh" to retrieve list.</p>
-                                </div>
-                            </fluent-tab-panel>
-                            <fluent-tab-panel>
-                                 <!--PROJECTION -->
-                                <div class="transaction_tab" data-tab="projection">
-                                    <p>Press "Refresh" to retrieve list.</p>
-                                </div>
-                            </fluent-tab-panel>
-                        </fluent-tabs>
-                    </div>
+                <div id="account_card_container">
+                    <account-card data-title="<?php echo $accountTitle; ?>" data-number="<?php echo $accountNumber; ?>" data-category="<?php echo $category; ?>">
+                        <card-balance data-title="Actual" id="running_balance"></card-balance>
+                        <card-balance data-title="Projection" id="projected_balance"></card-balance>
+                    </account-card>
+                </div>
+                <div id="transaction_tab_root_container">
+                    <fluent-tabs activeid="actual" id="transaction_tab">
+                        <fluent-tab id="actual">Actual</fluent-tab>
+                        <fluent-tab id="projection">Projection</fluent-tab>
+                        <fluent-tab-panel>
+                            <!--ACTUAL -->
+                            <div class="transaction_tab" data-tab="actual">
+                                <p class="centered">Press "Refresh" to retrieve list.</p>
+                            </div>
+                        </fluent-tab-panel>
+                        <fluent-tab-panel>
+                                <!--PROJECTION -->
+                            <div class="transaction_tab" data-tab="projection">
+                                <p>Press "Refresh" to retrieve list.</p>
+                            </div>
+                        </fluent-tab-panel>
+                    </fluent-tabs>
                 </div>
             </div>
-            
-            <?php include_once "../assets/layouts/footer.php" ?>
         </fluent-navigation-view-content-frame>        
     </fluent-navigation-view>
 
@@ -135,6 +129,7 @@
     <script src="../assets/scripts/DateTime.js"></script>
     <script src="../assets/scripts/Modal.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    <script src="../assets/scripts/AccountCard.js"></script>
     <script>const ACCOUNT_ID = <?php echo $accountId; ?>;</script>
     <script src="../assets/scripts/transaction.js"></script>
 </body>
