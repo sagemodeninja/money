@@ -1,21 +1,24 @@
-var accountsCont;
+var body;
+var refreshCommand;
+var toggleCommand;
+
 var closedAccounts;
 var contextMenu;
-
-const refreshCommand = document.querySelector("#refresh_command");
-const toggleCommand = document.querySelector("#toggle_closed_command");
 
 $(document).ready(() => {
     var isShowClosed = false;
     
-    accountsCont = $("#accounts_grid");
+    body = document.querySelector("#layout_body");
+    refreshCommand = document.querySelector("#refresh_command");
+    toggleCommand = document.querySelector("#toggle_closed_command");
+
     closedAccounts = [];
-    contextMenu = globalContext.addMenu("accounts_card", accountsCont[0]);
+    contextMenu = globalContext.addMenu("accounts_card", body);
     
     refreshCommand.addEventListener("click", refreshAccounts);
     
     // Toggle show/hide closed accounts...
-    toggleCommand.addEventListener("click", () => {
+    toggleCommand?.addEventListener("click", () => {
         toggleCommand.icon = isShowClosed ? "View" : "Hide";
         toggleCommand.label = isShowClosed ? "Show Closed Accounts" : "Hide Closed Accounts";
         
@@ -79,11 +82,11 @@ $(document).ready(() => {
 });
 
 function refreshAccounts() {
-    accountsCont.html('<p style="text-align: center;">Fetching Accounts...</p>');
+    body.innerHTML = '<p style="text-align: center;">Fetching Accounts...</p>';
 
     axios.get("account/crud/read_categorized.php")
          .then(response => {
-            accountsCont.empty();
+            body.innerHTML = null;
 
             let accounts = response.data;
             if(accounts.state){
@@ -104,7 +107,7 @@ function refreshAccounts() {
                 let categorized = content.reduce((map, acct) => map.set(acct.CategoryId, [...map.get(acct.CategoryId) ?? [], acct]), new Map());
                 refreshBalances(categories, categorized);
             } else {
-                accountsCont.html(`<p class="centered">Oops! ${accounts.content}</p>`);
+                body.innerHTML = `<p class="centered">Oops! ${accounts.content}</p>`;
             }
          })
          .catch(error => {
@@ -115,19 +118,23 @@ function refreshAccounts() {
 function refreshBalances(categories, categorized) {
     categorized.forEach((accounts, _category) => {
         let category = categories.find(cat => cat.Id == _category) ?? {};
-        let catColor = category?.Color ?? "9E9E9E";
-        let catTitle = category?.Title ?? "Uncategorized";
-        let catDiv = $(`<div style="display: flex; align-items: center; margin-top: 15px; margin-bottom: 8px;"></div>`);
-        let catIcon = $(`<span style="display: inline-block; background-color: #${catColor}; height: 8px; width: 8px; border-radius: 50%; margin-right: 8px;"></span>`);
-        let catLbl = $(`<span>${catTitle}</span>`);
+        let color = category?.Color ?? "9E9E9E";
+        let title = category?.Title ?? "Uncategorized";
+
+        const container = $('<div class="category"></div>');
+        const accountsGrid = $('<div class="accounts-grid"></div>');
+        const tag = $(`<fluent-symbol-icon symbol="Tag" foreground="#${color}" font-size="13" class="tag"></fluent-symbol-icon>`);
+        const label = $(`<span class="title">${title}</span>`);
         
-        catDiv.append(catIcon);
-        catDiv.append(catLbl);
-        accountsCont.append(catDiv);
-        
+        body.appendChild(container[0]);
+        body.appendChild(accountsGrid[0]);
+
+        container.append(tag);
+        container.append(label);
+
         $.each(accounts, (idx, account)=>{
-            let card = newCard(account, catTitle);
-            accountsCont.append(card);
+            let card = newCard(account, title);
+            accountsGrid.append(card);
         });
     });
 }
@@ -136,30 +143,23 @@ function refreshBalances(categories, categorized) {
 function newCard(account, category) {
     let accountNumber = account.AccountNumber?.slice(-4) ?? "••••";
     let bankIcon = account.BankIcon;
+
+    const card = $("<account-card>");
+    const runningBalance = $("<card-balance>...</card-balance>");
+    const projectedBalance = $("<card-balance>...</card-balance>");
+    const accountBankIcon = $('<img class="account-bank-icon" slot="icon">');
+
+    card.append(runningBalance);
+    card.append(projectedBalance);
+    card.append(accountBankIcon);
+
+    card.prop("title", account.Title);
+    card.prop("number", accountNumber);
+    card.prop("category", category);
     
-    let card = $("<div>").addClass("account-card");
-    let body = $("<div>").addClass("account-card-body");
-    let title = $(`<p class="account-name">${account.Title}</p>`);
-    let runningContainer = $("<p>").addClass("account-balance");
-    let runningFigure = $(`<span class="amount-figure">Loading...</span>`);
-    let runningSymbol = $(`<span class="currency-symbol">PHP</span>`);
-    let accountNoContainer = $("<p>").addClass("account-number");
-    let accountBankIcon = $("<img>").addClass("account-bank-icon");
-    let accountCategory = $(`<p class="account-category">${category}</p>`)
-    
-    runningContainer.append(runningFigure);
-    runningContainer.append(runningSymbol);
-    
-    accountNoContainer.append($("<span>••••</span>"));
-    accountNoContainer.append($("<span>••••</span>"));
-    accountNoContainer.append($("<span>••••</span>"));
-    accountNoContainer.append($(`<span>${accountNumber}</span>`));
-    
-    body.append(title);
-    body.append(runningContainer);
-    body.append(accountNoContainer);
-    body.append(accountCategory);
-    
+    runningBalance.prop("title", "Actual");
+    projectedBalance.prop("title", "Projection");
+
     if(bankIcon != null)
     {
         accountBankIcon.attr("src", `assets/images/bank_icons/${bankIcon}.svg`);
@@ -171,9 +171,6 @@ function newCard(account, category) {
         if(bankIcon == "cimb")
             accountBankIcon.attr("style", "bottom:20px;height:28px;right:25px;");
     }
-    
-    card.append(body);
-    card.append(accountBankIcon);
   
     // Context menu...
     card[0].addContext(contextMenu, account);
@@ -190,15 +187,14 @@ function newCard(account, category) {
         dataType: "JSON",
         success: payload => {
             if(payload.state) {
-                let balance = payload.content;
-                runningFigure.text(toCurrency(balance.Balance));
-                //projFig.text(toCurrency(balance.Projection));
+                let balances = payload.content;
+                runningBalance.text(toCurrency(balances.Balance));
+                projectedBalance.text(toCurrency(balances.Projection));
             } else {
-                // accountsCont.append( $(`<p class="centered">Oops! ${payload.content}</p>`) );
-                /*
-                runFig.text("N/A");
-                projFig.text("N/A");
-                */
+                runningBalance.text("!");
+                projectedBalance.text("!");
+
+                console.error(payload.content);
             }
         }
     });

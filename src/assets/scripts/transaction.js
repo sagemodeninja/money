@@ -283,6 +283,10 @@ function newRow(status, trans) {
 
         const delta = touch.pageX - initialTouch.pageX;
         const left = Math.min(0, initialLeft + delta);
+
+        if (Math.abs(delta) > 0)
+            e.preventDefault();
+
         main.css({ left: left });
     });
 

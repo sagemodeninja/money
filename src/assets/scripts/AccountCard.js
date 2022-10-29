@@ -2,7 +2,7 @@
     const template = document.createElement("template");
     template.innerHTML = `
     <style>
-    .account-card {
+    :host {
         background-image: -webkit-linear-gradient(-45deg, #252A32 50%, #2d343e 50%);
         border-radius: 10px;
         box-shadow: 0 3px 6px rgb(0 0 0 / 16%), 0 3px 6px rgb(0 0 0 / 23%);
@@ -11,7 +11,6 @@
         cursor: pointer;
         font-family: 'Inter', sans-serif;
         height: 180px;
-        margin: 20px 0;
         max-height: 180px;
         max-width: 320px;
         min-height: 180px;
@@ -21,13 +20,9 @@
         position: relative;
         user-select: none;
         width: 320px;
-        
-        /* Version 1 compatability...
-        display: inline-block;
-        margin: 10px;*/
     }
     
-    .account-card::before {
+    :host::before {
         border: solid 3px #4D90FE;
         border-radius: 13px;
         box-sizing: border-box;
@@ -41,7 +36,7 @@
         z-index: 0;
     }
     
-    .account-card:active::before {
+    :host:active::before {
         display: block;
     }
     
@@ -82,22 +77,29 @@
     .numbers span {
         margin-right: 8px;
     }
+
+    ::slotted(img[slot=icon]) {
+        bottom: 23px;
+        height: 22px;
+        position: absolute;
+        right: 18px;
+        shape-rendering: geometricPrecision;
+    }
     </style>
-    <div class="account-card">
-        <div class="body">
-            <span class="title"></span>
-            <div class="balances">
-                <slot></slot>
-            </div>
-            <p class="numbers">
-                <span>••••</span>
-                <span>••••</span>
-                <span>••••</span>
-                <span class="number">••••</span>
-            </p>
-            <p class="category"></p>
+    <div class="body">
+        <span class="title"></span>
+        <div class="balances">
+            <slot></slot>
         </div>
+        <p class="numbers">
+            <span>••••</span>
+            <span>••••</span>
+            <span>••••</span>
+            <span class="number">••••</span>
+        </p>
+        <span class="category"></span>
     </div>
+    <slot name="icon"></slot>
     `;
 
     class AccountCard extends HTMLElement {
@@ -212,6 +214,14 @@
         line-height: 20px;
     }
 
+    .figure.medium {
+        font-size: 16px;
+    }
+
+    .figure.small {
+        font-size: 15px;
+    }
+
     .figure::after {
         display: inline-block;
         color: #ffffff80;
@@ -220,6 +230,16 @@
         line-height: 13px;
         margin-left: 5px;
         vertical-align: top;
+    }
+
+    .figure.medium::after {
+        font-size: 12px;
+        margin-left: 4px;
+    }
+
+    .figure.small::after {
+        font-size: 11px;
+        margin-left: 0;
     }
 
     .currency-php::after {
@@ -274,10 +294,28 @@
             return this._figureSpan;
         }
 
+        get slot() {
+            this._slot ??= this.shadowRoot.querySelector("slot");
+            return this._slot;
+        }
+
         /* Functions */
         connectedCallback() {
             this.setTitle();
             this.setCurrency();
+
+            this.slot.addEventListener("slotchange", () => {
+                const nodes = this.slot.assignedNodes();
+                const content = nodes[0].textContent.replace(/,/g, '');
+                const balance = parseFloat(content);
+
+                if(isNaN(balance)) return;
+                
+                if (balance >= 1000000)
+                    this.figureSpan.classList.add("small");
+                else if (balance >= 100000)
+                    this.figureSpan.classList.add("medium");
+            });
         }
 
         attributeChangedCallback(name) {
