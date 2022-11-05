@@ -6,9 +6,6 @@
                 <fluent-navigation-view-item icon="AddFriend" content="Users" tag="Users" href="/user/index.php"></fluent-navigation-view-item>
                 <fluent-navigation-view-item icon="Tag" content="Categories" tag="Categories" href="/category/index.php"></fluent-navigation-view-item>
                 <fluent-navigation-view-item icon="ChipCardCreditCardReader" content="Accounts" tag="Accounts" href="/account/index.php"></fluent-navigation-view-item>
-                <fluent-navigation-view-item icon="DateTime" content="Periods" tag="Periods" href="/period/index.php"></fluent-navigation-view-item>
             </fluent-navigation-view-menu-items>
         </fluent-navigation-view-item>
-        
-        <fluent-navigation-view-item icon="ReceiptPrinter" content="Transactions" tag="Transactions" href="/transaction/index.php"></fluent-navigation-view-item>
 </fluent-navigation-view-menu-items>
