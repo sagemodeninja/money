@@ -44,5 +44,6 @@
 
     .accounts-grid {
         flex-direction: row;
+        flex-wrap: wrap;
     }
 }
