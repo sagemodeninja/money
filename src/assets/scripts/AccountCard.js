@@ -129,8 +129,8 @@
         }
 
         set number(value) {
-            this.setAttribute("data-number", value);
-            this.setTitle();
+            this.setAttribute("data-number", value ?? "••••");
+            this.setNumber();
         }
 
         get category() {
@@ -139,7 +139,7 @@
 
         set category(value) {
             this.setAttribute("data-category", value);
-            this.setTitle();
+            this.setCategory();
         }
 
         /* DOM */
@@ -168,8 +168,8 @@
         attributeChangedCallback(name) {
             switch(name) {
                 case "data-title": this.setTitle(); break;
-                case "data-number": this.setTitle(); break;
-                case "data-category": this.setTitle(); break;
+                case "data-number": this.setNumber(); break;
+                case "data-category": this.setCategory(); break;
             }
         }
 
@@ -178,7 +178,8 @@
         }
 
         setNumber() {
-            this.numberSpan.innerHTML = this.number;
+            const number = this.number?.slice(-4);
+            this.numberSpan.innerHTML = number;
         }
 
         setCategory() {

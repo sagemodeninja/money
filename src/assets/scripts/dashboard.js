@@ -5,12 +5,23 @@ var toggleCommand;
 var closedAccounts;
 var contextMenu;
 
+var transactionPanel;
+var transaction;
+
 $(document).ready(() => {
     var isShowClosed = false;
     
     body = document.querySelector("#layout_body");
     refreshCommand = document.querySelector("#refresh_command");
     toggleCommand = document.querySelector("#toggle_closed_command");
+
+    transactionPanel = document.querySelector("transaction_panel");
+    transaction = new TransactionManager({
+        card: document.querySelector("#transaction_card"),
+        tab: document.querySelector("#transaction_tab"),
+        editor: document.querySelector("#editor_dialog"),
+        command: document.querySelector("#create_command")
+    });
 
     closedAccounts = [];
     contextMenu = globalContext.addMenu("accounts_card", body);
@@ -200,7 +211,8 @@ function newCard(account, category) {
     });
     
     card.click(() => {
-        location.href = `transaction/?title=${account.Title}&id=${account.Id}&number=${accountNumber}&category=${category}`;
+        transaction_panel.show();
+        transaction.load(account);
     });
 
     return card;
@@ -209,7 +221,3 @@ function newCard(account, category) {
 function  toCurrency(value) {
     return Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 }
-
-
-
-
