@@ -1,122 +1,29 @@
-#account_card_container,
-#transaction_tab_root_container {
-    background-color: #fff;
+:root {
+    --tab-panel-padding: 20px;
 }
 
-#account_card_container {
+.card-container {
     display: flex;
     justify-content: center;
-    padding: 0 15px;
 }
 
-#transaction_tab_root_container {
-    /* height: calc(100% - 80px);
-    top: 80px; */
+.tabs-container {
+    flex-grow: 1;
 }
 
-#transaction_tab_btn_container {
-    box-sizing: border-box;
-    height: 40px;
-    left: 0;
-    margin: 0 5px;
-    padding: 14px 30px;
-    padding-bottom: 0;
-    position: absolute;
-    top: 0;
-    width: calc(100% - 10px);
-    z-index: 1;
+#transaction_tab {
+    height: 100%;
 }
 
-#transaction_tab_container {
-    background-color: white;
-    border: solid 1px #212121;
-    /* border: solid 1px red; */
-    border-radius: 8px;
-    box-sizing: border-box;
-    height: calc(100% - 45px);
-    left: 0;
-    margin: 5px;
-    margin-top: 0;
+fluent-tabs::part(tabpanel) {
+    display: block;
     overflow-y: auto;
-    padding: 10px;
-    position: absolute;
-    top: 40px;
-    width: calc(100% - 10px);
+    max-height: calc(100% - 253px); /* Bruh */
 }
 
-.transaction_tab {
-    padding-top: 20px;
-}
-
-.tab_btn {
-    background-color: #E0E0E0;
-    border: solid 1px #CFD8DC;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    box-sizing: border-box;
-    cursor: pointer;
-    display: inline-block;
-    font-size: 14px;
-    line-height: 25px;
-    margin: 0;
-    margin-right: 5px;
-    padding: 0;
-    position: relative;
-    text-align: center;
-    width: 100px;
-    z-index: 0;
-}
-
-.tab_btn.active {
-    background-color: white;
-    border: solid 1px #212121;
-    z-index: 1;
-}
-
-.tab-btn-base {
-    background-color: inherit;
-    border-bottom: solid 1px #212121;
-    box-sizing: border-box;
-    bottom: -1px;
-    display: block;
-    height: 5px;
-    left: -5px;
-    position: absolute;
-    width: calc(100% + 10px);
-    z-index: 0;
-}
-
-.tab_btn.active
-.tab-btn-base {
-    border-bottom: solid 1px white;
-}
-
-.tab_btn::before,
-.tab_btn::after {
-    background-color: #F0F0F0;
-    border-bottom: solid 1px #212121;
-    bottom: -1px;
-    box-sizing: border-box;
-    content: "";
-    display: block;
-    height: 20px;
-    position: absolute;
-    width: 6px;
-    z-index: 1;
-}
-
-.tab_btn::before {
-    border-bottom-right-radius: 5px;
-    border-right: solid 1px;
-    border-color: inherit;
-    right: 100%;
-}
-
-.tab_btn::after {
-    border-bottom-left-radius: 5px;
-    border-left: solid 1px;
-    border-color: inherit;
-    left: 100%;
+fluent-tab-panel {
+    padding-top: var(--tab-panel-padding);
+    padding-bottom: var(--tab-panel-padding);
 }
 
 /* version 20211114_01 */
@@ -306,8 +213,8 @@ fluent-dialog::part(positioning-region) {
 
 /* Tablet & Up */
 @media only screen and (min-width: 768px) {
-    #account_card_container {
-        justify-content: start !important;
+    fluent-tabs::part(tabpanel) {
+        max-height: calc(100% - 40px);
     }
 
     .transaction-row .main-content:hover {
