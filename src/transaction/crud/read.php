@@ -6,9 +6,7 @@
     
     if($conn) {
         $accountId = @$_GET["AccountId"];
-        $status = @$_GET["Status"];
-        $posted = $status == "actual" ? 1 : 0;
-        $query = "SELECT Id, `Date`, `Description`, Debit, Credit FROM transaction WHERE AccountId = $accountId AND Posted = $posted AND Status = 1 ORDER BY `Date` ASC, Id ASC;";
+        $query = "SELECT Id, `Date`, `Description`, Debit, Credit, Posted FROM transaction WHERE AccountId = $accountId AND Status = 1 ORDER BY Posted DESC, `Date` ASC, Id ASC;";
         $data = $conn->query($query);
         
         if($data) {
@@ -20,8 +18,9 @@
                     $description = str_replace("'", "**", $row["Description"]);
                     $debit = $row["Debit"];
                     $credit = $row["Credit"];
+                    $posted = $row["Posted"];
                     
-                    $result .= "{ 'Id': $id, 'Date': '$date', 'Description': '$description', 'Debit': $debit, 'Credit': $credit },";
+                    $result .= "{ 'Id': $id, 'Date': '$date', 'Description': '$description', 'Debit': $debit, 'Credit': $credit, 'Posted': $posted },";
                 }
                 $result = rtrim($result, ",");
                 $result .= "]}";

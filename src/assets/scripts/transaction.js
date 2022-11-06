@@ -4,25 +4,21 @@ const UPDATE = 1;
 class TransactionManager {
     constructor(config) {
         this.card = config.card;
-        this.tab = config.tab;
+        this.container = config.container;
         this.editor = config.editor;
         this.command = config.command;
 
-        this.tabPanels = {};
-        this.activeTab;
         this.account;
         this.operation = CREATE;
 
         this.registerMenu();
-        this.registerTabs();
         this.registerEditor();
     }
     
+    // TODO: Refactor?
     registerMenu() {
         // Menu
-        // TODO: Refactor
-        let container = document.querySelector("#transaction_tab");
-        this.contextMenu = globalContext.addMenu("transactions_row", container);
+        this.contextMenu = globalContext.addMenu("transactions_row", this.container);
         
         // Options
         let updateOption = new ContextMenuOption("Update");
@@ -33,33 +29,18 @@ class TransactionManager {
         updateOption.visible(isProjection);
         postOption.visible(isProjection);
         deleteOption.visible(isProjection);
-        cancelOption.visible(d => d.status == "actual");
+        cancelOption.visible(trans => trans.Posted);
 
         function isProjection(trans) { 
-            return trans.status == "projection";
+            return !trans.Posted;
         };
         
-        updateOption.onClick(d => this.updateBtnClicked(d.data));
-        postOption.onClick(d => this.postBtnClicked(d.data.Id));
-        deleteOption.onClick(d=> this.deleteBtnClicked(d.data.Id));
-        cancelOption.onClick(d => this.cancelBtnClicked(d.data.Id));
+        updateOption.onClick(trans => this.updateBtnClicked(trans));
+        postOption.onClick(trans => this.postBtnClicked(trans.Id));
+        deleteOption.onClick(d=> this.deleteBtnClicked(trans.Id));
+        cancelOption.onClick(trans => this.cancelBtnClicked(trans.Id));
         
         this.contextMenu.addOptions(updateOption, postOption, deleteOption, cancelOption);
-    }
-
-    registerTabs() {
-        this.activeTab = this.tab.activetab.id;
-        
-        const tabs = this.tab.querySelectorAll("fluent-tab-panel");
-        tabs.forEach(panel => {
-            const key = panel.dataset.tab;
-            this.tabPanels[key] = panel;
-        });
-
-        this.tab.addEventListener("change", e => {
-            this.activeTab = e.detail.id;
-            this.loadTransactions();
-        });
     }
 
     registerEditor() {
@@ -149,30 +130,25 @@ class TransactionManager {
     }
     
     loadTransactions() {
-        const data = {
-            AccountId: this.account.Id,
-            Status: this.activeTab
-        };
+        const data = { AccountId: this.account.Id };
         
         axios.get("transaction/crud/read.php", { params: data })
             .then(response => {
                 const payload = response.data;
                 const content = payload.content;
-                const tab = this.tabPanels[this.activeTab];
                 
                 if(!payload.state) {
-                    tab.innerHTML = `<p class="centered">Oops! ${content}</p>`;
+                    this.container.innerHTML = `<p class="centered">Oops! ${content}</p>`;
                     return;
                 }
 
-                tab.innerHTML = null;
+                this.container.innerHTML = null;
                 let transactions = this.groupTransactions(content);
 
                 Object.keys(transactions).forEach(key => {
-                    let data = transactions[key];
-                    let group = this.newGroup(key, data, this.activeTab);
+                    let group = this.newGroup(key, transactions[key]);
 
-                    tab.appendChild(group);
+                    this.container.appendChild(group);
                 });
             })
             .catch(error => {
@@ -184,8 +160,9 @@ class TransactionManager {
     // TODO: Try refactoring?
     groupTransactions(trans) {
         var groups = trans.reduce((g, t) => {
-            g[t.Date] ??= [];
-            g[t.Date].push(t);
+            const key = `${t.Date}_${t.Posted}`;
+            g[key] ??= [];
+            g[key].push(t);
             
             return g;
         }, {});
@@ -199,20 +176,25 @@ class TransactionManager {
         return sorted;
     }
 
-    newGroup(date, trans, status) {
+    newGroup(date, trans) {
         var group = $("<div>").addClass("transaction-group");
         var header = $("<p>").addClass("transaction-group-header");
         var body = $("<div>").addClass("transaction-group-body");
         
         // Title/header...
-        var dateTime = DateTime.parse(date);
+        var dateTime = DateTime.parse(date.slice(0, -2));
         header.text(dateTime.toString("MMM. dd, yyyy"));
+        
+        if (!trans[0].Posted) {
+            const status = trans.Posted ? "actual" : "projection";
+            header.addClass(status);
+        }
         
         group.append(header);
         group.append(body);
         
         $.each(trans, (i, t) => {
-            let row = this.newRow(status, t);
+            let row = this.newRow(t);
             body.append(row);
         });
         
@@ -220,7 +202,10 @@ class TransactionManager {
         return group[0];
     }
 
-    newRow(status, trans) {
+    newRow(trans) {
+        // TODO: Refactor?
+        const status = trans.Posted ? "actual" : "projection";
+
         var row = $(`<div class="transaction-row ${status}">`);
 
         var main = $("<div>").addClass("main-content");
@@ -241,7 +226,7 @@ class TransactionManager {
         summary.append(amount);
         summary.append(ref);
         
-        row[0].addContext(this.contextMenu, { status: status, data: trans });
+        row[0].addContext(this.contextMenu, trans);
 
         const actions = $("<div>").addClass("actions-container");
         row.append(actions);

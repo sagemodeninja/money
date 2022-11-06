@@ -39,23 +39,7 @@
                 <card-balance data-title="Projection" id="projected_balance"></card-balance>
             </account-card>
         </div>
-        <div class="tabs-container">
-            <fluent-tabs activeid="actual" id="transaction_tab">
-                <fluent-tab id="actual">Actual</fluent-tab>
-                <fluent-tab id="projection">Projection</fluent-tab>
-                
-                <fluent-tab-panel data-tab="actual">
-                    <!-- <div class="transaction-tab" data-tab="actual"> -->
-                        <p class="centered">Press "Refresh" to retrieve list.</p>
-                    <!-- </div> -->
-                </fluent-tab-panel>
-                <fluent-tab-panel data-tab="projection">
-                    <!-- <div class="transaction-tab" data-tab="projection"> -->
-                        <p>Press "Refresh" to retrieve list.</p>
-                    <!-- </div> -->
-                </fluent-tab-panel>
-            </fluent-tabs>
-        </div>
+        <div class="transaction-container"></div>
     </transaction-panel>
 
     <fluent-dialog id="editor_dialog" hidden="true">

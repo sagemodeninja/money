@@ -7,56 +7,59 @@
     justify-content: center;
 }
 
-.tabs-container {
+.transaction-container {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--body-font);
     flex-grow: 1;
-}
-
-#transaction_tab {
-    height: 100%;
-}
-
-fluent-tabs::part(tabpanel) {
-    display: block;
+    font-size: var(--type-ramp-base-font-size);
+    line-height: var(--type-ramp-base-line-height);
     overflow-y: auto;
-    max-height: calc(100% - 253px); /* Bruh */
-}
-
-fluent-tab-panel {
-    padding-top: var(--tab-panel-padding);
-    padding-bottom: var(--tab-panel-padding);
+    padding: 15px 0;
 }
 
 /* version 20211114_01 */
 
-.transaction-group:not(:nth-last-of-type(1))
-{
+.transaction-group:not(:nth-last-of-type(1)) {
     margin-bottom: 30px;
 }
 
-.transaction-group-header
-{
+.transaction-group-header {
     color: #212121;
     font-size: 14px;
     font-weight: 600;
     margin: 0 0 10px 10px;
 }
 
-.transaction-group-body
-{
+.transaction-group-header.projection::after {
+    background-color: var(--accent-fill-rest);
+    border-radius: 4px;
+    color: #fff;
+    content: "Unposted";
+    display: inline-block;
+    font-family: var(--body-font);
+    font-size: 11px;
+    font-weight: initial;
+    line-height: 16px;
+    margin-left: 10px;
+    padding: 1px 4px;
+    vertical-align: text-top;
+}
+
+.transaction-group-body {
     box-sizing: border-box;
     border: solid 1px #E0E0E0;
     border-radius: 5px;
     overflow: hidden;
+    isolation: isolate;
 }
 
-.transaction-row
-{
+.transaction-row {
     position: relative;
     height: 70px;
 }
 
-.transaction-row:not(:nth-last-of-type(1))
-{
+.transaction-row:not(:nth-last-of-type(1)) {
     border-bottom: solid 1px #E0E0E0;
 }
 
@@ -84,48 +87,40 @@ fluent-tab-panel {
     background-color: #FAFAFA;
 }
 
-.transaction-row .main-content div 
-{
+.transaction-row .main-content div {
     flex-grow: 1;
     padding: 5px;
 }
 
-.transaction-description
-{
+.transaction-description {
     max-width: 45%;
 }
 
-.transaction-description p
-{
+.transaction-description p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.transaction-row p
-{
+.transaction-row p {
     margin: 0;
 }
 
-.transaction-summary
-{
+.transaction-summary {
     align-items: flex-end;
     display: flex;
     flex-direction: column;
 }
 
-.transaction-summary p
-{
+.transaction-summary p {
     text-align: right;
 }
 
-.transaction-summary p:nth-of-type(1)
-{
+.transaction-summary p:nth-of-type(1) {
     font-weight: 500;
 }
 
-.transaction-summary p:nth-of-type(2)
-{
+.transaction-summary p:nth-of-type(2) {
     color: #616161;
     font-size: 14px;
 }

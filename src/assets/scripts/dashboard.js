@@ -18,7 +18,7 @@ $(document).ready(() => {
     transactionPanel = document.querySelector("transaction_panel");
     transaction = new TransactionManager({
         card: document.querySelector("#transaction_card"),
-        tab: document.querySelector("#transaction_tab"),
+        container: document.querySelector(".transaction-container"),
         editor: document.querySelector("#editor_dialog"),
         command: document.querySelector("#create_command")
     });

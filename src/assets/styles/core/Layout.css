@@ -25,21 +25,6 @@ body {
     width: 100%;
 }
 
-*::-webkit-scrollbar {
-    height: 12px;
-    width: 12px;
-}
-
-*::-webkit-scrollbar-track {
-    background-color: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-    background-color: #c1c1c1;
-    border: solid 3px rgb(240, 240, 240);
-    border-radius: 5px;
-}
-
 /* Content... */
 header {
     align-items: center;
