@@ -178,7 +178,7 @@
         }
 
         setNumber() {
-            const number = this.number.slice(-4);
+            const number = this.number?.slice(-4);
             this.numberSpan.innerHTML = number;
         }
 

@@ -113,6 +113,7 @@
 
     <!-- SCRIPTS -->
     <?php include_once "assets/layouts/common_scripts.php"; ?>
+    <script src="assets/scripts/alpha_blend.js"></script>
     <script src="assets/scripts/DateTime.js"></script>
     <script src="assets/scripts/ContextMenu.js"></script>
     <script src="assets/scripts/AccountCard.js"></script>

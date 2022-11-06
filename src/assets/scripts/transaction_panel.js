@@ -7,6 +7,7 @@
         --radius-mob: 15px;
         --margin: 15px;
         --top: calc(44px / 2);
+        --width: 500px;
     }
     
     :host {
@@ -32,7 +33,7 @@
         overflow: hidden;
         position: absolute;
         right: 0;
-        top: var(--top);
+        top: 100%;
         height: calc(100% - var(--top));
         width: 100%;
     }
@@ -52,7 +53,7 @@
         .panel {
             border-radius: var(--radius);
             height: calc(100% - var(--margin) * 2);
-            right: var(--margin);
+            right: calc(var(--width) * -1);
             top: var(--margin);
             width: 500px;
         }
@@ -72,6 +73,7 @@
             this.shadowRoot.appendChild(template.content.cloneNode(true));
 
             this.clickedThroughPanel;
+            this.overlay = { alpha: 0.0 };
         }
 
         /* DOM */
@@ -87,7 +89,7 @@
 
         show() {
             this.classList.add("visible");
-            this.changeTheme("#dadada");
+            this.animate(true, 0.1);
         }
 
         hide() {
@@ -96,11 +98,47 @@
                 return;
             }
 
-            this.classList.remove("visible");
-            this.changeTheme("#f2f2f2");
+            this.animate(false, 0);
         }
 
-        changeTheme(theme) {
+        animate(show, alpha) {
+            var timeline = anime.timeline({
+                duration: 300,
+                easing: "easeOutQuint",
+                update: () => this.changeTheme(),
+                complete: () => {
+                    if(!show) {
+                        this.classList.remove("visible");
+                    }
+                }
+            });
+
+            // Panel
+            const panelAnim = {targets: this.panel};
+
+            if (window.innerWidth < 768)
+                panelAnim.top = show ? 22 : window.innerHeight;
+            else
+                panelAnim.right = show ? 15 : -531; // TODO: Dynamic?
+
+            timeline.add(panelAnim, 0);
+
+            // Overlay
+            const background = `rgba(0, 0, 0, ${alpha})`;
+            timeline.add({targets: this, background: background}, 0);
+
+            // Theme
+            // FIXME: Flicker on show first attempt.
+            timeline.add({targets: this.overlay, alpha: alpha}, 0);
+        }
+
+        changeTheme() {
+            const theme = computeAlphaBlend(
+                "f2f2f2",
+                "000000", 
+                this.overlay.alpha
+            );
+
             document.querySelector('meta[name="theme-color"]')
                     .setAttribute("content", theme);
         }
