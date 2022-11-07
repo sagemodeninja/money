@@ -3,6 +3,7 @@ version: "3.7"
 services:
   app:
     build: .
+    user: "501:20"
     external_links:
       - "mysql-container:db"
     ports:

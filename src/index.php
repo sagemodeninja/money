@@ -2,13 +2,13 @@
     session_start();
     include_once "user/login_guard.php";
     CheckLogin();
+    require "vendor/autoload.php";
 ?>
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
     <?php include_once "assets/layouts/common_head_items.php" ?>
-    <link rel="stylesheet" href="assets/styles/dashboard.css">
-    <link rel="stylesheet" href="assets/styles/transaction.css">
+    <link rel="stylesheet" href="assets/minified/styles/dashboard.min.css">
     <title>Financial - Home</title>
 </head>
 <body>
@@ -97,13 +97,7 @@
 
     <!-- SCRIPTS -->
     <?php include_once "assets/layouts/common_scripts.php"; ?>
-    <script src="assets/scripts/alpha_blend.js"></script>
-    <script src="assets/scripts/DateTime.js"></script>
-    <script src="assets/scripts/ContextMenu.js"></script>
-    <script src="assets/scripts/AccountCard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-    <script src="assets/scripts/transaction_panel.js"></script>
-    <script src="assets/scripts/transaction.js"></script>
-    <script src="assets/scripts/dashboard.js"></script>
+    <script src="assets/minified/scripts/dashboard.min.js"></script>
 </body>
 </html>
