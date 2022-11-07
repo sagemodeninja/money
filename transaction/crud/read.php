@@ -6,7 +6,7 @@
     
     if($conn) {
         $accountId = @$_GET["AccountId"];
-        $query = "SELECT Id, `Date`, `Description`, Debit, Credit, Posted FROM transaction WHERE AccountId = $accountId AND Status = 1 ORDER BY Posted DESC, `Date` ASC, Id ASC;";
+        $query = "SELECT Id, `Date`, `Description`, Debit, Credit, Posted FROM transaction WHERE AccountId = $accountId AND Status = 1 ORDER BY Posted ASC, `Date` DESC, Id DESC;";
         $data = $conn->query($query);
         
         if($data) {

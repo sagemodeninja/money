@@ -3,10 +3,9 @@ const UPDATE = 1;
 
 class TransactionManager {
     constructor(config) {
-        this.card = config.card;
-        this.container = config.container;
-        this.editor = config.editor;
-        this.command = config.command;
+        for (var key in config) {
+            this[key] = config[key];
+        }
 
         this.account;
         this.operation = CREATE;
@@ -15,32 +14,27 @@ class TransactionManager {
         this.registerEditor();
     }
     
-    // TODO: Refactor?
     registerMenu() {
         // Menu
         this.contextMenu = globalContext.addMenu("transactions_row", this.container);
         
         // Options
-        let updateOption = new ContextMenuOption("Update");
-        let postOption = new ContextMenuOption("Post");
-        let deleteOption = new ContextMenuOption("Delete");
-        let cancelOption = new ContextMenuOption("Cancel");
-        
-        updateOption.visible(isProjection);
-        postOption.visible(isProjection);
-        deleteOption.visible(isProjection);
-        cancelOption.visible(trans => trans.Posted);
+        var options = ["Update", "Post", "Delete", "Cancel"];
+        var menuOptions = options.reduce((mo, o) => {
+            const option = new ContextMenuOption(o);
 
-        function isProjection(trans) { 
-            return !trans.Posted;
-        };
+            option.visible(trans => trans.Posted == (o == "Cancel"));
+            mo.push(option);
+
+            return mo;
+        }, []);
         
-        updateOption.onClick(trans => this.updateBtnClicked(trans));
-        postOption.onClick(trans => this.postBtnClicked(trans.Id));
-        deleteOption.onClick(d=> this.deleteBtnClicked(trans.Id));
-        cancelOption.onClick(trans => this.cancelBtnClicked(trans.Id));
+        menuOptions[0].onClick(trans => this.updateBtnClicked(trans));
+        menuOptions[1].onClick(trans => this.postBtnClicked(trans.Id));
+        menuOptions[2].onClick(trans => this.deleteBtnClicked(trans.Id));
+        menuOptions[3].onClick(trans => this.cancelBtnClicked(trans.Id));
         
-        this.contextMenu.addOptions(updateOption, postOption, deleteOption, cancelOption);
+        this.contextMenu.addOptions(...menuOptions);
     }
 
     registerEditor() {
@@ -145,11 +139,10 @@ class TransactionManager {
                 this.container.innerHTML = null;
                 let transactions = this.groupTransactions(content);
 
-                Object.keys(transactions).forEach(key => {
-                    let group = this.newGroup(key, transactions[key]);
-
+                for(var key in transactions) {
+                    const group = this.newGroup(key, transactions[key]);
                     this.container.appendChild(group);
-                });
+                }
             })
             .catch(error => {
                 alert("An error occured.");
@@ -157,46 +150,36 @@ class TransactionManager {
             });
     }
 
-    // TODO: Try refactoring?
     groupTransactions(trans) {
-        var groups = trans.reduce((g, t) => {
-            const key = `${t.Date}_${t.Posted}`;
-            g[key] ??= [];
-            g[key].push(t);
-            
-            return g;
-        }, {});
-        
-        // NOTE: .sort(() => -1) is used to reverse order.
-        var sorted = Object.keys(groups).sort(() => -1).reduce((o, k) => {
-            o[k] = groups[k].sort(() => -1);
-            return o;
-        }, {});
-        
-        return sorted;
+        var groups = {};
+
+        for(var t of trans) {
+            const key = t.Date + t.Posted;
+            (groups[key] ??= []).push(t);
+        }
+
+        return groups;
     }
 
     newGroup(date, trans) {
         var group = $("<div>").addClass("transaction-group");
         var header = $("<p>").addClass("transaction-group-header");
         var body = $("<div>").addClass("transaction-group-body");
-        
+
         // Title/header...
-        var dateTime = DateTime.parse(date.slice(0, -2));
+        var dateTime = DateTime.parse(date.slice(0, -1));
         header.text(dateTime.toString("MMM. dd, yyyy"));
         
-        if (!trans[0].Posted) {
-            const status = trans.Posted ? "actual" : "projection";
-            header.addClass(status);
-        }
+        const status = trans[0].Posted ? "actual" : "projection";
+        header.addClass(status);
         
         group.append(header);
         group.append(body);
         
-        $.each(trans, (i, t) => {
+        for(var t of trans) {
             let row = this.newRow(t);
             body.append(row);
-        });
+        }
         
         // TODO: Refactor
         return group[0];
