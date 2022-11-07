@@ -26,7 +26,7 @@ $(document).ready(() => {
     closedAccounts = [];
     contextMenu = globalContext.addMenu("accounts_card", body);
     
-    refreshCommand.addEventListener("click", refreshAccounts);
+    refreshCommand?.addEventListener("click", refreshAccounts);
     
     // Toggle show/hide closed accounts...
     toggleCommand?.addEventListener("click", () => {

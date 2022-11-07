@@ -1,3 +1,6 @@
+# Composer
+src/vendor
+
 # Secrets
 secrets.php
 
