@@ -1,17 +1,40 @@
-const CREATE = 0;
-const UPDATE = 1;
-
 class TransactionManager {
-    constructor(config) {
-        for (var key in config) {
-            this[key] = config[key];
-        }
+    // DOM
+    card: Element;
+    container: Element;
+    editor: any; // TODO: Strong type
+    command: Element;
 
-        this.account;
-        this.operation = CREATE;
+    // State
+    isRegistered: boolean;
+    operation: Operation;
+    contextMenu: ContextMenu;
+    account: Account;
 
+    constructor() {
+        this.operation = Operation.Create;
+    }
+
+    loadAccount(account: Account) {
+        this.account = account;
+
+        this.registerComponents();
+        this.refresh();
+    }
+
+    refresh() {
+        this.loadCard();
+        this.loadBalances();
+        this.loadTransactions();
+    }
+
+    registerComponents() {
+        if (this.isRegistered) return;
+        
         this.registerMenu();
         this.registerEditor();
+        
+        this.isRegistered = true;
     }
     
     registerMenu() {
@@ -19,20 +42,20 @@ class TransactionManager {
         this.contextMenu = globalContext.addMenu("transactions_row", this.container);
         
         // Options
-        var options = ["Update", "Post", "Delete", "Cancel"];
-        var menuOptions = options.reduce((mo, o) => {
+        let options = ["Update", "Post", "Delete", "Cancel"];
+        let menuOptions = options.reduce((mo, o) => {
             const option = new ContextMenuOption(o);
 
-            option.visible(trans => trans.Posted == (o == "Cancel"));
+            option.visible((trans: Transaction) => trans.Posted == (o == "Cancel"));
             mo.push(option);
 
             return mo;
         }, []);
         
         menuOptions[0].onClick(trans => this.updateBtnClicked(trans));
-        menuOptions[1].onClick(trans => this.postBtnClicked(trans.Id));
-        menuOptions[2].onClick(trans => this.deleteBtnClicked(trans.Id));
-        menuOptions[3].onClick(trans => this.cancelBtnClicked(trans.Id));
+        menuOptions[1].onClick(trans => this.post(trans));
+        menuOptions[2].onClick(trans => this.delete(trans));
+        menuOptions[3].onClick(trans => this.cancel(trans));
         
         this.contextMenu.addOptions(...menuOptions);
     }
@@ -42,7 +65,7 @@ class TransactionManager {
         let editor = $("#editor");
 
         this.command.addEventListener("click", () => {
-            this.operation = CREATE;
+            this.operation = Operation.Create;
         
             editor.find("input").each((idx, ipt)=>{
                 $(ipt).val("");
@@ -59,37 +82,7 @@ class TransactionManager {
             this.editor.hide()
         });
         
-        $("#save_btn").click(e => {
-            let url = this.operation == CREATE ? "transaction/crud/create.php" : "transaction/crud/update.php";
-            
-            $.ajax({
-                url: url,
-                method: "POST",
-                data: editor.serialize() + `&AccountId=${this.account.Id}`,
-                dataType: "JSON",
-                success: payload => {
-                    if(payload.state)
-                        this.refresh();
-
-                    this.operation = CREATE;
-                    this.editor.hide();
-                    this.changeTheme("#dadada");
-                }
-            });
-        });
-    }
-
-    // TODO: Better name?
-    load(account) {
-        this.account = account;
-
-        this.refresh();
-    }
-
-    refresh() {
-        this.loadCard();
-        this.loadBalances();
-        this.loadTransactions();
+        $("#save_btn").click(() => this.save());
     }
 
     loadCard() {
@@ -139,7 +132,7 @@ class TransactionManager {
                 this.container.innerHTML = null;
                 let transactions = this.groupTransactions(content);
 
-                for(var key in transactions) {
+                for(let key in transactions) {
                     const group = this.newGroup(key, transactions[key]);
                     this.container.appendChild(group);
                 }
@@ -151,9 +144,9 @@ class TransactionManager {
     }
 
     groupTransactions(trans) {
-        var groups = {};
+        let groups = {};
 
-        for(var t of trans) {
+        for(let t of trans) {
             const key = t.Date + t.Posted;
             (groups[key] ??= []).push(t);
         }
@@ -162,12 +155,12 @@ class TransactionManager {
     }
 
     newGroup(date, trans) {
-        var group = $("<div>").addClass("transaction-group");
-        var header = $("<p>").addClass("transaction-group-header");
-        var body = $("<div>").addClass("transaction-group-body");
+        let group = $("<div>").addClass("transaction-group");
+        let header = $("<p>").addClass("transaction-group-header");
+        let body = $("<div>").addClass("transaction-group-body");
 
         // Title/header...
-        var dateTime = DateTime.parse(date.slice(0, -1));
+        let dateTime = DateTime.parse(date.slice(0, -1));
         header.text(dateTime.toString("MMM. dd, yyyy"));
         
         const status = trans[0].Posted ? "actual" : "projection";
@@ -176,7 +169,7 @@ class TransactionManager {
         group.append(header);
         group.append(body);
         
-        for(var t of trans) {
+        for(let t of trans) {
             let row = this.newRow(t);
             body.append(row);
         }
@@ -189,22 +182,22 @@ class TransactionManager {
         // TODO: Refactor?
         const status = trans.Posted ? "actual" : "projection";
 
-        var row = $(`<div class="transaction-row ${status}">`);
+        let row = $(`<div class="transaction-row ${status}">`);
 
-        var main = $("<div>").addClass("main-content");
-        var desc = $(`<div class='transaction-description'><p>${trans.Description}</p></div>`);
-        var summary = $("<div class='transaction-summary'>");
+        let main = $("<div>").addClass("main-content");
+        let desc = $(`<div class='transaction-description'><p>${trans.Description}</p></div>`);
+        let summary = $("<div class='transaction-summary'>");
         
         main.append(desc);
         main.append(summary);
         row.append(main);
         
-        var isDebit = trans.Debit > trans.Credit;
-        var transAmount = isDebit ? trans.Debit : trans.Credit;
+        let isDebit = trans.Debit > trans.Credit;
+        let transAmount = isDebit ? trans.Debit : trans.Credit;
         transAmount = toCurrency(transAmount.toString());
         
-        var amount = $(`<p>${!isDebit ? "-" : ""} PHP ${transAmount}</p>`);
-        var ref = $("<p>REF: N/A</p>");
+        let amount = $(`<p>${!isDebit ? "-" : ""} PHP ${transAmount}</p>`);
+        let ref = $("<p>REF: N/A</p>");
         
         summary.append(amount);
         summary.append(ref);
@@ -226,12 +219,12 @@ class TransactionManager {
 
             postAction.click(() => {
                 collapseActions();
-                this.postBtnClicked(trans.Id);
+                this.post(trans.Id);
             });
 
             deleteAction.click(() => {
                 collapseActions();
-                this.deleteBtnClicked(trans.Id);
+                this.delete(trans.Id);
             });
 
             actions.append(editAction);
@@ -243,7 +236,7 @@ class TransactionManager {
 
             cancelAction.click(() => {
                 collapseActions();
-                this.cancelBtnClicked(trans.Id);
+                this.cancel(trans.Id);
             });
         }
 
@@ -323,7 +316,7 @@ class TransactionManager {
     }
 
     updateBtnClicked(data) {
-        this.operation = UPDATE;
+        this.operation = Operation.Update;
 
         // TODO: Refactor.
         let editor = $("#editor");
@@ -336,48 +329,57 @@ class TransactionManager {
         this.changeTheme("#999999");
         this.editor.show();
     }
-    
-    deleteBtnClicked(id) {
-        $.ajax({
-            url: "transaction/crud/delete.php",
-            method: "POST",
-            data: { Id: id },
-            dataType: "JSON",
-            success: payload => {
-                if(payload.state)
+
+    save() {
+        let endpoint = `transaction/crud/${Operation[this.operation]}.php`;
+
+        // TODO: Refactor
+        let form = this.editor.querySelector("form");
+        let data = new FormData(form);
+        data.append("AccountId", this.account.Id.toString());
+        let trans = Object.fromEntries(data.entries());
+
+        axios
+            .post(endpoint, trans)
+            .then(response => {
+                if (response.data.state)
                     this.refresh();
-            }
-        });
+
+                this.operation = Operation.Create;
+                this.editor.hide();
+                this.changeTheme("#dadada");
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
     
-    postBtnClicked(id) {
-        $.ajax({
-            url: "transaction/post/post.php",
-            method: "POST",
-            data: { Id: id },
-            dataType: "JSON",
-            success: payload => {
-                if (payload.state)
-                    this.refresh();
-            }
-        });
+    delete(trans: Transaction) {
+        this.handlePost("transaction/crud/delete.php", trans);
     }
     
-    cancelBtnClicked(id) {
-        $.ajax({
-            url: "transaction/post/cancel.php",
-            method: "POST",
-            data: { Id: id },
-            dataType: "JSON",
-            success: payload => {
-                if (payload.state)
-                    this.refresh();
-            }
-        });
+    post(trans: Transaction) {
+        this.handlePost("transaction/post/post.php", trans);
+    }
+    
+    cancel(trans: Transaction) {
+        this.handlePost("transaction/post/cancel.php", trans);
     }
 
-    changeTheme(theme) {
-        document.querySelector('meta[name="theme-color"]')
+    handlePost(endpoint: string, trans: Transaction) {
+        axios
+            .post(endpoint, trans)
+            .then(response => {
+                if (response.data.state)
+                    this.refresh();
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    changeTheme(theme: string) {
+        document.querySelector(`meta[name="theme-color"]`)
                 .setAttribute("content", theme);
     }
 }

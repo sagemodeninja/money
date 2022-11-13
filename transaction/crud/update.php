@@ -5,11 +5,15 @@
     $conn = connect();
     
     if($conn) {
-        $id = @$_POST["Id"];
-        $date = @$_POST["Date"];
-        $description = str_replace("'", "''", @$_POST["Description"]);
-        $debit = @$_POST["Debit"];
-        $credit = @$_POST["Credit"];
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+
+        $id = $data->Id;
+        $accountId = $data->AccountId;
+        $date = $data->Date;
+        $description = str_replace("'", "''", $data->Description);
+        $debit = $data->Debit;
+        $credit = $data->Credit;
         $query = "UPDATE transaction SET `Date` = '$date', `Description` = '$description', Debit = $debit, Credit = $credit WHERE Id = $id";
         
         if ($conn->query($query) === TRUE) {
@@ -22,5 +26,6 @@
         $result = "{'state': false, 'content': 'An error occured.'}";
     }
     
+    header('Content-Type: application/json; charset=utf-8');
     echo str_replace("**", "'", str_replace("'", "\"", $result));
 ?>

@@ -16,12 +16,12 @@ $(document).ready(() => {
     toggleCommand = document.querySelector("#toggle_closed_command");
 
     transactionPanel = document.querySelector("transaction_panel");
-    transaction = new TransactionManager({
-        card: document.querySelector("#transaction_card"),
-        container: document.querySelector(".transaction-container"),
-        editor: document.querySelector("#editor_dialog"),
-        command: document.querySelector("#create_command")
-    });
+    
+    transaction = new TransactionManager();
+    transaction.card = document.querySelector("#transaction_card");
+    transaction.container = document.querySelector(".transaction-container");
+    transaction.editor = document.querySelector("#editor_dialog");
+    transaction.command = document.querySelector("#create_command");
 
     closedAccounts = [];
     contextMenu = globalContext.addMenu("accounts_card", body);
@@ -212,7 +212,7 @@ function newCard(account, category) {
     
     card.click(() => {
         transaction_panel.show();
-        transaction.load(account);
+        transaction.loadAccount(account);
     });
 
     return card;

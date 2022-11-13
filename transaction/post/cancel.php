@@ -5,7 +5,10 @@
     $conn = connect();
     
     if($conn) {
-        $id = @$_POST["Id"];
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+
+        $id = $data->Id;
         $query = "UPDATE transaction SET Posted = 0 WHERE Id = $id;";
         
         if ($conn->query($query) === TRUE) {
@@ -18,5 +21,6 @@
         $result = "{'state': false, 'content': 'An error occured.'}";
     }
     
+    header('Content-Type: application/json; charset=utf-8');
     echo str_replace("**", "'", str_replace("'", "\"", $result));
 ?>
