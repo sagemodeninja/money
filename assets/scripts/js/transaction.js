@@ -354,6 +354,7 @@ class TransactionManager {
                 ? data[name]
                 : Math.abs(data.Amount);
         });
+        this.transactionType = data.TransactionType;
         this.changeTheme("#999999");
         this.editor.show();
     }
