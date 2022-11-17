@@ -15,13 +15,15 @@ foreach($styles as $style) {
 
 // JS
 $scripts = array(
-    "alpha_blend.js",
-    "DateTime.js",
-    "ContextMenu.js",
+    "js/alpha_blend.js",
+    "js/DateTime.js",
+    "js/ContextMenu.js",
     "AccountCard.js",
     "transaction_panel.js",
-    "transaction.js",
-    "dashboard.js"
+    "js/enums.js",
+    "js/objects.js",
+    "js/transaction.js",
+    "js/dashboard.js"
 );
 foreach ($scripts as $script) {
     $jsMinifier->add("assets/scripts/" . $script);
