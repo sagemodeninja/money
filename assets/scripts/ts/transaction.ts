@@ -37,7 +37,7 @@
         font-family: var(--body-font);
         font-size: 14px;
         font-weight: 500;
-        gap: inherit;
+        gap: 10px;
         justify-content: center;
         padding: 10px;
         user-select: none;
@@ -467,9 +467,8 @@ class TransactionManager {
     }
 
     save() {
-        let endpoint = `transaction/crud/${Operation[this.operation]}.php`;
-
-        console.log(Operation[this.operation]);
+        const operation = Operation[this.operation].toLowerCase();
+        const endpoint = `transaction/crud/${operation}.php`;
 
         // TODO: Refactor
         let form = this.editor.querySelector("form");
