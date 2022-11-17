@@ -1,77 +1,69 @@
 // Written by Gary Antier 2020
 // Current version: 1.2.0.1
-var ContextMargin = 3;
-var ContextTopOffset = 7;
-var ContextMenuOption = /** @class */ (function () {
-    function ContextMenuOption(label) {
+const ContextMargin = 3;
+const ContextTopOffset = 7;
+class ContextMenuOption {
+    constructor(label) {
         this.label = label;
         this.callbacks = [];
-        this.enableChallenge = function () { return true; };
-        this.visibleChallenge = function () { return true; };
+        this.enableChallenge = () => true;
+        this.visibleChallenge = () => true;
     }
-    ContextMenuOption.prototype.onClick = function (callback) {
+    onClick(callback) {
         this.callbacks.push(callback);
-    };
-    ContextMenuOption.prototype.visible = function (challenge) {
+    }
+    visible(challenge) {
         this.visibleChallenge = challenge;
-    };
-    ContextMenuOption.prototype.enable = function (challenge) {
+    }
+    enable(challenge) {
         this.enableChallenge = challenge;
-    };
-    ContextMenuOption.prototype.draw = function (data) {
-        var _this = this;
-        var option;
-        var visible = this.visibleChallenge(data);
-        var enable = this.enableChallenge(data);
+    }
+    draw(data) {
+        let option;
+        let visible = this.visibleChallenge(data);
+        let enable = this.enableChallenge(data);
         if (visible) {
             option = syn.create("button");
             option.text(this.label)
                 .addClass("core-context-action")
                 .enable(enable);
-            option.click(function (e) {
-                _this.callbacks.forEach(function (c) { return c(data); });
+            option.click(e => {
+                this.callbacks.forEach(c => c(data));
             });
         }
         return option;
-    };
-    return ContextMenuOption;
-}());
-var ContextMenu = /** @class */ (function () {
-    function ContextMenu(id, root) {
+    }
+}
+class ContextMenu {
+    constructor(id, root) {
         this.id = id;
         this.root = syn.wrap(root);
         this.options = [];
         this.data = [];
     }
-    ContextMenu.prototype.addOption = function (option) {
+    addOption(option) {
         this.options.push(option);
-    };
-    ContextMenu.prototype.addOptions = function () {
-        var _this = this;
-        var options = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            options[_i] = arguments[_i];
-        }
-        options.forEach(function (o) { return _this.options.push(o); });
-    };
-    ContextMenu.prototype.draw = function (dataIndex) {
-        var data = this.data[dataIndex];
-        var options = [];
-        this.options.forEach(function (o) {
+    }
+    addOptions(...options) {
+        options.forEach(o => this.options.push(o));
+    }
+    draw(dataIndex) {
+        let data = this.data[dataIndex];
+        let options = [];
+        this.options.forEach(o => {
             options.push(o.draw(data));
         });
         return options;
-    };
-    ContextMenu.prototype.addData = function (data) {
+    }
+    addData(data) {
         return this.data.push(data) - 1;
-    };
-    ContextMenu.prototype.clearData = function () {
+    }
+    clearData() {
         this.data = [];
-    };
-    return ContextMenu;
-}());
-var ContextMenuGlobal = /** @class */ (function () {
-    function ContextMenuGlobal() {
+    }
+}
+class ContextMenuGlobal {
+    constructor() {
         this.element = syn.create("div");
         this.menus = {};
         this.activeTrigger;
@@ -80,32 +72,31 @@ var ContextMenuGlobal = /** @class */ (function () {
         this.init();
         this.initEventListeners();
     }
-    ContextMenuGlobal.prototype.init = function () {
+    init() {
         this.element.addClass("core-context");
         syn.body.append(this.element);
         Node.prototype.addContext = function (context, data) {
-            var dataIndex = context.addData(data);
+            let dataIndex = context.addData(data);
             syn.wrap(this)
                 .data("context-id", context.id)
                 .data("index", dataIndex);
             return this;
         };
-    };
-    ContextMenuGlobal.prototype.initEventListeners = function () {
-        var _this = this;
-        syn.document.on("contextmenu", function (e) { return _this.onContext(e); });
-        syn.document.click(function (e) { return _this.onClick(e); });
-    };
-    ContextMenuGlobal.prototype.addMenu = function (id, root) {
-        var menu = new ContextMenu(id, root);
+    }
+    initEventListeners() {
+        syn.document.on("contextmenu", e => this.onContext(e));
+        syn.document.click(e => this.onClick(e));
+    }
+    addMenu(id, root) {
+        let menu = new ContextMenu(id, root);
         this.menus[id] = menu;
         return menu;
-    };
-    ContextMenuGlobal.prototype.onContext = function (e) {
-        var target;
-        var isDocument = false;
-        var contextId;
-        var dataIndex;
+    }
+    onContext(e) {
+        let target;
+        let isDocument = false;
+        let contextId;
+        let dataIndex;
         do {
             if (target) {
                 target = target === null || target === void 0 ? void 0 : target.parentNode;
@@ -127,32 +118,32 @@ var ContextMenuGlobal = /** @class */ (function () {
             this.show(contextId, dataIndex);
             target.addClass("active");
         }
-    };
-    ContextMenuGlobal.prototype.onClick = function (e) {
+    }
+    onClick(e) {
         if (e.target.isSameNode(this.element.self) == false) {
             this.reset();
         }
-    };
-    ContextMenuGlobal.prototype.show = function (contextId, dataIndex) {
-        var element = this.element;
-        var menu = this.menus[contextId];
-        var options = menu.draw(dataIndex);
-        options.forEach(function (o) {
+    }
+    show(contextId, dataIndex) {
+        let element = this.element;
+        let menu = this.menus[contextId];
+        let options = menu.draw(dataIndex);
+        options.forEach(o => {
             if (o) {
                 element.append(o);
             }
         });
         // Bounds...
-        var root = menu.root;
-        var rootTop = root.boundsTop + ContextMargin;
-        var rootRight = root.boundsRight - ContextMargin;
-        var rootBottom = root.boundsBottom - ContextMargin;
-        var rootLeft = root.boundsLeft + ContextMargin;
+        let root = menu.root;
+        let rootTop = root.boundsTop + ContextMargin;
+        let rootRight = root.boundsRight - ContextMargin;
+        let rootBottom = root.boundsBottom - ContextMargin;
+        let rootLeft = root.boundsLeft + ContextMargin;
         // Contexts...
-        var contextTop = this.triggerTop - ContextTopOffset;
-        var contextLeft = this.triggerLeft;
-        var contextBottom = contextTop + element.boundsHeight;
-        var contextRight = contextLeft + element.boundsWidth;
+        let contextTop = this.triggerTop - ContextTopOffset;
+        let contextLeft = this.triggerLeft;
+        let contextBottom = contextTop + element.boundsHeight;
+        let contextRight = contextLeft + element.boundsWidth;
         // X-limit bounds.
         if (contextLeft < rootLeft) {
             contextLeft = rootLeft;
@@ -168,10 +159,10 @@ var ContextMenuGlobal = /** @class */ (function () {
             contextTop = rootBottom - element.boundsHeight;
         }
         element.addClass("active");
-        element.self.style.top = "".concat(contextTop, "px");
-        element.self.style.left = "".concat(contextLeft, "px");
-    };
-    ContextMenuGlobal.prototype.reset = function () {
+        element.self.style.top = `${contextTop}px`;
+        element.self.style.left = `${contextLeft}px`;
+    }
+    reset() {
         var _a;
         this.element.empty();
         this.element.removeClass("active");
@@ -180,7 +171,6 @@ var ContextMenuGlobal = /** @class */ (function () {
         this.activeTrigger = undefined;
         this.triggerTop = undefined;
         this.triggerLeft = undefined;
-    };
-    return ContextMenuGlobal;
-}());
-var globalContext = new ContextMenuGlobal();
+    }
+}
+const globalContext = new ContextMenuGlobal();

@@ -1,80 +1,45 @@
 // Written by Gary Antier 2020
 // Last updated: April 11, 2021
 // Current version 1.2.0.0
-var FullMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-var AbbrMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
-var FullDaysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-var AbbrDaysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-var MinutesInHour = 60;
-var SecondsInMinute = 60;
-var MillisecondsInSecond = 1000;
-var TimeConstantsBase = /** @class */ (function () {
-    function TimeConstantsBase() {
+const FullMonth = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const AbbrMonth = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+const FullDaysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const AbbrDaysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MinutesInHour = 60;
+const SecondsInMinute = 60;
+const MillisecondsInSecond = 1000;
+class TimeConstantsBase {
+    get MillisecondsInASecond() {
+        return 1000;
     }
-    Object.defineProperty(TimeConstantsBase.prototype, "MillisecondsInASecond", {
-        get: function () {
-            return 1000;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(TimeConstantsBase.prototype, "SecondsInAMinute", {
-        get: function () {
-            return 60;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(TimeConstantsBase.prototype, "MillisecondsInAMinute", {
-        get: function () {
-            var milli = this.MillisecondsInASecond * this.SecondsInAMinute;
-            return milli;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(TimeConstantsBase.prototype, "MinutesInAnHour", {
-        get: function () {
-            return 60;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(TimeConstantsBase.prototype, "MillisecondsInAnHour", {
-        get: function () {
-            var milli = this.MillisecondsInAMinute * this.MinutesInAnHour;
-            return milli;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(TimeConstantsBase.prototype, "HoursInADay", {
-        get: function () {
-            return 24;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(TimeConstantsBase.prototype, "MillisecondsInADay", {
-        get: function () {
-            var milli = this.MillisecondsInAnHour * this.HoursInADay;
-            return milli;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(TimeConstantsBase.prototype, "DaysInAYear", {
-        get: function () {
-            return 365;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    return TimeConstantsBase;
-}());
-var TimeConstants = new TimeConstantsBase();
-var TimeSpan = /** @class */ (function () {
-    function TimeSpan(milli) {
+    get SecondsInAMinute() {
+        return 60;
+    }
+    get MillisecondsInAMinute() {
+        let milli = this.MillisecondsInASecond * this.SecondsInAMinute;
+        return milli;
+    }
+    get MinutesInAnHour() {
+        return 60;
+    }
+    get MillisecondsInAnHour() {
+        let milli = this.MillisecondsInAMinute * this.MinutesInAnHour;
+        return milli;
+    }
+    get HoursInADay() {
+        return 24;
+    }
+    get MillisecondsInADay() {
+        let milli = this.MillisecondsInAnHour * this.HoursInADay;
+        return milli;
+    }
+    get DaysInAYear() {
+        return 365;
+    }
+}
+const TimeConstants = new TimeConstantsBase();
+class TimeSpan {
+    constructor(milli) {
         this.milli = milli;
         this.totalSeconds = Math.floor(milli / TimeConstants.MillisecondsInASecond);
         this.totalMinutes = Math.floor(milli / TimeConstants.MillisecondsInAMinute);
@@ -85,145 +50,110 @@ var TimeSpan = /** @class */ (function () {
         this.hours = this.totalHours % TimeConstants.HoursInADay;
         this.days = this.totalDays % TimeConstants.DaysInAYear;
     }
-    TimeSpan.prototype.toString = function () {
-        var duration = "";
+    toString() {
+        let duration = "";
         if (this.days > 0) {
-            duration += "".concat(this.days, "d ");
+            duration += `${this.days}d `;
         }
         if (this.hours > 0) {
-            duration += "".concat(this.hours, "h ");
+            duration += `${this.hours}h `;
         }
         if (this.minutes > 0) {
-            duration += "".concat(this.minutes, "m ");
+            duration += `${this.minutes}m `;
         }
         if (this.seconds > 0) {
-            duration += "".concat(this.seconds, "s");
+            duration += `${this.seconds}s`;
         }
         else if (duration == "") {
             duration = "...";
         }
         return duration;
-    };
-    return TimeSpan;
-}());
-var DateTime = /** @class */ (function () {
-    function DateTime(date, offset) {
+    }
+}
+class DateTime {
+    constructor(date, offset) {
         this._date = date;
         this.offset = offset;
     }
-    DateTime.parse = function (dateTime, offset) {
-        if (offset === void 0) { offset = 0; }
+    static parse(dateTime, offset = 0) {
         if (dateTime) {
-            var irregularFormatRegex = /(\/Date\()(.*)(\)\/)/i;
+            let irregularFormatRegex = /(\/Date\()(.*)(\)\/)/i;
             if (typeof dateTime === "string" && irregularFormatRegex.test(dateTime)) {
-                var match = irregularFormatRegex.exec(dateTime);
+                let match = irregularFormatRegex.exec(dateTime);
                 dateTime = parseInt(match[2]);
             }
-            var milli = typeof dateTime === "number" ? dateTime : Date.parse(dateTime);
+            let milli = typeof dateTime === "number" ? dateTime : Date.parse(dateTime);
             if (isNaN(milli)) {
                 milli = 1;
             }
             // UTC offset...
             offset = offset * TimeConstants.MillisecondsInAnHour;
             milli += offset;
-            var date = new Date(milli);
+            let date = new Date(milli);
             return new DateTime(date, offset);
         }
         else {
             return null;
         }
-    };
-    DateTime.now = function () {
+    }
+    static now() {
         return new DateTime(new Date(), 8);
-    };
-    Object.defineProperty(DateTime.prototype, "year", {
-        get: function () {
-            return this._date.getFullYear();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "month", {
-        get: function () {
-            return this._date.getMonth();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "date", {
-        get: function () {
-            return this._date.getDate();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "day", {
-        get: function () {
-            return this._date.getDay();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "hour", {
-        get: function () {
-            return this._date.getHours();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "minutes", {
-        get: function () {
-            return this._date.getMinutes();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "seconds", {
-        get: function () {
-            return this._date.getSeconds();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(DateTime.prototype, "time", {
-        get: function () {
-            return this._date.getTime();
-        },
-        enumerable: false,
-        configurable: true
-    });
-    DateTime.difference = function (start, end) {
+    }
+    get year() {
+        return this._date.getFullYear();
+    }
+    get month() {
+        return this._date.getMonth();
+    }
+    get date() {
+        return this._date.getDate();
+    }
+    get day() {
+        return this._date.getDay();
+    }
+    get hour() {
+        return this._date.getHours();
+    }
+    get minutes() {
+        return this._date.getMinutes();
+    }
+    get seconds() {
+        return this._date.getSeconds();
+    }
+    get time() {
+        return this._date.getTime();
+    }
+    static difference(start, end) {
         var timeDiff = end.getTime() - start.getTime();
         return new TimeSpan(timeDiff);
-    };
-    DateTime.prototype.difference = function (secondDate) {
-        var diff = this.time - secondDate.time;
+    }
+    difference(secondDate) {
+        let diff = this.time - secondDate.time;
         return new TimeSpan(diff);
-    };
-    DateTime.prototype.addDays = function (days) {
-        var newDate = new Date(this._date);
+    }
+    addDays(days) {
+        let newDate = new Date(this._date);
         newDate.setDate(this.date + days);
         return new DateTime(newDate, this.offset);
-    };
-    DateTime.prototype.addYears = function (years) {
-        var newDate = new Date(this._date);
+    }
+    addYears(years) {
+        let newDate = new Date(this._date);
         newDate.setFullYear(this.year + years);
         return new DateTime(newDate, this.offset);
-    };
-    DateTime.prototype.toString = function (format) {
-        if (format === void 0) { format = "yyyy/MM/dd HH:mm:ss"; }
+    }
+    toString(format = "yyyy/MM/dd HH:mm:ss") {
         if (!this._date)
             return null;
-        var year = this.year.toString();
-        var subYear = year.padStart(2, '0').slice(-2);
-        var month = this.month;
-        var day = this.day;
-        var date = this.date;
-        var hour = this.hour;
-        var _12Hour = hour < 13 ? hour : hour - 12;
-        var isAM = hour < 12;
-        var minutes = this.minutes;
-        var seconds = this.seconds;
+        let year = this.year.toString();
+        let subYear = year.padStart(2, '0').slice(-2);
+        let month = this.month;
+        let day = this.day;
+        let date = this.date;
+        let hour = this.hour;
+        let _12Hour = hour < 13 ? hour : hour - 12;
+        let isAM = hour < 12;
+        let minutes = this.minutes;
+        let seconds = this.seconds;
         // Day...
         format = format.replace(/dd/g, date.toString().padStart(2, '0'));
         format = format.replace(/d/g, date);
@@ -249,7 +179,7 @@ var DateTime = /** @class */ (function () {
         format = format.replace(/MMMM/g, "####");
         format = format.replace(/MMM/g, "###");
         // Month in number...
-        var _month = month + 1;
+        let _month = month + 1;
         format = format.replace(/MM/g, _month.toString().padStart(2, '0'));
         format = format.replace(/M/g, _month);
         // AM/PM...
@@ -262,6 +192,5 @@ var DateTime = /** @class */ (function () {
         format = format.replace(/####/g, FullMonth[month]);
         format = format.replace(/###/g, AbbrMonth[month]);
         return format;
-    };
-    return DateTime;
-}());
+    }
+}

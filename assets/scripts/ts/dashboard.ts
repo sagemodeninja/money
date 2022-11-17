@@ -19,9 +19,9 @@ $(document).ready(() => {
     
     transaction = new TransactionManager();
     transaction.card = document.querySelector("#transaction_card");
+    transaction.actions = document.querySelectorAll("action-button");
     transaction.container = document.querySelector(".transaction-container");
     transaction.editor = document.querySelector("#editor_dialog");
-    transaction.command = document.querySelector("#create_command");
 
     closedAccounts = [];
     contextMenu = globalContext.addMenu("accounts_card", body);

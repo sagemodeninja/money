@@ -6,7 +6,7 @@
     
     if($conn) {
         $accountId = @$_GET["AccountId"];
-        $query = "SELECT Id, `Date`, `Description`, Debit, Credit, Posted FROM transaction WHERE AccountId = $accountId AND Status = 1 ORDER BY Posted ASC, `Date` DESC, Id DESC;";
+        $query = "SELECT Id, `Date`, `Description`, TransactionType, Amount, Total, Posted FROM transaction WHERE AccountId = $accountId AND Status = 1 ORDER BY Posted ASC, `Date` DESC, Id DESC;";
         $data = $conn->query($query);
         
         if($data) {
@@ -16,11 +16,12 @@
                     $id = $row["Id"];
                     $date = $row["Date"];
                     $description = str_replace("'", "**", $row["Description"]);
-                    $debit = $row["Debit"];
-                    $credit = $row["Credit"];
+                    $transactionType = $row["TransactionType"];
+                    $amount = $row["Amount"];
+                    $total = $row["Total"];
                     $posted = $row["Posted"];
                     
-                    $result .= "{ 'Id': $id, 'Date': '$date', 'Description': '$description', 'Debit': $debit, 'Credit': $credit, 'Posted': $posted },";
+                    $result .= "{ 'Id': $id, 'Date': '$date', 'Description': '$description', 'TransactionType': $transactionType, 'Amount': $amount, 'Total': $total, 'Posted': $posted },";
                 }
                 $result = rtrim($result, ",");
                 $result .= "]}";

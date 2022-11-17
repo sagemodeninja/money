@@ -13,9 +13,9 @@ function blend(baseValue, overlayValue, alpha) {
     return Math.round((overlayValue * alpha) + (baseValue * (1 - alpha)));
 }
 function computeAlphaBlend(baseHex, overlayHex, alpha) {
-    var base = getRgbFromHex(baseHex);
-    var overlay = getRgbFromHex(overlayHex);
-    var blended = {
+    const base = getRgbFromHex(baseHex);
+    const overlay = getRgbFromHex(overlayHex);
+    const blended = {
         r: blend(base.r, overlay.r, alpha),
         g: blend(base.g, overlay.g, alpha),
         b: blend(base.b, overlay.b, alpha),

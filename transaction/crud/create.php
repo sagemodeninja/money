@@ -11,9 +11,9 @@
         $accountId = $data->AccountId;
         $date = $data->Date;
         $description = str_replace("'", "''", $data->Description);
-        $debit = $data->Debit;
-        $credit = $data->Credit;
-        $query = "INSERT INTO transaction (PeriodId, AccountId, `Date`, `Description`, Debit, Credit) VALUES (0, $accountId, '$date', '$description', $debit, $credit);";
+        $transactionType = $data->TransactionType;
+        $amount = $data->Amount;
+        $query = "INSERT INTO transaction (AccountId, `Date`, `Description`, TransactionType, Amount, Total) VALUES ($accountId, '$date', '$description', $transactionType, $amount, $amount);";
         
         if ($conn->query($query) === TRUE) {
             $result = "{'state': true, 'content': 'Transaction created!'}";

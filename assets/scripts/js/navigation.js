@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", function () {
-    var navigationView = document.querySelector('#navigation_view');
-    navigationView.addEventListener('selectionchanged', function (e) {
+document.addEventListener("DOMContentLoaded", () => {
+    const navigationView = document.querySelector('#navigation_view');
+    navigationView.addEventListener('selectionchanged', e => {
         var args = e.detail.args;
         if (args.isSettingsSelected)
             return;

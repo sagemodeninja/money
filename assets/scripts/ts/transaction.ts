@@ -1,6 +1,114 @@
+(function (){
+    const template = document.createElement("template");
+    template.innerHTML = `
+    <style>
+    :host {
+        display: flex;
+        gap: 10px;
+    }
+    </style>
+    <slot></slot>
+    `;
+
+    class ActionsContainer extends HTMLElement {
+        constructor() {
+            super();
+
+            this.attachShadow({ mode: "open" });
+            this.shadowRoot.appendChild(template.content.cloneNode(true));
+        }
+    }
+
+    customElements.define("actions-container", ActionsContainer);
+})();
+
+(function (){
+    const template = document.createElement("template");
+    template.innerHTML = `
+    <style>
+    :host {
+        align-items: center;
+        background-color: rgba(3, 106, 196, 0.2);
+        border-radius: 5px;
+        color: var(--accent-fill-rest);
+        cursor: pointer;
+        display: flex;
+        flex-grow: 1;
+        font-family: var(--body-font);
+        font-size: 14px;
+        font-weight: 500;
+        gap: inherit;
+        justify-content: center;
+        padding: 10px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    :host:hover,
+    :host:active {
+        background-color: rgba(3, 106, 196, 0.25);
+    }
+    </style>
+    <fluent-symbol-icon></fluent-symbol-icon> 
+    <span>
+        <slot></slot>
+    </span>
+    `;
+
+    class ActionButton extends HTMLElement {
+        _symbolIcon: any;
+
+        constructor() {
+            super();
+
+            this.attachShadow({ mode: "open" });
+            this.shadowRoot.appendChild(template.content.cloneNode(true));
+        }
+
+        static get observedAttributes() {
+            return ["data-icon"];
+        }
+
+        /* Attributes */
+        get icon() {
+            return this.getAttribute("data-icon");
+        }
+
+        set icon(value) {
+            this.setAttribute("data-icon", value);
+            this.setIcon();
+        }
+
+        /* DOM */
+        get symbolIcon() {
+            this._symbolIcon ??= this.shadowRoot.querySelector("fluent-symbol-icon");
+            return this._symbolIcon;
+        }
+
+        /* Functions */
+        connectedCallback() {
+            this.setIcon();
+        }
+
+        attributeChangedCallback(name) {
+            if (name != "data-icon")
+                return;
+
+            this.setIcon();
+        }
+
+        setIcon() {
+            this.symbolIcon.symbol = this.icon;
+        }
+    }
+
+    customElements.define("action-button", ActionButton);
+})();
+
 class TransactionManager {
     // DOM
     card: Element;
+    actions: NodeListOf<Element>;
     container: Element;
     editor: any; // TODO: Strong type
     command: Element;
@@ -8,6 +116,7 @@ class TransactionManager {
     // State
     isRegistered: boolean;
     operation: Operation;
+    transactionType: TransactionType;
     contextMenu: ContextMenu;
     account: Account;
 
@@ -32,6 +141,7 @@ class TransactionManager {
         if (this.isRegistered) return;
         
         this.registerMenu();
+        this.registerActions();
         this.registerEditor();
         
         this.isRegistered = true;
@@ -60,21 +170,45 @@ class TransactionManager {
         this.contextMenu.addOptions(...menuOptions);
     }
 
-    registerEditor() {
-        // TODO: Refactor
-        let editor = $("#editor");
+    registerActions() {
+        const inputs = this.editor.querySelectorAll("form input");
 
-        this.command.addEventListener("click", () => {
-            this.operation = Operation.Create;
-        
-            editor.find("input").each((idx, ipt)=>{
-                $(ipt).val("");
+        this.actions.forEach((action: HTMLElement) => {
+            const type: number = parseInt(action.dataset.action);
+            action.addEventListener("click", () => {
+                this.operation = Operation.Create;
+                this.transactionType = type;
+
+                clearForm(type);
+
+                let typeInput = this.editor.querySelector("form input[name=TransactionType]");
+                typeInput.value = type;
+
+                this.editor.show();
+                this.changeTheme("#999999");
             });
-
-            this.editor.show();
-            this.changeTheme("#999999");
         });
+
+        function clearForm(type: number) {
+            inputs.forEach(input => {
+                input.value = input.type != "number" ? "" : "0.00";
+            });
+        }
+    }
+
+    registerEditor() {
+        const amountInput = this.editor.querySelector("form input#amount");
+        const amountInputHidden = this.editor.querySelector("form input[name=Amount]");
         
+        amountInput.addEventListener("input", () => {
+            let amount = parseFloat(amountInput.value);
+
+            if (this.transactionType == TransactionType.Withdraw)
+                amount *= -1;
+
+            amountInputHidden.value = amount;
+        });
+
         // TODO: Refactor
         const dissmissEditorBtn = document.querySelector("#dismiss_editor_dialog_btn");
         dissmissEditorBtn.addEventListener("click", () => {
@@ -94,10 +228,10 @@ class TransactionManager {
     }
     
     loadBalances() {
-        const data = { AccountId: this.account.Id };
+        const data = { accountId: this.account.Id };
         const balances = this.card.querySelectorAll("card-balance");
 
-        axios.get("report/balances.php", { params: data })
+        axios.get("report/account_balance.php", { params: data })
             .then(response => {
                 const payload = response.data;
                 const content = payload.content;
@@ -107,8 +241,8 @@ class TransactionManager {
                     return;
                 }
 
-                balances[0].innerText = toCurrency(content.Running);
-                balances[1].innerText = toCurrency(content.Projected);
+                balances[0].innerText = toCurrency(content.Balance);
+                balances[1].innerText = toCurrency(content.Projection);
             })
             .catch(error => {
                 alert("An error occured.");
@@ -192,11 +326,10 @@ class TransactionManager {
         main.append(summary);
         row.append(main);
         
-        let isDebit = trans.Debit > trans.Credit;
-        let transAmount = isDebit ? trans.Debit : trans.Credit;
-        transAmount = toCurrency(transAmount.toString());
+        let isDebit = trans.Total >= 0;
+        let transAmount: number = Math.abs(trans.Total);
         
-        let amount = $(`<p>${!isDebit ? "-" : ""} PHP ${transAmount}</p>`);
+        let amount = $(`<p>${!isDebit ? "-" : ""} PHP ${toCurrency(transAmount.toString())}</p>`);
         let ref = $("<p>REF: N/A</p>");
         
         summary.append(amount);
@@ -219,12 +352,12 @@ class TransactionManager {
 
             postAction.click(() => {
                 collapseActions();
-                this.post(trans.Id);
+                this.post(trans);
             });
 
             deleteAction.click(() => {
                 collapseActions();
-                this.delete(trans.Id);
+                this.delete(trans);
             });
 
             actions.append(editAction);
@@ -236,7 +369,7 @@ class TransactionManager {
 
             cancelAction.click(() => {
                 collapseActions();
-                this.cancel(trans.Id);
+                this.cancel(trans);
             });
         }
 
@@ -318,12 +451,15 @@ class TransactionManager {
     updateBtnClicked(data) {
         this.operation = Operation.Update;
 
-        // TODO: Refactor.
-        let editor = $("#editor");
-        editor.find("input").each((idx, ipt)=>{
-            ipt = $(ipt);
-            let name = ipt.attr("name");
-            ipt.val( data[name] );
+        let inputs = this.editor.querySelectorAll("form input");
+        inputs.forEach(input => {
+            let name = input.name;
+
+            if (name == "Amount") return;
+
+            input.value = name != "" // Empty
+                ? data[name]
+                : Math.abs(data.Amount);
         });
     
         this.changeTheme("#999999");
@@ -332,6 +468,8 @@ class TransactionManager {
 
     save() {
         let endpoint = `transaction/crud/${Operation[this.operation]}.php`;
+
+        console.log(Operation[this.operation]);
 
         // TODO: Refactor
         let form = this.editor.querySelector("form");

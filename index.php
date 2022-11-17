@@ -30,15 +30,16 @@
     </fluent-navigation-view>
 
     <transaction-panel id="transaction_panel">
-        <div>
-            <fluent-app-bar-button id="create_command" icon="Add" label="Create" modifier="Control" key="A"></fluent-app-bar-button>
-        </div>
         <div class="card-container">
             <account-card id="transaction_card">
                 <card-balance data-title="Actual" id="running_balance"></card-balance>
                 <card-balance data-title="Projection" id="projected_balance"></card-balance>
             </account-card>
         </div>
+        <actions-container>
+            <action-button data-icon="Add" data-action="0">Deposit</action-button>
+            <action-button data-icon="Remove" data-action="1">Withdraw</action-button>
+        </actions-container>
         <div class="transaction-container"></div>
     </transaction-panel>
 
@@ -53,6 +54,8 @@
             <div class="dialog-body">
                 <form id="editor">
                     <input type="hidden" name="Id">
+                    <input type="hidden" name="TransactionType">
+                    <input type="hidden" name="Amount">
                     <table>
                         <tr>
                             <td>
@@ -72,18 +75,10 @@
                         </tr>
                         <tr>
                             <td>
-                                <label for="debit">Debit:</label>
+                                <label for="amount">Amount:</label>
                             </td>
                             <td>
-                                <input type="number" name="Debit" id="debit">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="credit">Credit:</label>
-                            </td>
-                            <td>
-                                <input type="number" name="Credit" id="credit">
+                                <input type="number" inputmode="decimal" id="amount">
                             </td>
                         </tr>
                     </table>

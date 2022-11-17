@@ -12,9 +12,8 @@
         $accountId = $data->AccountId;
         $date = $data->Date;
         $description = str_replace("'", "''", $data->Description);
-        $debit = $data->Debit;
-        $credit = $data->Credit;
-        $query = "UPDATE transaction SET `Date` = '$date', `Description` = '$description', Debit = $debit, Credit = $credit WHERE Id = $id";
+        $amount = $data->Amount;
+        $query = "UPDATE transaction SET `Date` = '$date', `Description` = '$description', Amount = $amount, Total = $amount WHERE Id = $id";
         
         if ($conn->query($query) === TRUE) {
             $result = "{'state': true, 'content': 'Transaction updated!'}";
