@@ -1,16 +1,18 @@
 <?php
-    include_once "../../crud/_db_provider.php";
+    include_once "../includes/db_provider.php";
     
     $result = "";
     $conn = connect();
     
     if($conn) {
-        # Use this to escape single qoutes.
-        $text = str_replace("'", "''", @$_POST["text"]);
-        $query = "INSERT INTO {table} ({columns}) VALUES ({datum})";
+        $json = file_get_contents('php://input');
+        $data = json_decode($json);
+
+        $id = $data->Id;
+        $query = "UPDATE transaction SET Status = 0 WHERE Id = $id;";
         
         if ($conn->query($query) === TRUE) {
-            $result = "{'state': true, 'content': '{item} created!'}";
+            $result = "{'state': true, 'content': 'Transaction deleted!'}";
         } else {
             $error = str_replace("'", "**", $conn->error);
             $result = "{'state': false, 'content': '$error'}";
@@ -19,5 +21,6 @@
         $result = "{'state': false, 'content': 'An error occured.'}";
     }
     
+    header('Content-Type: application/json; charset=utf-8');
     echo str_replace("**", "'", str_replace("'", "\"", $result));
 ?>
