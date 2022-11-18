@@ -15,18 +15,18 @@ foreach($styles as $style) {
 
 // JS
 $scripts = array(
-    "js/alpha_blend.js",
-    "js/DateTime.js",
-    "js/ContextMenu.js",
+    "alpha_blend.js",
+    "DateTime.js",
+    "ContextMenu.js",
     "AccountCard.js",
-    "js/transaction_panel.js",
-    "js/enums.js",
-    "js/objects.js",
-    "js/transaction.js",
-    "js/dashboard.js"
+    "transaction_panel.js",
+    "enums.js",
+    "objects.js",
+    "transaction.js",
+    "dashboard.js"
 );
 foreach ($scripts as $script) {
-    $jsMinifier->add("assets/scripts/" . $script);
+    $jsMinifier->add("assets/scripts/js/" . $script);
 }
 
 // save minified file to disk

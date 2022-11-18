@@ -1,5 +1,5 @@
 <?php
-    include_once "../../crud/_db_provider.php";
+    include_once "../includes/db_provider.php";
     
     $result = "";
     $conn = connect();
@@ -9,10 +9,10 @@
         $data = json_decode($json);
 
         $id = $data->Id;
-        $query = "UPDATE transaction SET Status = 0 WHERE Id = $id;";
+        $query = "UPDATE transaction SET Posted = 0 WHERE Id = $id;";
         
         if ($conn->query($query) === TRUE) {
-            $result = "{'state': true, 'content': 'Transaction deleted!'}";
+            $result = "{'state': true, 'content': 'Transaction cancelled!'}";
         } else {
             $error = str_replace("'", "**", $conn->error);
             $result = "{'state': false, 'content': '$error'}";

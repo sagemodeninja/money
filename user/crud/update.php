@@ -1,5 +1,5 @@
 <?php
-    include_once "../../crud/_db_provider.php";
+    include_once "../../includes/db_provider.php";
     
     $result = "";
     $conn = connect();

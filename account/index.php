@@ -6,13 +6,13 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-    <?php include_once "../assets/layouts/common_head_items.php" ?>
+    <?php include_once "../includes/layouts/common_head_items.php" ?>
     <link rel="stylesheet" href="../assets/styles/main.css">
 </head>
 <body>
-    <?php include_once "../assets/layouts/header.php" ?>
+    <?php include_once "../includes/layouts/header.php" ?>
     <fluent-navigation-view id="navigation_view" header="Home" pane-display-mode="left" header-src="tag" selects-on-load>
-        <?php include_once "../assets/layouts/navigation_items.php" ?>
+        <?php include_once "../includes/layouts/navigation_items.php" ?>
             
         <fluent-navigation-view-header-content>
                 <button id="refresh_btn">Refresh</button>
@@ -105,7 +105,7 @@
     </fluent-navigation-view>
     
     <!-- SCRIPTS -->
-    <?php include_once "../assets/layouts/common_scripts.php"; ?>
-    <script src="../assets/scripts/account.js"></script>
+    <?php include_once "../includes/layouts/common_scripts.php"; ?>
+    <script src="../assets/scripts/js/account.js"></script>
 </body>
 </html>

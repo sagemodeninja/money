@@ -160,7 +160,7 @@ function newCard(account, category) {
         card.hide();
     }
     $.ajax({
-        url: "report/account_balance.php?accountId=" + account.Id,
+        url: "account/balance.php?accountId=" + account.Id,
         method: "GET",
         dataType: "JSON",
         success: payload => {

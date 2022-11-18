@@ -7,14 +7,14 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-    <?php include_once "assets/layouts/common_head_items.php" ?>
+    <?php include_once "includes/layouts/common_head_items.php" ?>
     <link rel="stylesheet" href="assets/minified/styles/dashboard.min.css">
     <title>Financial - Home</title>
 </head>
 <body>
-    <?php include_once "assets/layouts/header.php" ?>
+    <?php include_once "includes/layouts/header.php" ?>
     <fluent-navigation-view id="navigation_view" header="Home" pane-display-mode="left" header-src="tag" selects-on-load>
-        <?php include_once "assets/layouts/navigation_items.php" ?>
+        <?php include_once "includes/layouts/navigation_items.php" ?>
             
         <fluent-navigation-view-header-content style="flex-direction: column; margin-right: 10px; min-width: 0;">
             <fluent-command-bar default-label-position="right" style="align-self: flex-end;">
@@ -91,7 +91,7 @@
     </fluent-dialog>
 
     <!-- SCRIPTS -->
-    <?php include_once "assets/layouts/common_scripts.php"; ?>
+    <?php include_once "includes/layouts/common_scripts.php"; ?>
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
     <script src="assets/minified/scripts/dashboard.min.js"></script>
 </body>

@@ -193,7 +193,7 @@ function newCard(account, category) {
     }
 
     $.ajax({
-        url: "report/account_balance.php?accountId=" + account.Id,
+        url: "account/balance.php?accountId=" + account.Id,
         method: "GET",
         dataType: "JSON",
         success: payload => {

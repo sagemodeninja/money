@@ -213,7 +213,7 @@ class TransactionManager {
         const data = { accountId: this.account.Id };
         const balances = this.card.querySelectorAll("card-balance");
 
-        axios.get("report/account_balance.php", { params: data })
+        axios.get("account/balance.php", { params: data })
             .then(response => {
                 const payload = response.data;
                 const content = payload.content;
@@ -235,7 +235,7 @@ class TransactionManager {
     loadTransactions() {
         const data = { AccountId: this.account.Id };
         
-        axios.get("transaction/crud/read.php", { params: data })
+        axios.get("transaction/read.php", { params: data })
             .then(response => {
                 const payload = response.data;
                 const content = payload.content;
@@ -453,7 +453,7 @@ class TransactionManager {
 
     save() {
         const operation = Operation[this.operation].toLowerCase();
-        const endpoint = `transaction/crud/${operation}.php`;
+        const endpoint = `transaction/${operation}.php`;
 
         // TODO: Refactor
         let form = this.editor.querySelector("form");
@@ -477,15 +477,15 @@ class TransactionManager {
     }
     
     delete(trans: Transaction) {
-        this.handlePost("transaction/crud/delete.php", trans);
+        this.handlePost("transaction/delete.php", trans);
     }
     
     post(trans: Transaction) {
-        this.handlePost("transaction/post/post.php", trans);
+        this.handlePost("transaction/post.php", trans);
     }
     
     cancel(trans: Transaction) {
-        this.handlePost("transaction/post/cancel.php", trans);
+        this.handlePost("transaction/cancel.php", trans);
     }
 
     handlePost(endpoint: string, trans: Transaction) {
