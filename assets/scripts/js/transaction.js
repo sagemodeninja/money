@@ -3,26 +3,6 @@
     template.innerHTML = `
     <style>
     :host {
-        display: flex;
-        gap: 10px;
-    }
-    </style>
-    <slot></slot>
-    `;
-    class ActionsContainer extends HTMLElement {
-        constructor() {
-            super();
-            this.attachShadow({ mode: "open" });
-            this.shadowRoot.appendChild(template.content.cloneNode(true));
-        }
-    }
-    customElements.define("actions-container", ActionsContainer);
-})();
-(function () {
-    const template = document.createElement("template");
-    template.innerHTML = `
-    <style>
-    :host {
         align-items: center;
         background-color: rgba(3, 106, 196, 0.2);
         border-radius: 5px;
@@ -40,9 +20,12 @@
         -webkit-user-select: none;
     }
 
-    :host:hover,
-    :host:active {
+    :host(:hover) {
         background-color: rgba(3, 106, 196, 0.25);
+    }
+    
+    :host(:active) {
+        background-color: rgba(3, 106, 196, 0.3);
     }
     </style>
     <fluent-symbol-icon></fluent-symbol-icon> 
@@ -134,14 +117,16 @@ class TransactionManager {
             action.addEventListener("click", () => {
                 this.operation = Operation.Create;
                 this.transactionType = type;
-                clearForm(type);
+                clearForm();
                 let typeInput = this.editor.querySelector("form input[name=TransactionType]");
                 typeInput.value = type;
+                let dateInput = this.editor.querySelector("form input[name=Date]");
+                dateInput.value = DateTime.now().toString("yyyy-MM-dd");
                 this.editor.show();
                 this.changeTheme("#999999");
             });
         });
-        function clearForm(type) {
+        function clearForm() {
             inputs.forEach(input => {
                 input.value = input.type != "number" ? "" : "0.00";
             });
@@ -299,9 +284,10 @@ class TransactionManager {
                 console.log("No matches found of the initial touch.");
                 return;
             }
-            const delta = touch.pageX - initialTouch.pageX;
-            const left = Math.min(0, initialLeft + delta);
-            if (Math.abs(delta) > 0)
+            const xDelta = touch.pageX - initialTouch.pageX;
+            const yDelta = touch.pageY - initialTouch.pageY;
+            const left = Math.min(0, initialLeft + xDelta);
+            if (Math.abs(xDelta) > Math.abs(yDelta))
                 e.preventDefault();
             main.css({ left: left });
         });

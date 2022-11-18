@@ -36,10 +36,10 @@
                 <card-balance data-title="Projection" id="projected_balance"></card-balance>
             </account-card>
         </div>
-        <actions-container>
+        <div class="action-container">
             <action-button data-icon="Add" data-action="0">Deposit</action-button>
             <action-button data-icon="Remove" data-action="1">Withdraw</action-button>
-        </actions-container>
+        </div>
         <div class="transaction-container"></div>
     </transaction-panel>
 

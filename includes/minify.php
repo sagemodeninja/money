@@ -19,7 +19,7 @@ $scripts = array(
     "js/DateTime.js",
     "js/ContextMenu.js",
     "AccountCard.js",
-    "transaction_panel.js",
+    "js/transaction_panel.js",
     "js/enums.js",
     "js/objects.js",
     "js/transaction.js",
