@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/example/public_html/
+    - composer install
+    - composer dump-autoload
+    - /bin/cp -R src "${DEPLOYPATH}/src"
+    - /bin/cp -R vendor "${DEPLOYPATH}/vendor"

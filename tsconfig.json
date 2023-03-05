@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "es6",
 		"module": "commonjs",
-		"outDir": "assets/scripts/js"
+		"outDir": "src/assets/scripts/js"
 	},
-	"include": ["assets/scripts/ts/*.ts"]
+	"include": ["src/**/*"]
 }

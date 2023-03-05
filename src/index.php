@@ -2,7 +2,7 @@
     session_start();
     include_once "user/login_guard.php";
     CheckLogin();
-    require "vendor/autoload.php";
+    require_once __DIR__ . "/vendor/autoload.php";
 ?>
 <!DOCTYPE html>
 <html lang="en-us">

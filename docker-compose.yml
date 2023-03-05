@@ -9,5 +9,6 @@ services:
     ports:
       - 8081:80
     volumes:
-      - ./:/var/www/html
+      - ./src/:/var/www/html
+      - ./vendor:/var/www/html/vendor
     network_mode: bridge
