@@ -2,12 +2,11 @@
 session_start();
 include_once $_SERVER['DOCUMENT_ROOT'] . "/includes/db_provider.php";
 include_once $_SERVER['DOCUMENT_ROOT'] . "/helper.php";
-include_once $_SERVER['DOCUMENT_ROOT'] . "/secrets.php";
 
 $code = @$_GET["code"];
-$clientId =  GOOGLE_CLIENT_ID;
+$clientId =  getenv('GOOGLE_CLIENT_ID');
 $redirectURI = getFullHost() . "/user/verify_google.php";
-$clientSecret = GOOGLE_CLIENT_SECRET;
+$clientSecret = getenv('GOOGLE_CLIENT_SECRET');
 
 $idToken;
 $userInfo;

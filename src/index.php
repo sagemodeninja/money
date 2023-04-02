@@ -1,15 +1,15 @@
 <?php
     session_start();
     include_once "user/login_guard.php";
+    require_once __DIR__ . "/vendor/autoload.php";
     CheckLogin();
-    require "vendor/autoload.php";
 ?>
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
     <?php include_once "includes/layouts/common_head_items.php" ?>
     <link rel="stylesheet" href="assets/minified/styles/dashboard.min.css">
-    <title>Financial - Home</title>
+    <title>Money</title>
 </head>
 <body>
     <?php include_once "includes/layouts/header.php" ?>
