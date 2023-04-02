@@ -1,8 +1,7 @@
-# Composer
+# Development
 vendor
-
-# Secrets
-secrets.php
+.env
+mysql-data
 
 # macOS
 .DS_Store

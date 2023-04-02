@@ -1,10 +1,9 @@
 <?php
     function CheckLogin() {
         include_once $_SERVER['DOCUMENT_ROOT'] . "/helper.php";
-        include_once $_SERVER['DOCUMENT_ROOT'] . "/secrets.php";
 
         $isSignedIn = @$_SESSION["user_is_signed-in"];
-        $clientId =  GOOGLE_CLIENT_ID;
+        $clientId =  getenv('GOOGLE_CLIENT_ID');
         $redirectURI = getFullHost() . "/user/verify_google.php";
         
         if(!isset($isSignedIn)) {
