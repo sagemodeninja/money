@@ -3,23 +3,34 @@
 
     require 'rb-mysql.php';
 
+    use Core\Attributes\Get;
     use Core\Attributes\Post;
     use Core\Controller;
     use Models\UserModel;
 
     class UserController extends Controller {
-        #[Post]
-        public function Create() {
+        public function __construct()
+        {
             $connectionString = 'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE');
             \R::setup($connectionString, getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'));
+        }
 
-            $body = file_get_contents('php://input');
-            $data = json_decode($body);
+        #[Get]
+        public function GetAll() {
+            $users = UserModel::getAll();
+            $this->Ok($users);
+        }
 
-            UserModel::create($data->firstname, $data->lastname, $data->email);
-            \R::close();
-            
-            echo "Ok";
+        #[Get("getById")]
+        public function GetById() {
+            $user = UserModel::getById(1);
+            $this->Ok($user);
+        }
+
+        #[Post]
+        public function Create(UserModel $user) {
+            $user->create();
+            $this->Ok();
         }
     }
 ?>

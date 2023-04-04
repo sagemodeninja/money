@@ -1,28 +1,80 @@
 <?php
     namespace Core;
 
+    use Exception;
     use ReflectionObject;
+    use AutoMapperPlus\AutoMapper;
+    use AutoMapperPlus\Configuration\AutoMapperConfig;
 
     class Controller {
 
         // TODO: Dependency injection...
 
         public function handleRequest($method, $path) {
-            $action = $this->getAction($method, $path);
+            // FIXME: Does not capture error!
+            try {
+                $action = $this->getAction($method, $path);
 
-            if (!isset($action)) $this->NotFound();
+                if (!isset($action)) $this->NotFound();
+    
+                // TODO: Auto parse request body to class and provide as arguments to action.
+                // TODO: Auto parse query string and provide as arguments to action.
+                $args = [];
+                
+                // TODO: Handle both body and query as parameters.
+                if (!empty($action->getParameters()))
+                {
+                    $paramater = $action->getParameters()[0];
 
-            // TODO: Auto parse request body to class and provide as arguments to action.
-            // TODO: Auto parse query string and provide as arguments to action.
+                    switch($_SERVER['CONTENT_TYPE']) {
+                        case 'application/json':
+                            $body = file_get_contents('php://input');
+                            $data = json_decode($body);
 
-            $action->invoke($this);
+                            $config = new AutoMapperConfig();
+                            $class = $paramater->getType()->getName();
+                            $config->registerMapping(\stdClass::class, $class);
+
+                            $mapper = new AutoMapper($config);
+                            $args[] = $mapper->map($data, $class);
+                            break;
+                    }
+                }
+
+                $action->invoke($this, ...$args);
+            } catch (Exception $ex) {
+                $this->InternalServerError($ex->getMessage());
+            }
         }
 
         // TODO: Methods for Ok, BadRequest, etc.
 
+        protected function Ok($content = null) {
+            if (is_array($content))
+            {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(array_values($content));
+                return;
+            }
+
+            if (is_object($content))
+            {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode($content);
+                return;
+            }
+
+            echo $content;
+        }
+
         protected function NotFound($message = null) {
-            header("HTTP/1.0 404 Not Found");
+            http_response_code(404);
             die($message ?? '404 Not Found');
+        }
+
+        protected function InternalServerError($message) {
+            http_response_code(500);
+            die($message);
         }
 
         private function getAction($method, $path) {
@@ -38,9 +90,9 @@
 
                 if (empty($attributes)) continue;
 
-                $arguments = $attributes[0]->getArguments();
-                
-                if($arguments[0] ?? '' == $subPath)
+                $argument = $attributes[0]->getArguments()[0] ?? '';
+
+                if($argument == $subPath)
                     return $reflectionMethod;
             }
 
