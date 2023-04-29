@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Only apply the following rules to requests for the /api path
+RewriteCond %{REQUEST_URI} ^/api
+
+# Route all requests to index.php
+RewriteRule ^(.*)$ router.php [QSA,L]
