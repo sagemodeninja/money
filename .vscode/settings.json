@@ -1,0 +1,7 @@
+{
+    "files.exclude": {
+        "**/.github": true,
+        "**/mysql-data": true,
+        "**/vendor": true
+    }
+}
