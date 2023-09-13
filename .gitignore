@@ -3,5 +3,8 @@ vendor
 .env
 mysql-data
 
+# Node
+**/node_modules
+
 # macOS
 .DS_Store
