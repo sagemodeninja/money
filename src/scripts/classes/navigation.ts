@@ -1,0 +1,11 @@
+export default function useNavigation() {
+    const navigationView = document.querySelector('#navigation_view');
+    
+    navigationView.addEventListener('selectionchanged', (e: CustomEvent) => {
+        var args = e.detail.args;
+
+        if(args.isSettingsSelected) return;
+        
+        window.location.href = args.selectedItem.href;
+    });
+}

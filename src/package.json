@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Manage your finances.",
   "devDependencies": {
+    "@types/animejs": "^3.1.7",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
@@ -16,11 +17,19 @@
     "type": "git",
     "url": "git+https://github.com/sagemodeninja/money.git"
   },
-  "keywords": ["money", "finance"],
+  "keywords": [
+    "money",
+    "finance"
+  ],
   "author": "",
   "license": "GPLV3",
   "bugs": {
     "url": "https://github.com/sagemodeninja/money/issues"
   },
-  "homepage": "https://github.com/sagemodeninja/money#readme"
+  "homepage": "https://github.com/sagemodeninja/money#readme",
+  "dependencies": {
+    "@sagemodeninja/custom-component": "^1.0.0-beta.17",
+    "animejs": "^3.2.1",
+    "axios": "^1.5.0"
+  }
 }

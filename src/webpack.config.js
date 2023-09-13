@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
     entry: {
         'app': './scripts/app.ts',
+        'account': './scripts/views/account.ts',
     },
     output: {
         path: path.resolve(__dirname, 'assets/scripts'),

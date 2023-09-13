@@ -5,6 +5,8 @@
 		"sourceMap": true,
 		"outDir": "assets/scripts",
 		"moduleResolution": "node",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
 		"paths": {
 		  "@/*": ["./scripts/*"]
 		}
