@@ -2,7 +2,6 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        'app': './scripts/app.ts',
         'account': './scripts/views/account-view.ts',
         'category': './scripts/views/category-view.ts',
         'user': './scripts/views/user-view.ts',
