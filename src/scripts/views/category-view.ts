@@ -1,9 +1,9 @@
-import useNavigation from '@/classes/navigation';
-import { User } from '@/entities/user';
-import { Operation } from '@/enums/operation';
-import { UserService } from '@/services/user-service';
+import useNavigation from "@/classes/navigation";
+import { Category } from "@/entities/category";
+import { Operation } from "@/enums/operation";
+import { CategoryService } from "@/services/category-service";
 
-class UserView {
+class CategoryView {
     private _table: HTMLTableSectionElement;
     private _editorCont: HTMLDivElement;
     private _editor: HTMLFormElement;
@@ -13,7 +13,7 @@ class UserView {
     private _saveBtn: HTMLButtonElement;
 
     private _operation: Operation;
-    private _service: UserService;
+    private _service: CategoryService;
 
     constructor() {
         useNavigation();
@@ -26,7 +26,7 @@ class UserView {
         this._createBtn = document.querySelector('#create_btn');
         this._saveBtn = document.querySelector('#save_btn');
 
-        this._service = new UserService();
+        this._service = new CategoryService();
 
         this.addEventListeners();
     }
@@ -41,7 +41,7 @@ class UserView {
             return;
         }
 
-        const content = payload.content as User[];
+        const content = payload.content as Category[];
         const rows = content.map(data => {
             const row = document.createElement('tr');
             const columns: HTMLTableCellElement[] = [];
@@ -55,10 +55,11 @@ class UserView {
                 return column;
             }
             
+            // FIELDS
             addColumn(data.Id);
-            addColumn(data.Firstname);
-            addColumn(data.Lastname);
-            addColumn(data.Email);
+            addColumn(data.Title);
+            addColumn(data.Color);
+            addColumn(data.Order);
 
             // ACTIONS
             var actions = addColumn();
@@ -76,7 +77,7 @@ class UserView {
 
             return row;
         });
-
+        
         this._table.append(...rows);
     }
 
@@ -95,7 +96,7 @@ class UserView {
         this._editorCont.style.display = 'block';
     }
 
-    private onUpdateClick(data: User) {
+    private onUpdateClick(data: Category) {
         this._operation = Operation.Update;
         this._editor
             .querySelectorAll('input')
@@ -116,7 +117,7 @@ class UserView {
 
         this.refresh();
     }
-
+    
     private async save() {
         const data = new FormData(this._editor);
         const payload = this._operation === Operation.Create
@@ -133,6 +134,6 @@ class UserView {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const view = new UserView();
+    const view = new CategoryView();
     view.refresh();
 });
