@@ -1,0 +1,26 @@
+{
+  "name": "e-money",
+  "version": "2.0.0",
+  "description": "Manage your finances.",
+  "devDependencies": {
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "build": "webpack --mode=development",
+    "watch": "webpack --watch --mode=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sagemodeninja/money.git"
+  },
+  "keywords": ["money", "finance"],
+  "author": "",
+  "license": "GPLV3",
+  "bugs": {
+    "url": "https://github.com/sagemodeninja/money/issues"
+  },
+  "homepage": "https://github.com/sagemodeninja/money#readme"
+}

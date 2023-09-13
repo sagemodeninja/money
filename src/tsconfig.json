@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"module": "ES2015",
+		"target": "ES2017",
+		"sourceMap": true,
+		"outDir": "assets/scripts",
+		"moduleResolution": "node",
+		"paths": {
+		  "@/*": ["./scripts/*"]
+		}
+	},
+	"include": ["scripts/**/*"],
+	"exclude": ["node_modules"]
+}
