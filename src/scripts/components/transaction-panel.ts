@@ -1,5 +1,6 @@
+import { computeAlphaBlend } from '@/classes/alpha-blend';
 import { customComponent, CustomComponent } from '@sagemodeninja/custom-component';
-import * as anime from 'animejs';
+import anime from 'animejs/lib/anime.es.js';
 
 @customComponent('transaction-panel')
 export class TransactionPanel extends CustomComponent {

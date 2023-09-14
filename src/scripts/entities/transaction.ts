@@ -4,5 +4,6 @@ export interface Transaction {
     Description: string;
     Debit: number;
     Credit: number;
+    Total: number;
     Posted: boolean
 }

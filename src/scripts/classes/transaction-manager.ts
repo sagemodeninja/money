@@ -1,421 +1,451 @@
+import { ContextMenu, ContextMenuOption, globalContext } from "@/components/context-menu";
+import { Account } from '@/entities/account';
+import { Transaction } from '@/entities/transaction';
+import { Operation } from '@/enums/operation';
+import { TransactionType } from '@/enums/transaction-type';
+import { DateTime } from './date-time';
+import { AccountCard } from '@/components/account-card';
+import axios from 'axios';
+import { CardBalance } from '@/components/card-balance';
+import { toCurrency } from './currency';
+import anime from 'animejs/lib/anime.es.js';
+
 export class TransactionManager {
-    // // DOM
-    // card: Element;
-    // actions: NodeListOf<Element>;
-    // container: Element;
-    // editor: any; // TODO: Strong type
-    // command: Element;
+    // DOM
+    card: AccountCard;
+    actions: NodeListOf<CardBalance>;
+    container: HTMLDivElement;
+    editor: any; // TODO: Strong type
+    command: Element;
 
-    // // State
-    // isRegistered: boolean;
-    // operation: Operation;
-    // transactionType: TransactionType;
-    // contextMenu: ContextMenu;
-    // account: Account;
+    // State
+    isRegistered: boolean;
+    operation: Operation;
+    transactionType: TransactionType;
+    contextMenu: ContextMenu;
+    account: Account;
 
-    // constructor() {
-    //     this.operation = Operation.Create;
-    // }
+    constructor() {
+        this.operation = Operation.Create;
+    }
 
-    // loadAccount(account: Account) {
-    //     this.account = account;
+    loadAccount(account: Account) {
+        this.account = account;
 
-    //     this.registerComponents();
-    //     this.refresh();
-    // }
+        this.registerComponents();
+        this.refresh();
+    }
 
-    // refresh() {
-    //     this.loadCard();
-    //     this.loadBalances();
-    //     this.loadTransactions();
-    // }
+    refresh() {
+        this.loadCard();
+        this.loadBalances();
+        this.loadTransactions();
+    }
 
-    // registerComponents() {
-    //     if (this.isRegistered) return;
+    registerComponents() {
+        if (this.isRegistered) return;
         
-    //     this.registerMenu();
-    //     this.registerActions();
-    //     this.registerEditor();
+        this.registerMenu();
+        this.registerActions();
+        this.registerEditor();
         
-    //     this.isRegistered = true;
-    // }
+        this.isRegistered = true;
+    }
     
-    // registerMenu() {
-    //     // Menu
-    //     this.contextMenu = globalContext.addMenu("transactions_row", this.container);
+    registerMenu() {
+        // Menu
+        this.contextMenu = globalContext.addMenu("transactions_row", this.container);
         
-    //     // Options
-    //     let options = ["Update", "Post", "Delete", "Cancel"];
-    //     let menuOptions = options.reduce((mo, o) => {
-    //         const option = new ContextMenuOption(o);
+        // Options
+        let options = ["Update", "Post", "Delete", "Cancel"];
+        let menuOptions = options.reduce((mo, o) => {
+            const option = new ContextMenuOption(o);
 
-    //         option.visible((trans: Transaction) => trans.Posted == (o == "Cancel"));
-    //         mo.push(option);
+            option.visible((trans: Transaction) => trans.Posted == (o == "Cancel"));
+            mo.push(option);
 
-    //         return mo;
-    //     }, []);
+            return mo;
+        }, []);
         
-    //     menuOptions[0].onClick(trans => this.updateBtnClicked(trans));
-    //     menuOptions[1].onClick(trans => this.post(trans));
-    //     menuOptions[2].onClick(trans => this.delete(trans));
-    //     menuOptions[3].onClick(trans => this.cancel(trans));
+        menuOptions[0].onClick(trans => this.updateBtnClicked(trans));
+        menuOptions[1].onClick(trans => this.post(trans));
+        menuOptions[2].onClick(trans => this.delete(trans));
+        menuOptions[3].onClick(trans => this.cancel(trans));
         
-    //     this.contextMenu.addOptions(...menuOptions);
-    // }
+        this.contextMenu.addOptions(...menuOptions);
+    }
 
-    // registerActions() {
-    //     const inputs = this.editor.querySelectorAll("form input");
+    registerActions() {
+        const inputs = this.editor.querySelectorAll("form input");
 
-    //     this.actions.forEach((action: HTMLElement) => {
-    //         const type: number = parseInt(action.dataset.action);
-    //         action.addEventListener("click", () => {
-    //             this.operation = Operation.Create;
-    //             this.transactionType = type;
+        this.actions.forEach((action: HTMLElement) => {
+            const type: number = parseInt(action.dataset.action);
+            action.addEventListener("click", () => {
+                this.operation = Operation.Create;
+                this.transactionType = type;
 
-    //             clearForm();
+                clearForm();
 
-    //             let typeInput = this.editor.querySelector("form input[name=TransactionType]");
-    //             typeInput.value = type;
+                let typeInput = this.editor.querySelector("form input[name=TransactionType]");
+                typeInput.value = type;
 
-    //             let dateInput = this.editor.querySelector("form input[name=Date]");
-    //             dateInput.value = DateTime.now().toString("yyyy-MM-dd");
+                let dateInput = this.editor.querySelector("form input[name=Date]");
+                dateInput.value = DateTime.now().toString("yyyy-MM-dd");
 
-    //             this.editor.show();
-    //             this.changeTheme("#999999");
-    //         });
-    //     });
+                this.editor.show();
+                this.changeTheme("#999999");
+            });
+        });
 
-    //     function clearForm() {
-    //         inputs.forEach(input => {
-    //             input.value = input.type != "number" ? "" : "0.00";
-    //         });
-    //     }
-    // }
+        function clearForm() {
+            inputs.forEach(input => {
+                input.value = input.type != "number" ? "" : "0.00";
+            });
+        }
+    }
 
-    // registerEditor() {
-    //     const amountInput = this.editor.querySelector("form input#amount");
-    //     const amountInputHidden = this.editor.querySelector("form input[name=Amount]");
+    registerEditor() {
+        const amountInput = this.editor.querySelector("form input#amount");
+        const amountInputHidden = this.editor.querySelector("form input[name=Amount]");
         
-    //     amountInput.addEventListener("input", () => {
-    //         let amount = parseFloat(amountInput.value);
+        amountInput.addEventListener("input", () => {
+            let amount = parseFloat(amountInput.value);
 
-    //         if (this.transactionType == TransactionType.Withdraw)
-    //             amount *= -1;
+            if (this.transactionType == TransactionType.Withdraw)
+                amount *= -1;
 
-    //         amountInputHidden.value = amount;
-    //     });
+            amountInputHidden.value = amount;
+        });
 
-    //     // TODO: Refactor
-    //     const dissmissEditorBtn = document.querySelector("#dismiss_editor_dialog_btn");
-    //     dissmissEditorBtn.addEventListener("click", () => {
-    //         this.changeTheme("#dadada");
-    //         this.editor.hide()
-    //     });
+        // TODO: Refactor
+        const dissmissEditorBtn = document.querySelector("#dismiss_editor_dialog_btn");
+        dissmissEditorBtn.addEventListener("click", () => {
+            this.changeTheme("#dadada");
+            this.editor.hide()
+        });
         
-    //     $("#save_btn").click(() => this.save());
-    // }
+        const saveBtn = document.getElementById('save_btn');
+        saveBtn.addEventListener('click', this.save.bind(this));
+    }
 
-    // loadCard() {
-    //     const account = this.account;
+    loadCard() {
+        const account = this.account;
 
-    //     this.card.title = account.Title;
-    //     this.card.number = account.AccountNumber;
-    //     this.card.category = account.Category;
-    // }
+        this.card.title = account.Title;
+        this.card.number = account.AccountNumber;
+        this.card.category = account.Category;
+    }
     
-    // loadBalances() {
-    //     const data = { accountId: this.account.Id };
-    //     const balances = this.card.querySelectorAll("card-balance");
+    loadBalances() {
+        const data = { accountId: this.account.Id };
+        const balances = this.card.querySelectorAll("card-balance") as NodeListOf<CardBalance>;
 
-    //     axios.get("account/balance.php", { params: data })
-    //         .then(response => {
-    //             const payload = response.data;
-    //             const content = payload.content;
+        axios.get("account/balance.php", { params: data })
+            .then(response => {
+                const payload = response.data;
+                const content = payload.content;
                 
-    //             if(!payload.state) {
-    //                 alert(`Oops! ${content}`);
-    //                 return;
-    //             }
+                if(!payload.state) {
+                    alert(`Oops! ${content}`);
+                    return;
+                }
 
-    //             balances[0].innerText = toCurrency(content.Balance);
-    //             balances[1].innerText = toCurrency(content.Projection);
-    //         })
-    //         .catch(error => {
-    //             alert("An error occured.");
-    //             console.log(error);
-    //         });
-    // }
+                balances[0].innerText = toCurrency(content.Balance);
+                balances[1].innerText = toCurrency(content.Projection);
+            })
+            .catch(error => {
+                alert("An error occured.");
+                console.log(error);
+            });
+    }
     
-    // loadTransactions() {
-    //     const data = { AccountId: this.account.Id };
+    loadTransactions() {
+        const data = { AccountId: this.account.Id };
         
-    //     axios.get("transaction/read.php", { params: data })
-    //         .then(response => {
-    //             const payload = response.data;
-    //             const content = payload.content;
+        axios.get("transaction/read.php", { params: data })
+            .then(response => {
+                const payload = response.data;
+                const content = payload.content;
                 
-    //             if(!payload.state) {
-    //                 this.container.innerHTML = `<p class="centered">Oops! ${content}</p>`;
-    //                 return;
-    //             }
+                if(!payload.state) {
+                    this.container.innerHTML = `<p class="centered">Oops! ${content}</p>`;
+                    return;
+                }
 
-    //             this.container.innerHTML = null;
-    //             let transactions = this.groupTransactions(content);
+                this.container.innerHTML = null;
+                let transactions = this.groupTransactions(content);
 
-    //             for(let key in transactions) {
-    //                 const group = this.newGroup(key, transactions[key]);
-    //                 this.container.appendChild(group);
-    //             }
-    //         })
-    //         .catch(error => {
-    //             alert("An error occured.");
-    //             console.log(error);
-    //         });
-    // }
+                for(let key in transactions) {
+                    const group = this.newGroup(key, transactions[key]);
+                    this.container.appendChild(group);
+                }
+            })
+            .catch(error => {
+                alert("An error occured.");
+                console.log(error);
+            });
+    }
 
-    // groupTransactions(trans) {
-    //     let groups = {};
+    groupTransactions(trans) {
+        let groups = {};
 
-    //     for(let t of trans) {
-    //         const key = t.Date + t.Posted;
-    //         (groups[key] ??= []).push(t);
-    //     }
+        for(let t of trans) {
+            const key = t.Date + t.Posted;
+            (groups[key] ??= []).push(t);
+        }
 
-    //     return groups;
-    // }
+        return groups;
+    }
 
-    // newGroup(date, trans) {
-    //     let group = $("<div>").addClass("transaction-group");
-    //     let header = $("<p>").addClass("transaction-group-header");
-    //     let body = $("<div>").addClass("transaction-group-body");
+    newGroup(date, trans) {
+        const group = document.createElement('div');
+        const header = document.createElement('p');
+        const body = document.createElement('div');
 
-    //     // Title/header...
-    //     let dateTime = DateTime.parse(date.slice(0, -1));
-    //     header.text(dateTime.toString("MMM. dd, yyyy"));
+        group.classList.add('transaction-group');
+        header.classList.add('transaction-group-header');
+        body.classList.add('transaction-group-body');
         
-    //     const status = trans[0].Posted ? "actual" : "projection";
-    //     header.addClass(status);
+        // Title/header...
+        const dateTime = DateTime.parse(date.slice(0, -1));
+        header.innerText = dateTime.toString('MMM. dd, yyyy');
         
-    //     group.append(header);
-    //     group.append(body);
+        const status = trans[0].Posted ? 'actual' : 'projection';
+        header.classList.add(status);
         
-    //     for(let t of trans) {
-    //         let row = this.newRow(t);
-    //         body.append(row);
-    //     }
+        group.append(header);
+        group.append(body);
         
-    //     // TODO: Refactor
-    //     return group[0];
-    // }
-
-    // newRow(trans) {
-    //     // TODO: Refactor?
-    //     const status = trans.Posted ? "actual" : "projection";
-
-    //     let row = $(`<div class="transaction-row ${status}">`);
-
-    //     let main = $("<div>").addClass("main-content");
-    //     let desc = $(`<div class='transaction-description'><p>${trans.Description}</p></div>`);
-    //     let summary = $("<div class='transaction-summary'>");
+        for(let t of trans) {
+            let row = this.newRow(t);
+            body.append(row);
+        }
         
-    //     main.append(desc);
-    //     main.append(summary);
-    //     row.append(main);
+        return group;
+    }
+
+    newRow(transaction: Transaction) {
+        // TODO: Refactor?
+        const status = transaction.Posted ? 'actual' : 'projection';
+
+        const row = document.createElement('div');
+        const main = document.createElement('div');
+        const desc = document.createElement('div');
+        const descPar = document.createElement('p');
+        const summary = document.createElement('div');
         
-    //     let isDebit = trans.Total >= 0;
-    //     let transAmount: number = Math.abs(trans.Total);
+        row.classList.add('transaction-row', status);
+        main.classList.add('main-content');
+        desc.classList.add('transaction-description');
+        descPar.innerText = transaction.Description;
+        desc.appendChild(descPar);
+        summary.classList.add('transaction-summary');
+
+        main.append(desc);
+        main.append(summary);
+        row.append(main);
         
-    //     let amount = $(`<p>${!isDebit ? "-" : ""} PHP ${toCurrency(transAmount.toString())}</p>`);
-    //     let ref = $("<p>REF: N/A</p>");
+        const isDebit = transaction.Total >= 0;
+        const transAmount: number = Math.abs(transaction.Total);
         
-    //     summary.append(amount);
-    //     summary.append(ref);
+        const amountPar = document.createElement('p');
+        const refPar = document.createElement('p');
+
+        amountPar.innerText = `${!isDebit ? "-" : ""} PHP ${toCurrency(transAmount.toString())}`;
+        refPar.innerText = 'REF: N/A';
         
-    //     row[0].addContext(this.contextMenu, trans);
-
-    //     const actions = $("<div>").addClass("actions-container");
-    //     row.append(actions);
-
-    //     if (status === "projection") {
-    //         const editAction = this.newAction("edit", "Edit");
-    //         const postAction = this.newAction("post", "CompletedSolid");
-    //         const deleteAction = this.newAction("delete", "Delete");
-
-    //         editAction.click(() => {
-    //             collapseActions();
-    //             this.updateBtnClicked(trans);
-    //         });
-
-    //         postAction.click(() => {
-    //             collapseActions();
-    //             this.post(trans);
-    //         });
-
-    //         deleteAction.click(() => {
-    //             collapseActions();
-    //             this.delete(trans);
-    //         });
-
-    //         actions.append(editAction);
-    //         actions.append(postAction);
-    //         actions.append(deleteAction);
-    //     } else {
-    //         const cancelAction = this.newAction("delete", "Cancel");
-    //         actions.append(cancelAction);
-
-    //         cancelAction.click(() => {
-    //             collapseActions();
-    //             this.cancel(trans);
-    //         });
-    //     }
-
-    //     // Touch events...
-    //     let initialTouch;
-    //     let initialLeft;
-
-    //     main[0].addEventListener("touchstart", e => {
-    //         initialTouch = e.changedTouches[0];
-
-    //         initialLeft = parseInt(main.css("left"));
-    //     });
-
-    //     main[0].addEventListener("touchmove", e => {
-    //         const touch = Array.from(e.changedTouches)
-    //                         .find(tch => tch.identifier === initialTouch.identifier);
-
-    //         if (touch === undefined) {
-    //             console.log("No matches found of the initial touch.");
-    //             return;
-    //         }
-
-    //         const xDelta = touch.pageX - initialTouch.pageX;
-    //         const yDelta = touch.pageY - initialTouch.pageY;
-    //         const left = Math.min(0, initialLeft + xDelta);
-
-    //         if (Math.abs(xDelta) > Math.abs(yDelta))
-    //             e.preventDefault();
-
-    //         main.css({ left: left });
-    //     });
-
-    //     main[0].addEventListener("touchend", e => {
-    //         const touch = Array.from(e.changedTouches)
-    //                         .find(tch => tch.identifier === initialTouch.identifier);
-
-    //         if (touch === undefined) {
-    //             console.log("No matches found of the initial touch.");
-    //             return;
-    //         }
-
-    //         const left = parseInt(main.css("left"));
-    //         const actionWidth = actions[0].clientWidth;
-    //         const threshold = actionWidth / 2;
-    //         const snapPoint = actionWidth * (Math.abs(left) > threshold);
-
-    //         anime({
-    //             targets: main[0],
-    //             left: -snapPoint,
-    //             duration: 200,
-    //             easing: "easeInOutQuad"
-    //         });
-    //     });
-
-    //     function collapseActions() {
-    //         anime({
-    //             targets: main[0],
-    //             left: 0,
-    //             duration: 200,
-    //             easing: "easeInOutQuad"
-    //         });
-    //     }
+        summary.append(amountPar);
+        summary.append(refPar);
         
-    //     return row;
-    // }
+        (row as any).addContext(this.contextMenu, transaction);
 
-    // newAction(name, symbol) {
-    //     const action = $(`<div class="action action-${name}" tabindex="-1">`);
-    //     const icon = $(`<fluent-symbol-icon></fluent-symbol-icon>`);
+        const actions = document.createElement('div');
 
-    //     // Icon
-    //     action.append(icon);
-    //     icon.attr("symbol", symbol);
-    //     icon.attr("font-size", 20);
-    //     icon.attr("foreground", "#fff");
+        actions.classList.add('actions-container');
+        row.append(actions);
 
-    //     return action;
-    // }
+        if (status === "projection") {
+            const editAction = this.newAction("edit", "Edit");
+            const postAction = this.newAction("post", "CompletedSolid");
+            const deleteAction = this.newAction("delete", "Delete");
 
-    // updateBtnClicked(data) {
-    //     this.operation = Operation.Update;
+            editAction.addEventListener('click', () => {
+                collapseActions();
+                this.updateBtnClicked(transaction);
+            });
 
-    //     let inputs = this.editor.querySelectorAll("form input");
-    //     inputs.forEach(input => {
-    //         let name = input.name;
+            postAction.addEventListener('click', () => {
+                collapseActions();
+                this.post(transaction);
+            });
 
-    //         if (name == "Amount") return;
+            deleteAction.addEventListener('click', () => {
+                collapseActions();
+                this.delete(transaction);
+            });
 
-    //         input.value = name != "" // Empty
-    //             ? data[name]
-    //             : Math.abs(data.Amount);
-    //     });
+            actions.append(editAction);
+            actions.append(postAction);
+            actions.append(deleteAction);
+        } else {
+            const cancelAction = this.newAction("delete", "Cancel");
+            actions.append(cancelAction);
 
-    //     this.transactionType = data.TransactionType;
+            cancelAction.addEventListener('click', () => {
+                collapseActions();
+                this.cancel(transaction);
+            });
+        }
+
+        // Touch events...
+        let initialTouch;
+        let initialLeft;
+
+        main.addEventListener("touchstart", e => {
+            initialTouch = e.changedTouches[0];
+            initialLeft = parseInt(main.style.left);
+        });
+
+        main.addEventListener("touchmove", e => {
+            const touch = Array.from(e.changedTouches)
+                            .find(tch => tch.identifier === initialTouch.identifier);
+
+            if (touch === undefined) {
+                console.log("No matches found of the initial touch.");
+                return;
+            }
+
+            const xDelta = touch.pageX - initialTouch.pageX;
+            const yDelta = touch.pageY - initialTouch.pageY;
+            const left = Math.min(0, initialLeft + xDelta);
+
+            if (Math.abs(xDelta) > Math.abs(yDelta))
+                e.preventDefault();
+
+            main.style.left = `${left}px`;
+        });
+
+        main.addEventListener("touchend", e => {
+            const touch = Array.from(e.changedTouches)
+                            .find(tch => tch.identifier === initialTouch.identifier);
+
+            if (touch === undefined) {
+                console.log("No matches found of the initial touch.");
+                return;
+            }
+
+            const left = parseInt(main.style.left);
+            const actionWidth = actions.clientWidth;
+            const threshold = actionWidth / 2;
+            const snapPoint = actionWidth * ((Math.abs(left) > threshold) ? 1 : 0);
+
+            anime({
+                targets: main,
+                left: -snapPoint,
+                duration: 200,
+                easing: "easeInOutQuad"
+            });
+        });
+
+        function collapseActions() {
+            anime({
+                targets: main[0],
+                left: 0,
+                duration: 200,
+                easing: "easeInOutQuad"
+            });
+        }
+        
+        return row;
+    }
+
+    newAction(name, symbol) {
+        const action = document.createElement('div');
+        const icon = document.createElement('fluent-symbol-icon')
+        
+        action.classList.add('action', `action-${name}`);
+        action.tabIndex = -1;
+
+        // Icon
+        action.append(icon);
+        icon.setAttribute('symbol', symbol);
+        icon.setAttribute('font-size', '20');
+        icon.setAttribute('foreground', '#fff');
+
+        return action;
+    }
+
+    updateBtnClicked(data) {
+        this.operation = Operation.Update;
+
+        let inputs = this.editor.querySelectorAll("form input");
+        inputs.forEach(input => {
+            let name = input.name;
+
+            if (name == "Amount") return;
+
+            input.value = name != "" // Empty
+                ? data[name]
+                : Math.abs(data.Amount);
+        });
+
+        this.transactionType = data.TransactionType;
     
-    //     this.changeTheme("#999999");
-    //     this.editor.show();
-    // }
+        this.changeTheme("#999999");
+        this.editor.show();
+    }
 
-    // save() {
-    //     const operation = Operation[this.operation].toLowerCase();
-    //     const endpoint = `transaction/${operation}.php`;
+    save() {
+        const operation = Operation[this.operation].toLowerCase();
+        const endpoint = `transaction/${operation}.php`;
 
-    //     // TODO: Refactor
-    //     let form = this.editor.querySelector("form");
-    //     let data = new FormData(form);
-    //     data.append("AccountId", this.account.Id.toString());
-    //     let trans = Object.fromEntries(data.entries());
+        // TODO: Refactor
+        let form = this.editor.querySelector("form");
+        let data = new FormData(form);
+        data.append("AccountId", this.account.Id.toString());
+        let trans = Object.fromEntries(data.entries());
 
-    //     axios
-    //         .post(endpoint, trans)
-    //         .then(response => {
-    //             if (response.data.state)
-    //                 this.refresh();
+        axios
+            .post(endpoint, trans)
+            .then(response => {
+                if (response.data.state)
+                    this.refresh();
 
-    //             this.operation = Operation.Create;
-    //             this.editor.hide();
-    //             this.changeTheme("#dadada");
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //         });
-    // }
+                this.operation = Operation.Create;
+                this.editor.hide();
+                this.changeTheme("#dadada");
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
     
-    // delete(trans: Transaction) {
-    //     this.handlePost("transaction/delete.php", trans);
-    // }
+    delete(trans: Transaction) {
+        this.handlePost("transaction/delete.php", trans);
+    }
     
-    // post(trans: Transaction) {
-    //     this.handlePost("transaction/post.php", trans);
-    // }
+    post(trans: Transaction) {
+        this.handlePost("transaction/post.php", trans);
+    }
     
-    // cancel(trans: Transaction) {
-    //     this.handlePost("transaction/cancel.php", trans);
-    // }
+    cancel(trans: Transaction) {
+        this.handlePost("transaction/cancel.php", trans);
+    }
 
-    // handlePost(endpoint: string, trans: Transaction) {
-    //     axios
-    //         .post(endpoint, trans)
-    //         .then(response => {
-    //             if (response.data.state)
-    //                 this.refresh();
-    //         })
-    //         .catch(error => {
-    //             console.log(error);
-    //         });
-    // }
+    handlePost(endpoint: string, trans: Transaction) {
+        axios
+            .post(endpoint, trans)
+            .then(response => {
+                if (response.data.state)
+                    this.refresh();
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 
-    // changeTheme(theme: string) {
-    //     document.querySelector(`meta[name="theme-color"]`)
-    //             .setAttribute("content", theme);
-    // }
+    changeTheme(theme: string) {
+        document.querySelector(`meta[name="theme-color"]`)
+                .setAttribute("content", theme);
+    }
 }

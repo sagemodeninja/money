@@ -42,36 +42,38 @@ export class ContextMenuOption {
         option.addEventListener('click', () => {
             this.callbacks.forEach(callback => callback(data));
         });
+
+        return option;
     }
 }
 
 export class ContextMenu {
     id: string;
-    root: HTMLElement;
-    options: any[];
+    root: HTMLDivElement;
+    options: ContextMenuOption[];
     data: any;
 
-    constructor(id, root) {
+    constructor(id: string, root: HTMLDivElement) {
         this.id = id;
         this.root = root;
         this.options = [];
         this.data = [];
     }
 
-    addOption(option) {
+    addOption(option: ContextMenuOption) {
         this.options.push(option);
     }
 
-    addOptions(...options) {
-        options.forEach(o => this.options.push(o));
+    addOptions(...options: ContextMenuOption[]) {
+        options.forEach(option => this.options.push(option));
     }
 
     draw(dataIndex) {
-        let data = this.data[dataIndex];
-        let options = [];
+        const data = this.data[dataIndex];
+        const options = [];
 
-        this.options.forEach(o => {
-            options.push( o.draw(data) );
+        this.options.forEach(option => {
+            options.push(option.draw(data));
         });
 
         return options;
@@ -88,7 +90,7 @@ export class ContextMenu {
 
 export class ContextMenuGlobal {
     element: HTMLDivElement;
-    menus: {[key: string]: any}
+    menus: {[key: string]: ContextMenu}
 
     activeTrigger: any;
     triggerTop: any;
@@ -126,7 +128,7 @@ export class ContextMenuGlobal {
         document.addEventListener('click', this.onClick.bind(this));
     }
 
-    addMenu(id, root) {
+    addMenu(id: string, root: HTMLDivElement) {
         const menu = new ContextMenu(id, root);
 
         this.menus[id] = menu;
@@ -164,7 +166,7 @@ export class ContextMenuGlobal {
             this.triggerLeft = e.clientX;
 
             this.show(contextId, dataIndex);
-            target.addClass("active");
+            target.classList.add('active');
         }
     }
 
@@ -174,27 +176,26 @@ export class ContextMenuGlobal {
         }
     }
 
-    show(contextId, dataIndex) {
-        let element = this.element;
-        let menu = this.menus[contextId];
-
-        let options = menu.draw(dataIndex);
-        options.forEach(o => {
-            if (o) {
-                element.append(o)
+    show(contextId: string, dataIndex) {
+        const menu = this.menus[contextId];
+        const options = menu.draw(dataIndex);
+        
+        options.forEach(option => {
+            if (option) {
+                this.element.appendChild(option)
             }
         });
 
         // Bounds...
-        let root = menu.root;
-        let rootTop = root.boundsTop + ContextMargin;
-        let rootRight = root.boundsRight - ContextMargin;
-        let rootBottom = root.boundsBottom - ContextMargin;
-        let rootLeft = root.boundsLeft + ContextMargin;
-
-        const {height, width} = element.getBoundingClientRect();
+        const root = menu.root;
+        const {left, top, right, bottom} = root.getBoundingClientRect();
+        let rootTop = top + ContextMargin;
+        let rootRight = right - ContextMargin;
+        let rootBottom = bottom - ContextMargin;
+        let rootLeft = left + ContextMargin;
 
         // Contexts...
+        const {height, width} = this.element.getBoundingClientRect();
         let contextTop = this.triggerTop - ContextTopOffset;
         let contextLeft = this.triggerLeft;
         let contextBottom = contextTop + height;
@@ -214,16 +215,16 @@ export class ContextMenuGlobal {
             contextTop = rootBottom - height;
         }
 
-        element.classList.add('active');
-        element.style.top = `${contextTop}px`;
-        element.style.left = `${contextLeft}px`;
+        this.element.classList.add('active');
+        this.element.style.top = `${contextTop}px`;
+        this.element.style.left = `${contextLeft}px`;
     }
 
     reset() {
         this.element.innerHTML = null;
         this.element.classList.remove('active');
         this.element.setAttribute('style', null);
-        this.activeTrigger?.removeClass('active');
+        this.activeTrigger?.classList.remove('active');
 
         this.activeTrigger = undefined;
         this.triggerTop = undefined;

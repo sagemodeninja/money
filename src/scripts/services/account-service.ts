@@ -26,6 +26,17 @@ export class AccountService extends ServiceBase {
     }
 
     // TODO: Use JSON
+    async close(id: bigint) {
+        const endpoint = this.endpoint('close.php');
+        const data = new FormData();
+
+        data.append('Id', id.toString());
+
+        const {data: payload} = await this._connection.post(endpoint, data);
+        return payload as ResponsePayload<string>;
+    }
+
+    // TODO: Use JSON
     async remove(id: bigint) {
         const endpoint = this.endpoint('delete.php');
         const data = new FormData();
