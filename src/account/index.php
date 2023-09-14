@@ -106,6 +106,6 @@
     
     <!-- SCRIPTS -->
     <?php include_once "../includes/layouts/common_scripts.php"; ?>
-    <script src="../assets/scripts/js/account.js"></script>
+    <script src="../assets/scripts/account.js"></script>
 </body>
 </html>

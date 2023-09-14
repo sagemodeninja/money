@@ -80,6 +80,6 @@
 
     <!-- SCRIPTS -->
     <?php include_once "../includes/layouts/common_scripts.php"; ?>
-    <script src="../assets/scripts/js/user.js"></script>
+    <script src="../assets/scripts/user.js"></script>
 </body>
 </html>

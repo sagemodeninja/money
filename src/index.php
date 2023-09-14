@@ -93,7 +93,6 @@
     <!-- SCRIPTS -->
     <?php include_once "includes/layouts/common_scripts.php"; ?>
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-    <script src="assets/minified/scripts/dashboard.min.js"></script>
-    <script src="assets/scripts/app.js"></script>
+    <script src="assets/scripts/dashboard.js"></script>
 </body>
 </html>
