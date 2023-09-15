@@ -95,25 +95,8 @@ export class AccountCard extends CustomComponent {
     private _titleSpan: HTMLSpanElement;
     private _numberSpan: HTMLSpanElement;
     private _categorySpan: HTMLSpanElement;
-
-    public render() {
-        return `
-            <div class="body">
-                <span class="title"></span>
-                <div class="balances">
-                    <slot></slot>
-                </div>
-                <p class="numbers">
-                    <span>••••</span>
-                    <span>••••</span>
-                    <span>••••</span>
-                    <span class="number">••••</span>
-                </p>
-                <span class="category"></span>
-            </div>
-            <slot name="icon"></slot>
-        `;
-    }/* Attributes */
+    
+    /* Attributes */
     get title() {
         return this.getAttribute("data-title");
     }
@@ -155,6 +138,25 @@ export class AccountCard extends CustomComponent {
     get categorySpan() {
         this._categorySpan ??= this.shadowRoot.querySelector(".category");
         return this._categorySpan;
+    }
+
+    public render() {
+        return `
+            <div class="body">
+                <span class="title"></span>
+                <div class="balances">
+                    <slot></slot>
+                </div>
+                <p class="numbers">
+                    <span>••••</span>
+                    <span>••••</span>
+                    <span>••••</span>
+                    <span class="number">••••</span>
+                </p>
+                <span class="category"></span>
+            </div>
+            <slot name="icon"></slot>
+        `;
     }
 
     /* Functions */
