@@ -1,4 +1,6 @@
+import '@/components/page-indicator';
 import { CustomComponent, customComponent } from '@sagemodeninja/custom-component';
+import { PageIndicator } from '@/components/page-indicator';
 
 enum SnapDirection {
     Left = -1,
@@ -49,6 +51,16 @@ export class SnapView extends CustomComponent {
             right: 12px;
         }
 
+        .snapButton:not(:disabled):active {
+            height: 22px;
+            margin: 1px;
+            width: 22px;
+        }
+
+        .snapButton:not(:active) {
+            transition: all 0.25s;
+        }
+
         .snapButton:disabled {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             opacity: 0.8;
@@ -56,6 +68,12 @@ export class SnapView extends CustomComponent {
 
         .snapButton:disabled svg path {
             fill: #888;
+        }
+
+        .indicator {
+            bottom: 16px;
+            position: absolute;
+            width: 100%;
         }
         
         @media only screen and (min-width: 768px) {
@@ -67,14 +85,16 @@ export class SnapView extends CustomComponent {
     private readonly _snapEvent: Event;
 
     private _index: number = 0;
+    private _panelCount: number = 0;
 
     private _container: HTMLDivElement;
+    private _slot: HTMLSlotElement;
     private _leftBtn: HTMLButtonElement;
     private _rightBtn: HTMLButtonElement;
+    private _indicator: PageIndicator;
 
     constructor() {
         super();
-
         this._snapEvent = new Event('snap');
     }
 
@@ -88,6 +108,11 @@ export class SnapView extends CustomComponent {
         return this._container;
     }
 
+    get defaultSlot() {
+        this._slot ??= this.shadowRoot.querySelector('slot');
+        return this._slot;
+    }
+
     get leftBtn() {
         this._leftBtn ??= this.shadowRoot.querySelector('.left');
         return this._leftBtn;
@@ -96,6 +121,11 @@ export class SnapView extends CustomComponent {
     get rightBtn() {
         this._rightBtn ??= this.shadowRoot.querySelector('.right');
         return this._rightBtn;
+    }
+    
+    get indicator() {
+        this._indicator ??= this.shadowRoot.querySelector('.indicator');
+        return this._indicator;
     }
 
     public render() {
@@ -106,13 +136,14 @@ export class SnapView extends CustomComponent {
             <button class="snapButton left" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                     <path d="M0.29 12.71l8 8 1.41-1.41-6.29-6.29H24v-2H3.41l6.29-6.29-1.41-1.41-8 8a1 1 0 0 0 0 1.41z" data-name="Arrow Left"/>
-                </svg>        
+                </svg>
             </button>
             <button class="snapButton right">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                     <path d="M23.71 11.29l-8-8-1.41 1.41 6.29 6.29H0v2h20.59l-6.29 6.29 1.41 1.41 8-8a1 1 0 0 0 0-1.41z" data-name="Arrow Right"/>
                 </svg>          
             </button>
+            <page-indicator class="indicator" part="indicator"></page-indicator>
         `
     }
 
@@ -121,15 +152,12 @@ export class SnapView extends CustomComponent {
     }
 
     private addEventListeners() {
-        this.container.addEventListener('scrollend', () => {
-            const {scrollLeft: left} = this.container;
-            const {width} = this.container.getBoundingClientRect();
+        this.defaultSlot.addEventListener('slotchange', () => {
+            const {length} = this.defaultSlot.assignedElements();
 
-            this._index = Math.round(left / width);
-
-            this.leftBtn.disabled = this._index <= 0;
-
-            this.dispatchEvent(this._snapEvent);
+            this._panelCount = length - 1;
+            this.indicator.size = length;
+            this.indicator.activeIndex = 0;
         });
 
         this.rightBtn.addEventListener('click', () => {
@@ -139,6 +167,25 @@ export class SnapView extends CustomComponent {
         this.leftBtn.addEventListener('click', () => {
             this.snap(SnapDirection.Left);
         });
+
+        this.container.addEventListener('scroll', () => {
+            const index = this.resolveIndex();
+
+            if (this._index === index) return;
+
+            this._index = index;
+            this.leftBtn.disabled = index <= 0;
+            this.rightBtn.disabled = index === this._panelCount;
+            this.indicator.activeIndex = index;
+            this.dispatchEvent(this._snapEvent);
+        });
+    }
+
+    private resolveIndex() {
+        const {scrollLeft: left} = this.container;
+        const {width} = this.container.getBoundingClientRect();
+
+        return Math.round(left / width);
     }
 
     private snap(direction: SnapDirection) {
@@ -148,5 +195,21 @@ export class SnapView extends CustomComponent {
             left: (this._index + direction) * width,
             behavior: 'smooth'
         })
+    }
+}
+
+@customComponent('snap-view-panel')
+export class SnapViewPanel extends CustomComponent {
+    static styles = `
+        :host {
+            flex-shrink: 0;
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+            width: 100%;
+        }
+    `
+
+    public render() {
+        return `<slot></slot>`
     }
 }
