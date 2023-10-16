@@ -44,6 +44,10 @@ export class SnapView extends CustomComponent {
             width: 24px;
         }
 
+        .snapButton svg path {
+            fill: #4fb96f;
+        }
+
         .snapButton.left {
             left: 12px;
         }

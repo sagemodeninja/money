@@ -23,7 +23,7 @@
 
 <div class="container">
     <div class="contentHeader">
-        <h1 class="title">Hi, Gary</h1>
+        <h1 class="title">Welcome back, Gary!</h1>
         <snap-view class="snap-view" id="test_container">
             <snap-view-panel>1</snap-view-panel>
             <snap-view-panel>2</snap-view-panel>
@@ -31,6 +31,8 @@
         </snap-view>
     </div>
     <div class="contentBody">
+        <h1 class="title">Accounts</h1>
+        <account-card></account-card>
         <account-card></account-card>
     </div>
 </div>
