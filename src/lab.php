@@ -1,10 +1,8 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-    .container {
-        border: solid 1px;
-        display: flex;
+    .snap-view {
         height: 250px;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
         width: 350px;
     }
     
@@ -25,15 +23,12 @@
     }
 </style>
 
-<div class="container" id="test_container">
+<snap-view class="snap-view" id="test_container">
     <div class="item">1</div>
     <div class="item">2</div>
     <div class="item">3</div>
     <div class="item">4</div>
     <div class="item">5</div>
-</div>
-
-<button id="forward">></button>
-<button id="backward"><</button>
+</snap-view>
 
 <script src="/assets/scripts/lab.js"></script>
