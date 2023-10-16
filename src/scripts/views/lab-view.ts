@@ -1,5 +1,6 @@
 import '@/components/wallet-card';
 import '@/components/snap-view';
+import '@/components/cards/account-card';
 import { SnapView } from '@/components/snap-view';
 
 document.addEventListener('DOMContentLoaded', () => {

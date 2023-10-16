@@ -1,0 +1,28 @@
+.container {
+    background-color: #040507;
+    background-color: #fff;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Manrope', sans-serif;
+    height: 100%;
+    overflow: hidden;
+    width: 450px;
+}
+
+.contentHeader {
+    padding: 16px 0;
+}
+
+.contentHeader .title {
+    font-weight: 800;
+    margin: 0;
+}
+
+.contentBody {
+    /* background-color: #333333; */
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    flex-grow: 1;
+    padding: 16px;
+}

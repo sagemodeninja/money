@@ -10,7 +10,8 @@ export class PageIndicator extends CustomComponent {
         }
 
         .indicator {
-            background-color: rgba(153 153 153 / 0.443);
+            background-color: rgba(0 0 0 / 0.4);
+            background-color: rgba(0 0 0 / 0.2);
             border-radius: 4px;
             display: block;
             height: 7px;
@@ -20,7 +21,7 @@ export class PageIndicator extends CustomComponent {
         }
 
         .indicator.active {
-            background-color: rgb(153 153 153);
+            background-color: #4fb96f;
             width: 30px;
         }
     `

@@ -38,6 +38,7 @@ export class SnapView extends CustomComponent {
             display: none;
             height: 24px;
             justify-content: center;
+            padding: 4px;
             position: absolute;
             top: calc(50% - (24px / 2));
             width: 24px;
