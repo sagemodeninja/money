@@ -1,15 +1,17 @@
+:root {
+    --fill-accent-color: #4fb96f;
+    --fill-accent-color-secondary: #5fdf85;
+}
+
 .container {
     background-color: #040507;
     background-color: #fff;
-    border: solid 1px #000;
-    border-radius: 32px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     font-family: 'Manrope', sans-serif;
     height: 100%;
     overflow: hidden;
-    padding: 5px;
     width: 450px;
 }
 
@@ -24,7 +26,6 @@
 }
 
 .contentBody {
-    background-color: #0a0e10;
     border-top-left-radius: 32px;
     border-top-right-radius: 32px;
     border-radius: 27px;
@@ -36,7 +37,6 @@
 }
 
 .contentBody .title {
-    color: #fff;
     font-size: 24px;
     font-weight: 500;
     margin: 0;

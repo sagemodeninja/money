@@ -21,7 +21,7 @@ export class PageIndicator extends CustomComponent {
         }
 
         .indicator.active {
-            background-color: #4fb96f;
+            background-color: var(--fill-accent-color);
             width: 30px;
         }
     `
