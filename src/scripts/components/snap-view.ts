@@ -51,7 +51,7 @@ export class SnapView extends CustomComponent {
             right: 12px;
         }
 
-        .snapButton:not(:disabled):active {
+        .snapButton:active {
             height: 22px;
             margin: 1px;
             width: 22px;
@@ -61,15 +61,6 @@ export class SnapView extends CustomComponent {
             transition: all 0.25s;
         }
 
-        .snapButton:disabled {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            opacity: 0.8;
-        }
-
-        .snapButton:disabled svg path {
-            fill: #888;
-        }
-
         .indicator {
             bottom: 16px;
             position: absolute;
@@ -77,7 +68,7 @@ export class SnapView extends CustomComponent {
         }
         
         @media only screen and (min-width: 768px) {
-            .snapButton {
+            :host(:hover) .snapButton:not(:disabled) {
                 display: flex;
             }
         }
