@@ -1,0 +1,28 @@
+:root {
+    font-family: 'Manrope', sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+}
+
+main {
+    display: flex;
+    flex-grow: 1;
+}
+
+.pages {
+    max-width: 100%;
+}
+
+.homePage {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    width: 450px;
+}

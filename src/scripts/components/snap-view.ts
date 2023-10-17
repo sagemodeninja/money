@@ -31,7 +31,7 @@ export class SnapView extends CustomComponent {
         .snapButton {
             align-items: center;
             background: #fff;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 50px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             cursor: pointer;

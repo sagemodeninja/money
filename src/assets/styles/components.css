@@ -3,17 +3,9 @@
     --fill-accent-color-secondary: #5fdf85;
 }
 
-.container {
-    background-color: #040507;
-    background-color: #fff;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    font-family: 'Manrope', sans-serif;
-    height: 100%;
-    overflow: hidden;
-    width: 450px;
-}
+.homePage > .title {
+    margin: 0;
+} 
 
 .contentHeader {
     padding: 16px 0;

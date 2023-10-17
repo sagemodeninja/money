@@ -16,7 +16,7 @@ export class AccountCard extends CustomComponent {
         }
 
         :host(:active) {
-            box-shadow: 0 0 0 3px var(--fill-accent-color-secondary);
+            box-shadow: 0 0 0 3px var(--fill-accent-color);
         }
 
         .details {
