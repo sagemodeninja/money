@@ -1,4 +1,4 @@
-import { CustomComponent, customComponent } from '@sagemodeninja/custom-component';
+import { CustomComponent, customComponent, property, query,  } from '@sagemodeninja/custom-component';
 
 @customComponent('page-indicator')
 export class PageIndicator extends CustomComponent {
@@ -10,7 +10,6 @@ export class PageIndicator extends CustomComponent {
         }
 
         .indicator {
-            background-color: rgba(0 0 0 / 0.4);
             background-color: rgba(0 0 0 / 0.2);
             border-radius: 4px;
             display: block;
@@ -26,49 +25,36 @@ export class PageIndicator extends CustomComponent {
         }
     `
 
-    static get observedAttributes() {
-        return ['size', 'active-index'];
-    }
-
     private readonly _indicators: HTMLSpanElement[] = [];
 
-    private _size: number = 0;
-    private _activeIndex: number;
-
+    @query('.control')
     private _control: HTMLDivElement;
 
-    /* Attributes */
-    set size(value: number) {
-        this.updateSize(value);
-    }
+    @property()
+    public size: number;
 
-    set activeIndex(value: number) {
-        this.updateActiveIndex(value);
-    }
-
-    /* DOM */
-    get control() {
-        this._control ??= this.shadowRoot.querySelector('.control');
-        return this._control;
-    }
+    @property({ attribute: 'active-index' })
+    public activeIndex: number;
 
     public render() {
         return `<div class="control" part="control"></div>`
     }
 
-    attributeChangedCallback(name: string, _, newValue: any) {
-        switch(name) {
-            case 'size':
-                this.updateSize(parseInt(newValue));
-                break;
-            case 'active-index':
-                this.updateActiveIndex(parseInt(newValue));
-                break;
+    protected override stateHasChanged(changes: Map<string, any>) {
+        for (const [key, value] of changes) {
+            switch (key) {
+                case 'size':
+                    this.updateSize(value);
+                    break;
+                case 'activeIndex':
+                    this.updateActiveIndex(value);
+                    break;
+            }
         }
     }
 
-    private updateSize(newValue: number) {
-        const delta = newValue - this._size;
+    private updateSize(oldValue: number) {
+        const delta = this.size - (oldValue ?? 0);
 
         if (delta === 0) return;
 
@@ -80,20 +66,14 @@ export class PageIndicator extends CustomComponent {
 
         const removed = this._indicators.splice(delta, Math.abs(delta), ...added);
 
-        this.control.append(...added);
+        this._control.append(...added);
         removed.forEach(indicator => indicator.remove());
-
-        this._size = newValue;
-        this.setAttribute('size', newValue.toString());
     }
 
-    private updateActiveIndex(newIndex: number) {
-        if (this._activeIndex === newIndex) return;
+    private updateActiveIndex(oldIndex: number) {
+        if (this.activeIndex === oldIndex) return;
 
-        this._indicators[this._activeIndex]?.classList.remove('active');
-        this._indicators[newIndex].classList.add('active');
-
-        this._activeIndex = newIndex;
-        this.setAttribute('active-index', newIndex.toString());
+        this._indicators[oldIndex]?.classList.remove('active');
+        this._indicators[this.activeIndex].classList.add('active');
     }
 }

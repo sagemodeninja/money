@@ -2,7 +2,5 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/antixlzd/test.money.garyantier.com
-    - composer install
-    - composer dump-autoload
-    - /bin/cp -R src "${DEPLOYPATH}/src"
-    - /bin/cp -R vendor "${DEPLOYPATH}/vendor"
+    - /bin/cp -R .htaccess $DEPLOYPATH
+    - /bin/cp -R build/* $DEPLOYPATH

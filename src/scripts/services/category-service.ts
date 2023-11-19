@@ -1,6 +1,6 @@
-import { ResponsePayload } from '@/classes/response-payload';
+import { ResponsePayload } from '@/classes';
+import { Category } from '@/entities';
 import { service, ServiceBase } from './service-base';
-import { Category } from '@/entities/category';
 
 @service('/category/crud')
 export class CategoryService extends ServiceBase {

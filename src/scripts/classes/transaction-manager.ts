@@ -1,14 +1,15 @@
-import { ContextMenu, ContextMenuOption, globalContext } from "@/components/context-menu";
-import { Account } from '@/entities/account';
-import { Transaction } from '@/entities/transaction';
-import { Operation } from '@/enums/operation';
-import { TransactionType } from '@/enums/transaction-type';
-import { DateTime } from './date-time';
-import { AccountCard } from '@/components/account-card';
 import axios from 'axios';
-import { CardBalance } from '@/components/card-balance';
-import { toCurrency } from './currency';
 import anime from 'animejs/lib/anime.es.js';
+import { DateTime, toCurrency } from '.';
+import { Account, Transaction } from '@/entities';
+import { Operation, TransactionType } from '@/enums';
+import {
+    ContextMenu,
+    ContextMenuOption,
+    AccountCard,
+    CardBalance,
+    globalContext
+} from '@/components';
 
 export class TransactionManager {
     // DOM

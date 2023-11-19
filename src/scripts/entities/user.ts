@@ -1,4 +1,4 @@
-import { EntityStatus } from '@/enums/entity-status';
+import { EntityStatus } from '@/enums';
 
 export interface User {
     Id: bigint;

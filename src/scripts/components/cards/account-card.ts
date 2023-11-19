@@ -13,21 +13,22 @@ export class AccountCard extends CustomComponent {
             overflow: hidden;
             padding: 16px 24px;
             position: relative;
+            user-select: none;
         }
 
         :host(:active) {
             box-shadow: 0 0 0 3px var(--fill-accent-color);
         }
 
-        .details {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
         .control {
             align-items: center;
             display: flex;
             gap: 32px;
+        }
+
+        .details {
+            flex-grow: 1;
+            overflow: hidden;
         }
 
         .title {
@@ -55,20 +56,19 @@ export class AccountCard extends CustomComponent {
             justify-content: end;
         }
 
-        .currrencyCode,
         .amount {
             font-family: 'JetBrains Mono', monospace;
+            font-size: 21px;
             font-weight: 600;
             line-height: 0.8;
         }
 
-        .currrencyCode {
+        .currrency {
             color: var(--fill-accent-color-secondary);
+            font-family: 'Manrope', sans-serif;
             font-size: 14px;
-        }
-
-        .amount {
-            font-size: 21px;
+            font-weight: 600;
+            line-height: 0.7;
         }
     `
 
@@ -80,8 +80,8 @@ export class AccountCard extends CustomComponent {
                     <span class="subtitle">Cash</span>
                 </div>
                 <span class="balance">
-                    <span class="amount">1,502,023.03</span>
-                    <span class="currrencyCode">PHP</span>
+                    <span class="amount">1.05K</span>
+                    <span class="currrency">PHP</span>
                 </span>
             </div>
         `

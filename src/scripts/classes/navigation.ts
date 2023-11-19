@@ -1,4 +1,4 @@
-export default function useNavigation() {
+export function useNavigation() {
     const navigationView = document.querySelector('#navigation_view');
     
     navigationView.addEventListener('selectionchanged', (e: CustomEvent) => {

@@ -1,4 +1,4 @@
-import { CustomComponent, customComponent } from "@sagemodeninja/custom-component";
+import { CustomComponent, customComponent } from '@sagemodeninja/custom-component';
 
 @customComponent('card-balance')
 export class CardBalance extends CustomComponent {

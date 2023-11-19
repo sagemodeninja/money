@@ -1,0 +1,2 @@
+<script src="https://cdn.jsdelivr.net/gh/sagemodeninja/fluent-navigation-view-component@v1.3.10/src/fluent-navigation-view.min.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fluentui/web-components/dist/web-components.min.js" type="module"></script>

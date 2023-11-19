@@ -1,4 +1,4 @@
-import { CustomComponent, customComponent } from "@sagemodeninja/custom-component";
+import { CustomComponent, customComponent } from '@sagemodeninja/custom-component';
 
 @customComponent('action-button')
 export class ActionButton extends CustomComponent {

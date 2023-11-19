@@ -1,0 +1,80 @@
+:root {
+    font-family: 'Manrope', sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+}
+
+main {
+    display: flex;
+    flex-grow: 1;
+}
+
+.pages {
+    max-width: 100%;
+}
+
+.homePage {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    width: 450px;
+}
+
+.snap-view {
+    height: 250px;
+    width: 100%;
+}
+
+snap-view-panel {
+    align-items: center;
+    color: #000;
+    display: flex;
+    font-family: 'Manrope', sans-serif;
+    font-size: 64px;
+    font-weight: bold;
+    justify-content: center;
+}
+
+:root {
+    --fill-accent-color: #4fb96f;
+    --fill-accent-color-secondary: #5fdf85;
+}
+
+.homePage > .title {
+    margin: 0;
+} 
+
+.contentHeader {
+    padding: 16px 0;
+}
+
+.contentHeader .title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.contentBody {
+    border-top-left-radius: 32px;
+    border-top-right-radius: 32px;
+    border-radius: 27px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 16px;
+    padding: 28px;
+}
+
+.contentBody .title {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+    margin-bottom: 16px;
+}

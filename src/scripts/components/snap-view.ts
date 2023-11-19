@@ -1,6 +1,6 @@
 import '@/components/page-indicator';
-import { CustomComponent, customComponent } from '@sagemodeninja/custom-component';
 import { PageIndicator } from '@/components/page-indicator';
+import { CustomComponent, customComponent, query } from '@sagemodeninja/custom-component';
 
 enum SnapDirection {
     Left = -1,
@@ -83,10 +83,19 @@ export class SnapView extends CustomComponent {
     private _index: number = 0;
     private _panelCount: number = 0;
 
+    @query('.container')
     private _container: HTMLDivElement;
-    private _slot: HTMLSlotElement;
+    
+    @query('slot')
+    private _defaultSlot: HTMLSlotElement;
+    
+    @query('.left')
     private _leftBtn: HTMLButtonElement;
+    
+    @query('.right')
     private _rightBtn: HTMLButtonElement;
+    
+    @query('.indicator')
     private _indicator: PageIndicator;
 
     constructor() {
@@ -94,34 +103,8 @@ export class SnapView extends CustomComponent {
         this._snapEvent = new Event('snap');
     }
 
-    get activeIndex() {
+    public get activeIndex() {
         return this._index;
-    }
-
-    /* DOM */
-    get container() {
-        this._container ??= this.shadowRoot.querySelector('.container');
-        return this._container;
-    }
-
-    get defaultSlot() {
-        this._slot ??= this.shadowRoot.querySelector('slot');
-        return this._slot;
-    }
-
-    get leftBtn() {
-        this._leftBtn ??= this.shadowRoot.querySelector('.left');
-        return this._leftBtn;
-    }
-    
-    get rightBtn() {
-        this._rightBtn ??= this.shadowRoot.querySelector('.right');
-        return this._rightBtn;
-    }
-    
-    get indicator() {
-        this._indicator ??= this.shadowRoot.querySelector('.indicator');
-        return this._indicator;
     }
 
     public render() {
@@ -143,51 +126,51 @@ export class SnapView extends CustomComponent {
         `
     }
 
-    connectedCallback() {
+    public connectedCallback() {
         this.addEventListeners();
     }
 
     private addEventListeners() {
-        this.defaultSlot.addEventListener('slotchange', () => {
-            const {length} = this.defaultSlot.assignedElements();
+        this._defaultSlot.addEventListener('slotchange', () => {
+            const {length} = this._defaultSlot.assignedElements();
 
             this._panelCount = length - 1;
-            this.indicator.size = length;
-            this.indicator.activeIndex = 0;
+            this._indicator.size = length;
+            this._indicator.activeIndex = 0;
         });
 
-        this.rightBtn.addEventListener('click', () => {
+        this._rightBtn.addEventListener('click', () => {
             this.snap(SnapDirection.Right);
         });
 
-        this.leftBtn.addEventListener('click', () => {
+        this._leftBtn.addEventListener('click', () => {
             this.snap(SnapDirection.Left);
         });
 
-        this.container.addEventListener('scroll', () => {
+        this._container.addEventListener('scroll', () => {
             const index = this.resolveIndex();
 
             if (this._index === index) return;
 
             this._index = index;
-            this.leftBtn.disabled = index <= 0;
-            this.rightBtn.disabled = index === this._panelCount;
-            this.indicator.activeIndex = index;
+            this._leftBtn.disabled = index <= 0;
+            this._rightBtn.disabled = index === this._panelCount;
+            this._indicator.activeIndex = index;
             this.dispatchEvent(this._snapEvent);
         });
     }
 
     private resolveIndex() {
-        const {scrollLeft: left} = this.container;
-        const {width} = this.container.getBoundingClientRect();
+        const {scrollLeft} = this._container;
+        const {width} = this._container.getBoundingClientRect();
 
-        return Math.round(left / width);
+        return Math.round(scrollLeft / width);
     }
 
     private snap(direction: SnapDirection) {
-        const {width} = this.container.getBoundingClientRect();
+        const {width} = this._container.getBoundingClientRect();
 
-        this.container.scrollTo({
+        this._container.scrollTo({
             left: (this._index + direction) * width,
             behavior: 'smooth'
         })
