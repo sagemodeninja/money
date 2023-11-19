@@ -1,6 +1,10 @@
 RewriteEngine On
 
+# Only apply the following rules to requests for the /api path
+RewriteCond %{REQUEST_URI} ^/api
+RewriteRule ^(.*)$ api/router.php [QSA,L]
+
 # Redirect all traffic to index.php
 # except for static files.
 RewriteCond %{REQUEST_URI} !^/static
-RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteRule ^(.*)$ app/router.php [QSA,L]

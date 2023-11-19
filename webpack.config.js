@@ -1,5 +1,5 @@
 const path = require('path');
-const autoDiscovery = require('./src/auto-discovery');
+const autoDiscovery = require('./src/autoloader');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
@@ -18,9 +18,10 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 './src/.htaccess',
+                { from: './src/api', to: 'api' },
+                { from: './src/app/includes', to: 'app/includes' },
+                { from: './src/app/router.php', to: 'app/router.php' },
                 { from: './src/static', to: 'static' },
-                { from: './src/includes', to: 'includes' },
-                './src/index.php',
             ]
         })
     ],

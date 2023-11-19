@@ -7,11 +7,12 @@
         $uri = '/home';
     }
 
-    $file = 'app' . $uri . '/index.php';
-    $included = @include_once $file;
+    $file = __DIR__ . '/' . $uri . '/index.php';
 
-    if (!$included) {
+    if (!file_exists($file)) {
         http_response_code(404);
         exit;
     }
+
+    include_once $file;
 ?>
