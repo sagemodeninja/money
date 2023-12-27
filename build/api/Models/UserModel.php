@@ -1,57 +1,125 @@
 <?php
     namespace Models;
 
-    use \R;
-    use RedBeanPHP\SimpleModel;
-
-    class UserModel extends SimpleModel {
+    class UserModel {
         public int $id;
-        public string $firstname;
-        public string $lastname;
-        public string $email;
+        public string $principal;
+        public string $displayName;
         public int $status;
 
-        public static function create($data) {
-            $user = R::getRedBean()->dispense('user');
-            
-            $user->firstname = $data->firstname;
-            $user->lastname = $data->lastname;
-            $user->email = $data->email;
-
-            R::store($user);
-        }
-
         public static function getAll() {
-            $users = R::findAll('user', "status = ?", [true]);
-            return $users;
+            $dbhost = getenv('MYSQL_HOST');
+            $dbuser = getenv('MYSQL_USER');
+            $dbpassword = getenv('MYSQL_PASSWORD');
+            $dbname = getenv('MYSQL_DATABASE');
+
+            $dsn = "mysql:host=$dbhost;dbname=$dbname;charset=utf8mb4";
+            $pdo = new \PDO($dsn, $dbuser, $dbpassword);
+
+            $query = "SELECT u.Id, u.Principal, u.DisplayName FROM `user` u WHERE `Status` = 0;";
+            $statement = $pdo->prepare($query);
+            
+            $statement->execute();
+            $result = $statement->fetchAll();
+
+            return UserModel::mapRowsToModel(UserModel::class, $result);
         }
 
         public static function getById($id) {
-            $host = getenv('MYSQL_HOST');
+            $dbhost = getenv('MYSQL_HOST');
+            $dbuser = getenv('MYSQL_USER');
+            $dbpassword = getenv('MYSQL_PASSWORD');
             $dbname = getenv('MYSQL_DATABASE');
-            $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 
-            $pdo = new \PDO($dsn, getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'));
+            $dsn = "mysql:host=$dbhost;dbname=$dbname;charset=utf8mb4";
+            $pdo = new \PDO($dsn, $dbuser, $dbpassword);
 
-            // Perform a SQL query
-            $stmt = $pdo->prepare("SELECT * FROM user WHERE id = :value1");
-            $stmt->execute(['value1' => $id]);
+            $query = "SELECT u.Id, u.Principal, u.DisplayName FROM `user` u WHERE Id = :id AND `Status` = 0;";
+            $statement = $pdo->prepare($query);
+            
+            $statement->execute([
+                ':id' => $id
+            ]);
+            $result = $statement->fetch();
 
-            $row = $stmt->fetch();
+            return UserModel::mapRowToModel(UserModel::class, $result);
+        }
 
-            if (!$row) return null;
+        public static function create($user) {
+            $dbhost = getenv('MYSQL_HOST');
+            $dbuser = getenv('MYSQL_USER');
+            $dbpassword = getenv('MYSQL_PASSWORD');
+            $dbname = getenv('MYSQL_DATABASE');
 
-            $result = new UserModel();
-            $result->id = $row['id'];
-            $result->firstname = $row['firstname'];
-            $result->lastname = $row['lastname'];
-            $result->email = $row['email'];
-            $result->status = $row['status'];
+            $dsn = "mysql:host=$dbhost;dbname=$dbname;charset=utf8mb4";
+            $pdo = new \PDO($dsn, $dbuser, $dbpassword);
 
-            // Close the database connection
-            $pdo = null;
+            $query = "INSERT INTO `user` (`Principal`, `DisplayName`) VALUES (:principal, :display_name)";
+            $statement = $pdo->prepare($query);
+            
+            $statement->execute([
+                ':principal' => $user->principal,
+                ':display_name' => $user->displayName
+            ]);
+        }
 
-            return $result;
+        public static function update($id, $user) {
+            $dbhost = getenv('MYSQL_HOST');
+            $dbuser = getenv('MYSQL_USER');
+            $dbpassword = getenv('MYSQL_PASSWORD');
+            $dbname = getenv('MYSQL_DATABASE');
+
+            $dsn = "mysql:host=$dbhost;dbname=$dbname;charset=utf8mb4";
+            $pdo = new \PDO($dsn, $dbuser, $dbpassword);
+
+            $query = "UPDATE `user` SET `Principal` = :principal, `DisplayName` = :display_name WHERE Id = :id";
+            $statement = $pdo->prepare($query);
+            
+            $statement->execute([
+                ':id' => $id,
+                ':principal' => $user->principal,
+                ':display_name' => $user->displayName
+            ]);
+        }
+
+        public static function remove($id) {
+            $dbhost = getenv('MYSQL_HOST');
+            $dbuser = getenv('MYSQL_USER');
+            $dbpassword = getenv('MYSQL_PASSWORD');
+            $dbname = getenv('MYSQL_DATABASE');
+
+            $dsn = "mysql:host=$dbhost;dbname=$dbname;charset=utf8mb4";
+            $pdo = new \PDO($dsn, $dbuser, $dbpassword);
+
+            $query = "UPDATE `user` SET `Status` = 1 WHERE Id = :id";
+            $statement = $pdo->prepare($query);
+            
+            $statement->execute([':id' => $id]);
+        }
+
+        private static function mapRowToModel($className, $row) {
+            $entity = new $className();
+    
+            foreach ($row as $key => $value) {
+                $key = lcfirst($key);
+                $exists = property_exists($entity, $key);
+
+                if ($exists) {
+                    $entity->$key = $value;
+                }
+            }
+    
+            return $entity;
+        }
+
+        private static function mapRowsToModel($className, $rows) {
+            $entities = [];
+        
+            foreach ($rows as $row) {
+                $entities[] = UserModel::mapRowToModel($className, $row);
+            }
+        
+            return $entities;
         }
     }
 ?>

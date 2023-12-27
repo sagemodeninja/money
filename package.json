@@ -4,7 +4,7 @@
   "description": "Manage your finances.",
   "scripts": {
     "build": "webpack --mode=development",
-    "watch": "webpack --watch --mode=development"
+    "dev": "webpack --watch --mode=development"
   },
   "repository": {
     "type": "git",
