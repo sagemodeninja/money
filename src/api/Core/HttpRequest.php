@@ -16,7 +16,6 @@
         }
 
         public static function parse(object $controller, string $method, RequestUri $uri): HttpRequest {
-            $method = ucfirst(strtolower($method));
             $reflection = new ReflectionObject($controller);
             $actions = ControllerAction::getControllerActions($reflection);
 
@@ -25,7 +24,7 @@
                 return $httpMethod->getName() == $method && @preg_match($httpMethod->getRoutePattern(), $uri->route);
             });
 
-            $action = current($matches) ?? null;
+            $action = current($matches) ? current($matches) : null;
             
             return new HttpRequest($method, $uri, $action);
         }

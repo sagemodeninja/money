@@ -22,5 +22,10 @@
 
             return "/^$pattern$/";
         }
+
+        public function getBindingPattern() {
+            $routePattern = $this->getRoutePattern();
+            return str_replace('(\w+)', '{(\w+)}', $routePattern);
+        }
     }
 ?>

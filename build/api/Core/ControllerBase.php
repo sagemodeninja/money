@@ -8,7 +8,7 @@
         // TODO: Dependency injection...
         
         // TODO: Implement case-insensitive search.
-        public static function getController(RequestUri $uri) {
+        public static function getController(RequestUri $uri): ControllerBase {
             $name = ucfirst(strtolower($uri->controller));
             $namespace = 'Controllers\\' . $name . 'Controller';
 
@@ -21,47 +21,14 @@
             // FIXME: Does not capture all error!
             try {
                 $request = HttpRequest::parse($this, $method, $uri);
-
                 $method = $request->action->method;
-                $httpMethod = $request->action->httpMethod;
 
-                if (!isset($method)) {
+                if (!isset($method))
                     return $this->NotFound();
-                }
 
-                // TODO: Auto parse request body to class and provide as arguments to action.
-                // TODO: Auto parse query string and provide as arguments to action.
+                // TODO: Improve parsing/mapping of request body.
                 $paramaters = $method->getParameters();
-                $args = [];
-                
-                // TODO: Handle both body and query as parameters.
-                if (!empty($paramaters))
-                {
-                    preg_match_all("/{([\w-]+)}/", $httpMethod->route, $routeKeys, PREG_SET_ORDER);
-                    preg_match($httpMethod->getRoutePattern(), $uri->route, $routeValues);
-                    
-                    $routeParams = [];
-
-                    for ($i = 0; $i < count($routeKeys); $i++) {
-                        $key = $routeKeys[$i][1];
-                        $routeParams[$key] = $routeValues[$i + 1];
-                    }
-
-                    foreach($paramaters as $paramater) {
-                        $name = $paramater->getName();
-
-                        if (array_key_exists($name, $routeParams)) {
-                            $args[] = $routeParams[$name];
-                        } else {
-                            switch($_SERVER['CONTENT_TYPE']) {
-                                case 'application/json':
-                                    $body = file_get_contents('php://input');
-                                    $args[] = json_decode($body);
-                                    break;
-                            }
-                        }
-                    }
-                }
+                $args = ParameterBinding::bind($request, $paramaters);
 
                 $method->invoke($this, ...$args);
             } catch (Exception $ex) {
