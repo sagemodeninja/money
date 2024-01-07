@@ -24,7 +24,7 @@
             // The controller is extracted from the second segment (index 1) of the path,
             // and the route is constructed by joining the segments starting from the third segment (index 2)
             // skipping the "api" part.
-            $this->controller = $routeFragments[1];
+            $this->controller = ucfirst(strtolower($routeFragments[1]));
             $this->route = implode('/', array_splice($routeFragments, 2));
         }
     }

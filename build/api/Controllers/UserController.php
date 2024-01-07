@@ -12,31 +12,31 @@
         #[Get]
         public function GetAll() {
             $users = UserModel::getAll();
-            $this->Ok($users);
+            return $this->Ok($users);
         }
 
         #[Get("{id}")]
         public function GetById($id) {
             $users = UserModel::getById($id);
-            $this->Ok($users);
+            return $this->Ok($users);
         }
 
         #[Post]
         public function Create($user) {
             UserModel::create($user);
-            $this->Ok();
+            return $this->Created();
         }
 
         #[Patch("{id}")]
         public function Update($id, $user) {
             UserModel::update($id, $user);
-            $this->Ok();
+            return $this->Ok();
         }
 
         #[Delete("{id}")]
         public function Remove($id) {
             UserModel::remove($id);
-            $this->Ok();
+            return $this->NoContent();
         }
     }
 ?>

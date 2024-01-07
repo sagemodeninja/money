@@ -3,69 +3,62 @@
 
     use ReflectionClass;
     use Exception;
+    use Core\HttpResponse;
 
     class ControllerBase {
         // TODO: Dependency injection...
         
         // TODO: Implement case-insensitive search.
-        public static function getController(RequestUri $uri): ControllerBase {
-            $name = ucfirst(strtolower($uri->controller));
+        public static function getController(HttpRequest $request): ?ControllerBase {
+            $name = $request->uri->controller;
             $namespace = 'Controllers\\' . $name . 'Controller';
 
-            $class = new ReflectionClass($namespace);
+            if(!class_exists($namespace)) return null;
 
+            $class = new ReflectionClass($namespace);
             return $class->newInstance();
         }
 
-        public function handleRequest(string $method, RequestUri $uri) {
-            // FIXME: Does not capture all error!
+        public function handleRequest(HttpRequest $request): HttpResponse {
             try {
-                $request = HttpRequest::parse($this, $method, $uri);
-                $method = $request->action->method;
-
-                if (!isset($method))
+                $action = ControllerAction::getControllerAction($this, $request);
+                
+                if (!isset($action))
                     return $this->NotFound();
-
-                // TODO: Improve parsing/mapping of request body.
-                $paramaters = $method->getParameters();
-                $args = ParameterBinding::bind($request, $paramaters);
-
-                $method->invoke($this, ...$args);
+                
+                return $action->handle($this, $request);
             } catch (Exception $ex) {
-                $this->InternalServerError($ex->getMessage());
+                // FIXME: Does not capture all error!
+                return $this->InternalServerError($ex);
             }
         }
 
+        protected function StatusCode(int $statusCode, ?object $content): HttpResponse {
+            return new HttpResponse($statusCode, $content);
+        }
+
         protected function Ok($content = null) {
-            http_response_code(400);
-
-            if (is_array($content))
-                return $this->Json(array_values($content));
-
-            if (is_object($content))
-                return $this->Json($content);
-
-            echo $content;
+            return new HttpResponse(200, $content);
         }
 
-        protected function Json($content) {
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode($content);
+        protected function Created($content = null) {
+            return new HttpResponse(201, $content);
         }
 
-        protected function BadRequest($message = null) {
-            http_response_code(400);
-            echo $message;
+        protected function NoContent() {
+            return new HttpResponse(204);
         }
 
-        protected function NotFound($message = null) {
-            http_response_code(404);
-            echo ($message ?? '404 Not Found');
+        protected function BadRequest($content = null) {
+            return new HttpResponse(400, $content);
         }
-
-        protected function InternalServerError($message) {
-            http_response_code(500);
-            echo $message;
+        
+        protected function NotFound($content = null) {
+            return new HttpResponse(404, $content ?? '404 Not Found');
+        }
+        
+        protected function InternalServerError($content = null) {
+            return new HttpResponse(500, $content);
         }
     }
 ?>

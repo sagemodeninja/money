@@ -3,11 +3,13 @@
 
     class ParameterBinding {
         // TODO: Handle both body and query as parameters.
-        public static function bind(HttpRequest $request, array $parameters): array {
+        public static function bind(HttpRequest $request, ControllerAction $action): array {
             $args = [];
 
-            $routeParams = ParameterBinding::getRouteParameters($request);
+            $routeParams = ParameterBinding::getRouteParameters($request, $action);
             $requestParams = array_merge($routeParams, $_GET);
+
+            $parameters = $action->method->getParameters();
 
             foreach($parameters as $parameter) {
                 $name = $parameter->getName();
@@ -26,9 +28,9 @@
             return $args;
         }
 
-        private static function getRouteParameters(HttpRequest $request): array {
+        private static function getRouteParameters(HttpRequest $request, ControllerAction $action): array {
             $uri = $request->uri;
-            $httpMethod = $request->action->httpMethod;
+            $httpMethod = $action->httpMethod;
             
             preg_match($httpMethod->getBindingPattern(), $httpMethod->route, $keys);
             preg_match($httpMethod->getRoutePattern(), $uri->route, $values);
