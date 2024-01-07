@@ -20,7 +20,7 @@ use ReflectionMethod;
 
         public static function getActionParameters(ReflectionMethod $action, ReflectionAttribute $method): array {
             $routeParams = ActionParameter::getRouteParameters($method);
-            ActionParameter::getQueryParameters();
+            $queryParams = ActionParameter::getQueryParameters();
 
             // $methodAttribute = $method->newInstance();
             // $routePattern = $methodAttribute->getRoutePattern();
@@ -35,7 +35,7 @@ use ReflectionMethod;
             //     $routeParams[$key] = $routeValues[$i + 1];
             // }
 
-            return array_merge($routeParams);
+            return array_merge($routeParams, $queryParams);
         }
 
         private static function getRouteParameters(ReflectionAttribute $method): array {
@@ -48,11 +48,12 @@ use ReflectionMethod;
 
             if ($match != 1) return [];
 
+            // TODO: Way to complicated here!
             return array_map(fn($match) => new ActionParameter(ActionParameter::$Route, $match), array_splice($keys, 1));
         }
 
         private static function getQueryParameters(): array {
-            var_dump($_GET);
+            // var_dump($_GET);
             return [];
         }
     }

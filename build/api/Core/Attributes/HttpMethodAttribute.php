@@ -8,12 +8,19 @@
         {
             $this->route = $route;
         }
+        
+        public function getName() {
+            $namespace = 'Core\\Attributes\\';
+            $name = str_replace($namespace, '', static::class);
+
+            return $name;
+        }
 
         public function getRoutePattern() {
             $route = str_replace('/', '\\/', $this->route);
             $pattern = preg_replace('/{[\w-]+}/', '(\w+)', $route);
 
-            return $pattern;
+            return "/^$pattern$/";
         }
     }
 ?>

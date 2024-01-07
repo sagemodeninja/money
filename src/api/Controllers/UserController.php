@@ -15,8 +15,8 @@
             $this->Ok($users);
         }
 
-        #[Get("{id}/principal/{principal}")]
-        public function GetById($id, $principal) {
+        #[Get("{id}")]
+        public function GetById($id) {
             $users = UserModel::getById($id);
             $this->Ok($users);
         }

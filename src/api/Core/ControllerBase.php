@@ -10,39 +10,35 @@
         // TODO: Implement case-insensitive search.
         public static function getController(RequestUri $uri) {
             $name = ucfirst(strtolower($uri->controller));
-            $name = 'Controllers\\' . $name . 'Controller';
+            $namespace = 'Controllers\\' . $name . 'Controller';
 
-            $class = new ReflectionClass($name);
-            $instance = $class->newInstance();
+            $class = new ReflectionClass($namespace);
 
-            return $instance;
+            return $class->newInstance();
         }
 
         public function handleRequest(string $method, RequestUri $uri) {
             // FIXME: Does not capture all error!
             try {
                 $request = HttpRequest::parse($this, $method, $uri);
-                
-                $action = $request->action;
 
-                if (!isset($action)) {
+                $method = $request->action->method;
+                $httpMethod = $request->action->httpMethod;
+
+                if (!isset($method)) {
                     return $this->NotFound();
                 }
 
                 // TODO: Auto parse request body to class and provide as arguments to action.
                 // TODO: Auto parse query string and provide as arguments to action.
-                $paramaters = $action->getParameters();
+                $paramaters = $method->getParameters();
                 $args = [];
                 
                 // TODO: Handle both body and query as parameters.
                 if (!empty($paramaters))
                 {
-                    $methodAttribute = ControllerBase::getMethodAttribute($method, $action);
-
-                    $routePattern = $methodAttribute->getRoutePattern();
-
-                    preg_match_all("/{([\w-]+)}/", $methodAttribute->route, $routeKeys, PREG_SET_ORDER);
-                    preg_match("/$routePattern/", $uri->route, $routeValues);
+                    preg_match_all("/{([\w-]+)}/", $httpMethod->route, $routeKeys, PREG_SET_ORDER);
+                    preg_match($httpMethod->getRoutePattern(), $uri->route, $routeValues);
                     
                     $routeParams = [];
 
@@ -67,15 +63,15 @@
                     }
                 }
 
-                $action->invoke($this, ...$args);
+                $method->invoke($this, ...$args);
             } catch (Exception $ex) {
                 $this->InternalServerError($ex->getMessage());
             }
         }
 
-        // TODO: Methods for Ok, BadRequest, etc.
-
         protected function Ok($content = null) {
+            http_response_code(400);
+
             if (is_array($content))
                 return $this->Json(array_values($content));
 
@@ -90,6 +86,11 @@
             echo json_encode($content);
         }
 
+        protected function BadRequest($message = null) {
+            http_response_code(400);
+            echo $message;
+        }
+
         protected function NotFound($message = null) {
             http_response_code(404);
             echo ($message ?? '404 Not Found');
@@ -98,22 +99,6 @@
         protected function InternalServerError($message) {
             http_response_code(500);
             echo $message;
-        }
-
-        private static function getMethodAttributeName($method) {
-            $method = ucfirst(strtolower($method));
-            $name = 'Core\\Attributes\\' . $method;
-
-            return $name;
-        }
-
-        private static function getMethodAttribute($method, $action) {
-            $name = ControllerBase::getMethodAttributeName($method);
-            $attributes = $action->getAttributes($name);
-
-            if (empty($attributes)) return null;
-
-            return $attributes[0]->newInstance();
         }
     }
 ?>

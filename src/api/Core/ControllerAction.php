@@ -1,39 +1,37 @@
 <?php
     namespace Core;
 
-use Core\Attributes\HttpMethodAttribute;
-use ReflectionAttribute;
-use ReflectionObject;
+    use Core\Attributes\HttpMethodAttribute;
+    use ReflectionAttribute;
+    use ReflectionObject;
     use ReflectionMethod;
 
     class ControllerAction {
-        public ReflectionMethod $action;
-        public ReflectionAttribute $method;
-        public array $parameters;
+        public ReflectionMethod $method;
+        public HttpMethodAttribute $httpMethod;
 
-        public function __construct(ReflectionMethod $action, ReflectionAttribute $method, array $parameters)
+        public function __construct(ReflectionMethod $method, HttpMethodAttribute $httpMethod)
         {
-            $this->action = $action;
             $this->method = $method;
-            $this->parameters = $parameters;
+            $this->httpMethod = $httpMethod;
         }
 
-        public static function getControllerActions(object $controller): array {
-            $controllerObject = new ReflectionObject($controller);
-            $methods = $controllerObject->getMethods(ReflectionMethod::IS_PUBLIC);
+        public static function getControllerActions(ReflectionObject $controller): array {
+            $methods = $controller->getMethods(ReflectionMethod::IS_PUBLIC);
+            $actions = [];
 
-            $actions = array_map(function (ReflectionMethod $method) {
+            foreach ($methods as $method) {
                 $attributes = $method->getAttributes(HttpMethodAttribute::class, ReflectionAttribute::IS_INSTANCEOF);
 
-                if (empty($attributes)) return null;
+                if (empty($attributes)) continue;
 
                 $attribute = current($attributes);
-                $parameters = ActionParameter::getActionParameters($method, $attribute);
+                $httpMethod = $attribute->newInstance();
 
-                return new ControllerAction($method, $attribute, $parameters);
-            }, $methods);
+                $actions[] = new ControllerAction($method, $httpMethod);
+            }
 
-            return array_filter($actions);
+            return $actions;
         }
     }
 ?>
