@@ -1,6 +1,8 @@
 <?php
     namespace Core;
 
+    use Core\Http\HttpRequest;
+
     class ParameterBinding {
         // TODO: Handle both body and query as parameters.
         public static function bind(HttpRequest $request, ControllerAction $action): array {

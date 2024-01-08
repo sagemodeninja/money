@@ -1,10 +1,12 @@
 <?php
     namespace Core;
 
-    use Core\Attributes\HttpMethodAttribute;
     use ReflectionAttribute;
     use ReflectionObject;
     use ReflectionMethod;
+    use Core\Attributes\HttpMethodAttribute;
+    use Core\Http\HttpRequest;
+    use Core\Http\HttpResponse;
 
     class ControllerAction {
         public ReflectionMethod $method;

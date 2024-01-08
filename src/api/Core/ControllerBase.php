@@ -3,7 +3,8 @@
 
     use ReflectionClass;
     use Exception;
-    use Core\HttpResponse;
+    use Core\Http\HttpRequest;
+    use Core\Http\HttpResponse;
 
     class ControllerBase {
         // TODO: Dependency injection...

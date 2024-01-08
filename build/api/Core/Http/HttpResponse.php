@@ -1,5 +1,5 @@
 <?php
-    namespace Core;
+    namespace Core\Http;
 
     class HttpResponse {
         public int $statusCode;

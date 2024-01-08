@@ -2,8 +2,8 @@
     require_once 'autoloader.php';
 
     use Core\ControllerBase;
-    use Core\HttpRequest;
-    use Core\HttpResponse;
+    use Core\Http\HttpRequest;
+    use Core\Http\HttpResponse;
 
     class Router {
         public static function handle(): HttpResponse {
