@@ -1,86 +1,68 @@
 <?php
     namespace Models;
 
-    use ReflectionClass;
-    use ReflectionProperty;
+    use Core\ModelBase;
 
-    class AccountModel {
+    class AccountModel extends ModelBase {
         public int $id;
-        public string $shortCode;
-        public string $title;
-        public ?int $walletId;
-        public ?int $categoryId;
-        public CategoryModel $category;
-        public ?string $accountNumber;
-        public ?string $bankIcon;
+        public int $userId;
+        public string $name;
+        public int $accountType;
         public int $status;
-        
-        public static function getCategorized() {
-            $host = getenv('MYSQL_HOST');
-            $dbname = getenv('MYSQL_DATABASE');
-            $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 
-            $pdo = new \PDO($dsn, getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'));
+        public static function getAll() {
+            $connection = AccountModel::connect();
 
-            $columns = [];
+            $query = 'SELECT a.`Id`, a.`UserId`, a.`Name`, a.`AccountType` FROM `account` a WHERE a.`Status` = 0;';
+            $statement = $connection->execute($query);
 
-            AccountModel::mapColumns(AccountModel::class, $columns);
-            AccountModel::prepareColumns($columns);
-
-            $query = "SELECT " . join(',', $columns) . " FROM account a LEFT JOIN category b ON b.Id = a.CategoryId WHERE a.`Status` IN (1, 2)";
-            $stmt = $pdo->prepare($query);
-            
-            $stmt->execute();
-            $result = $stmt->fetchAll();
-
-            $pdo = null;
-
+            $result = $statement->fetchAll();
             return AccountModel::mapRowsToModel(AccountModel::class, $result);
         }
 
-        private static function mapColumns($class, &$columns, $alias = 'a') {
-            $reflection = new ReflectionClass($class);
-            $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        public static function getById($id) {
+            $connection = AccountModel::connect();
 
-            foreach ($properties as $property) {
-                $type = $property->getType()->getName();
+            $query = 'SELECT a.`Id`, a.`UserId`, a.`Name`, a.`AccountType` FROM `account` a WHERE a.`Id` = :id AND a.`Status` = 0;';
+            $statement = $connection->execute($query, [':id' => $id]);
 
-                if (str_starts_with($type, "Models\\")) {
-                    $nextAlias = chr(97 + count($columns));
-                    AccountModel::mapColumns($type, $columns, $nextAlias);
-                } else {
-                    $columns[$alias][] = ucfirst($property->getName());
-                }
-            }
+            $result = $statement->fetch();
+            return AccountModel::mapRowToModel(AccountModel::class, $result);
         }
 
-        private static function prepareColumns(&$columns) {
-            array_walk($columns, function (&$group, $alias) {
-                $group = array_map(fn ($column) => "`$alias`.`$column`", $group);
-            });
+        public static function create($account) {
+            $connection = AccountModel::connect();
 
-            $columns = array_merge(...array_values($columns));
+            $query = 'INSERT INTO `account` (`UserId`, `Name`, `AccountType`) VALUES (:user_id, :name, :account_type)';
+            $params = [
+                ':user_id' => $account->userId,
+                ':name' => $account->name,
+                ':account_type' => $account->accountType
+            ];
+
+            $connection->execute($query, $params);
         }
 
-        private static function mapRowsToModel($className, $rows) {
-            $entities = [];
-        
-            foreach ($rows as $row) {
-                $entity = new $className();
-        
-                foreach ($row as $key => $value) {
-                    $key = lcfirst($key);
-                    $exists = property_exists($entity, $key);
+        public static function update($id, $account) {
+            $connection = AccountModel::connect();
 
-                    if ($exists) {
-                        $entity->$key = $value;
-                    }
-                }
-        
-                $entities[] = $entity;
-            }
-        
-            return $entities;
+            $query = 'UPDATE `account` SET `Name` = :name, `AccountType` = :account_type WHERE Id = :id';
+            $params = [
+                ':id' => $id,
+                ':name' => $account->name,
+                ':account_type' => $account->accountType
+            ];
+            
+            $connection->execute($query, $params);
+        }
+
+        public static function remove($id) {
+            $connection = AccountModel::connect();
+
+            $query = 'UPDATE `account` SET `Status` = 1 WHERE Id = :id';
+            $params = [':id' => $id];
+
+            $connection->execute($query, $params);
         }
     }
 ?>

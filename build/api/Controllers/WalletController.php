@@ -6,36 +6,36 @@
     use Core\Attributes\Post;
     use Core\Attributes\Patch;
     use Core\Attributes\Delete;
-    use Models\UserModel;
+    use Models\WalletModel;
 
-    class UserController extends ControllerBase {
+    class WalletController extends ControllerBase {
         #[Get]
         public function GetAll() {
-            $users = UserModel::getAll();
-            return $this->Ok($users);
+            $wallets = WalletModel::getAll();
+            return $this->Ok($wallets);
         }
 
         #[Get("{id}")]
         public function GetById($id) {
-            $user = UserModel::getById($id);
-            return $this->Ok($user);
+            $wallet = WalletModel::getById($id);
+            return $this->Ok($wallet);
         }
 
         #[Post]
-        public function Create($user) {
-            UserModel::create($user);
+        public function Create($wallet) {
+            WalletModel::create($wallet);
             return $this->Created();
         }
 
         #[Patch("{id}")]
-        public function Update($id, $user) {
-            UserModel::update($id, $user);
+        public function Update($id, $wallet) {
+            WalletModel::update($id, $wallet);
             return $this->Ok();
         }
 
         #[Delete("{id}")]
         public function Remove($id) {
-            UserModel::remove($id);
+            WalletModel::remove($id);
             return $this->NoContent();
         }
     }

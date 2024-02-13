@@ -17,8 +17,8 @@
 
         #[Get("{id}")]
         public function GetById($id) {
-            $users = UserModel::getById($id);
-            return $this->Ok($users);
+            $user = UserModel::getById($id);
+            return $this->Ok($user);
         }
 
         #[Post]

@@ -5,6 +5,20 @@
     use Core\Http\HttpRequest;
     use Core\Http\HttpResponse;
 
+    header("Access-Control-Allow-Origin: *");
+    
+    // TODO: Refactor this part!
+    if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+        
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']))
+            header("Access-Control-Allow-Methods: GET, POST, PATCH, DELETE, OPTIONS");         
+        
+        if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
+            header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+    
+        exit(0);
+    }
+
     class Router {
         public static function handle(): HttpResponse {
             $request = new HttpRequest($_SERVER);
