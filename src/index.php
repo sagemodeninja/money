@@ -1,7 +1,7 @@
 <?php
     session_start();
     include_once "user/login_guard.php";
-    require_once __DIR__ . "/vendor/autoload.php";
+    // require_once __DIR__ . "/vendor/autoload.php";
     CheckLogin();
 ?>
 <!DOCTYPE html>
