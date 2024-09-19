@@ -3,7 +3,7 @@ include_once '../../database.php';
 include_once '../../models/wallet_model.php';
 
 $connection = new Database('wallet', WalletModel::class);
-$query = 'SELECT * FROM wallet WHERE status = 0';
+$query = 'SELECT * FROM wallet WHERE status = 1';
 $wallets = $connection->all($query);
 
 http_response_code(200);

@@ -2,13 +2,8 @@
 include_once '../../database.php';
 include_once '../../models/wallet_model.php';
 
-$model = new WalletModel();
-
-$model->user_id = 1;
-$model->name = 'Maya';
-
 $connection = new Database('wallet', WalletModel::class);
-$connection->insert($model);
+$connection->delete(4);
 
 http_response_code(200);
 ?>

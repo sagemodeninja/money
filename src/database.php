@@ -21,6 +21,12 @@ class Database {
         return self::rowsToModel($this->_model, $result);
     }
 
+    public function delete(int $id) {
+        $query = "UPDATE $this->_table SET `status` = 0 WHERE `id` = :id";
+        $statement = $this->_connection->prepare($query);
+        $statement->execute([':id' => $id]);
+    }
+
     public function insert(mixed $model) {
         $fields = [];
         $params = [];
