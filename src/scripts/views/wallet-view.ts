@@ -2,6 +2,7 @@ import '@/components'
 import { WalletService } from '@/services'
 import { WalletForm } from '@/classes/forms'
 import { WalletCard } from '@/components'
+import { Wallet } from '@/entities'
 
 class WalletView {
     private readonly _service: WalletService
@@ -22,11 +23,7 @@ class WalletView {
 
     public async refresh() {
         const wallets = await this._service.get()
-        const cards = wallets.map(w => {
-            const card = document.createElement('wallet-card') as WalletCard
-            card.name = w.name
-            return card
-        })
+        const cards = wallets.map(w => this.createCard(w))
         this._grid.replaceChildren(...cards)
     }
 
@@ -35,6 +32,13 @@ class WalletView {
         this._createBtn.onclick = async () => {
             await this._form.open()
         }
+    }
+
+    private createCard(wallet: Wallet) {
+        const card = document.createElement('wallet-card') as WalletCard
+        card.name = wallet.name
+        card.onclick = async () => this._form.open(wallet)
+        return card
     }
 }
 
