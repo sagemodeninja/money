@@ -1,9 +1,14 @@
 <?php
 include_once '../../database.php';
+include_once '../../http/http_request.php';
 include_once '../../models/wallet_model.php';
 
-$connection = new Database('wallet', WalletModel::class);
-$connection->delete(4);
+HttpRequest::handle('DELETE', function (HttpRequest $request) {
+    $id = $request->params['id'];
 
-http_response_code(200);
+    $connection = new Database('wallet', WalletModel::class);
+    $connection->delete($id);
+    
+    return new HttpResponse(204);
+});
 ?>

@@ -1,12 +1,12 @@
 <?php
 include_once '../../database.php';
+include_once '../../http/http_request.php';
 include_once '../../models/wallet_model.php';
 
-$connection = new Database('wallet', WalletModel::class);
-$query = 'SELECT * FROM wallet WHERE status = 1';
-$wallets = $connection->all($query);
-
-http_response_code(200);
-header('Content-Type: application/json; charset=utf-8');
-echo json_encode(array_values($wallets));
+HttpRequest::handle('GET', function () {
+    $connection = new Database('wallet', WalletModel::class);
+    $query = 'SELECT * FROM wallet WHERE status = 1';
+    $wallets = $connection->all($query);
+    return new HttpResponse(200, $wallets);
+});
 ?>

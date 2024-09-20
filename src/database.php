@@ -50,6 +50,30 @@ class Database {
         $statement->execute($params);
     }
 
+    public function update(int $id, mixed $model) {
+        $assignments = [];
+        $params = [':id' => $id];
+
+        $reflection = new ReflectionClass($model);
+        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+
+        foreach ($properties as $property)
+        {
+            $field = $property->getName();
+
+            if (!isset($model->$field)) continue;
+            
+            $param = ":$field";
+            $assignments[] = "`$field` = $param";
+            $params[$param] = $property->getValue($model);
+        }
+
+        $query = "UPDATE $this->_table SET " . implode(', ', $assignments) . " WHERE `id` = :id";
+        $statement = $this->_connection->prepare($query);
+
+        $statement->execute($params);
+    }
+
     private static function connect()
     {
         $dbhost = getenv('MYSQL_HOST');
