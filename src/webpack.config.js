@@ -19,6 +19,14 @@ module.exports = {
                 test: /\.ts$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+                // For *.component.scss
+                test: /\.component\.s[ac]ss$/,
+                use: [
+                    'css-loader',
+                    'sass-loader',
+                ],
             }
         ]
     },

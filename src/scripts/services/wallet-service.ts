@@ -9,13 +9,13 @@ export class WalletService extends ServiceBase {
         return data as Wallet[]
     }
 
-    async create(data: Wallet) {
+    async create(data: Partial<Wallet>) {
         const endpoint = this.endpoint('post.php')
         const {data: payload} = await this._connection.post(endpoint, data)
         return payload as Wallet
     }
 
-    async update(id: number, data: Wallet) {
+    async update(id: number, data: Partial<Wallet>) {
         const endpoint = this.endpoint(`patch.php?id=${id}`)
         const {data: payload} = await this._connection.patch(endpoint, data)
         return payload as Wallet

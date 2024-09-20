@@ -1,36 +1,23 @@
-import {WalletService} from '@/services'
-import { customComponent, CustomComponent, property, query } from '@sagemodeninja/custom-component'
-
-@customComponent('wallet-card')
-class WalletCard extends CustomComponent {
-    @query('.name')
-    private _nameSpan: HTMLSpanElement
-
-    @property()
-    public name: string
-
-    public render() {
-        return `
-            <div>
-                <span class="name"></span>
-                <span class="amount">P0.00</span>
-            </div>
-        `
-    }
-
-    public stateHasChanged(changes: Map<string, any>): void {
-        if (changes.has('name'))
-            this._nameSpan.innerText = this.name
-    }
-}
+import '@/components'
+import { WalletService } from '@/services'
+import { WalletForm } from '@/classes/forms'
+import { WalletCard } from '@/components'
 
 class WalletView {
     private readonly _service: WalletService
     private readonly _grid: HTMLDivElement
+    private readonly _refreshBtn: HTMLButtonElement
+    private readonly _createBtn: HTMLButtonElement
+    private readonly _form: WalletForm
 
     constructor() {
         this._service = new WalletService()
         this._grid = document.getElementById('wallet-grid') as HTMLDivElement
+        this._refreshBtn = document.querySelector('#refresh_button')
+        this._createBtn = document.querySelector('#create_button')
+        this._form = new WalletForm(this._service)
+
+        this.addEventListener()
     }
 
     public async refresh() {
@@ -41,6 +28,13 @@ class WalletView {
             return card
         })
         this._grid.replaceChildren(...cards)
+    }
+
+    private addEventListener() {
+        this._refreshBtn.onclick = this.refresh.bind(this)
+        this._createBtn.onclick = async () => {
+            await this._form.open()
+        }
     }
 }
 

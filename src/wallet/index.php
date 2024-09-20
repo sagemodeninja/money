@@ -15,14 +15,20 @@
         <?php include_once "../includes/layouts/navigation_items.php" ?>
             
         <fluent-navigation-view-header-content>
-                <button id="refresh_btn">Refresh</button>
-                <button id="create_btn">Create</button>
+                <button id="refresh_button">Refresh</button>
+                <button id="create_button">Create</button>
         </fluent-navigation-view-header-content>
 
         <fluent-navigation-view-content-frame style="position: relative;">
             <div id="wallet-grid"></div>
         </fluent-navigation-view-content-frame>        
     </fluent-navigation-view>
+
+    <form-dialog id="form">
+        <select name="user_id"></select>
+        <input type="text" name="name" placeholder="Name"/>
+        <button id="submit_button">Submit</button>
+    </form-dialog>
     
     <!-- SCRIPTS -->
     <?php include_once "../includes/layouts/common_scripts.php"; ?>
