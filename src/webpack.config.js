@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
     entry: {
+        'wallet': './scripts/views/wallet-view.ts',
         'account': './scripts/views/account-view.ts',
         'category': './scripts/views/category-view.ts',
         'dashboard': './scripts/views/dashboard-view.ts',

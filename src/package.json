@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/sagemodeninja/money#readme",
   "dependencies": {
-    "@sagemodeninja/custom-component": "^1.0.0-beta.17",
+    "@sagemodeninja/custom-component": "^2.0.6",
     "@sagemodeninja/fluent-command-bar-component": "^1.7.1-beta.2",
     "@sagemodeninja/fluent-icon-element-component": "^1.2.2",
     "animejs": "^3.2.1",
