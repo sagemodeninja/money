@@ -5,8 +5,7 @@ include_once '../../models/wallet_model.php';
 
 HttpRequest::handle('GET', function () {
     $connection = new Database('wallet', WalletModel::class);
-    $query = 'SELECT * FROM wallet WHERE status = 1';
-    $wallets = $connection->all($query);
+    $wallets = $connection->whereAll('`status` = :status', ['satus' => 1]);
     return new HttpResponse(200, $wallets);
 });
 ?>

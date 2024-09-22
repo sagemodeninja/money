@@ -11,11 +11,12 @@ class Database {
         $this->_connection = self::connect();
     }
 
-    public function all(string $query)
+    public function whereAll(string $filter, array $args = null)
     {
+        $query = "SELECT * FROM $this->_table WHERE $filter";
         $statement = $this->_connection->prepare($query);
 
-        $statement->execute();
+        $statement->execute($args);
         $result = $statement->fetchAll();
 
         return self::rowsToModel($this->_model, $result);
@@ -51,6 +52,7 @@ class Database {
     }
 
     public function update(int $id, mixed $model) {
+        // TODO: Check if record exists first.
         $assignments = [];
         $params = [':id' => $id];
 
