@@ -13,13 +13,24 @@ class Database {
 
     public function whereAll(string $filter, array $args = null)
     {
-        $query = "SELECT * FROM $this->_table WHERE $filter";
+        $query = "SELECT * FROM `$this->_table` WHERE $filter";
         $statement = $this->_connection->prepare($query);
 
         $statement->execute($args);
         $result = $statement->fetchAll();
 
         return self::rowsToModel($this->_model, $result);
+    }
+
+    public function where(string $filter, array $args = null)
+    {
+        $query = "SELECT * FROM `$this->_table` WHERE $filter LIMIT 1";
+        $statement = $this->_connection->prepare($query);
+
+        $statement->execute($args);
+        $result = $statement->fetch();
+
+        return self::rowToModel($this->_model, $result);
     }
 
     public function delete(int $id) {

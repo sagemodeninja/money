@@ -1,7 +1,8 @@
 <?php
 session_start();
-include_once $_SERVER['DOCUMENT_ROOT'] . "/includes/db_provider.php";
-include_once $_SERVER['DOCUMENT_ROOT'] . "/helper.php";
+include_once $_SERVER['DOCUMENT_ROOT'] . '/helper.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/database.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/models/user_model.php';
 
 $code = @$_GET["code"];
 $clientId =  getenv('GOOGLE_CLIENT_ID');
@@ -60,25 +61,15 @@ $iss = str_replace("https://", "", @$userInfo->iss);
 $picture = @$userInfo->picture;
 $userExists = false;
 
-// User exists
-$conn = connect();
-if($conn) {
-    $query = "SELECT Id, Firstname, Lastname FROM user WHERE Email = '$email';";
-    $data = $conn->query($query);
-    
-    if($data) {
-        $userExists = $data->num_rows > 0;
-        if($userExists) {
-            $row = $data->fetch_assoc();
-            $userId = $row["Id"];
-            $firstname = $row["Firstname"];
-            $lastname = $row["Lastname"];
-        }
-    } else {
-        die( "An error occured! $error." );
-    }
-} else {
-    die("An error occured! Can't connect to database.");
+$database = new Database('user', UserModel::class);
+$user = $database->where('`email` = :email', ['email' => $email]);
+
+$userExists = isset($user);
+
+if($userExists) {
+    $userId = $user->id;
+    $firstname = $user->given_name;
+    $lastname = $user->surname;
 }
 
 if($userExists && $aud === $clientId && $iss === "accounts.google.com") {
