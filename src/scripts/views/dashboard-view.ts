@@ -1,5 +1,6 @@
 import '@sagemodeninja/fluent-icon-element-component'
 import '@sagemodeninja/fluent-command-bar-component'
+import '@/components'
 import '@/components/account-card'
 import '@/components/action-button'
 import '@/components/card-balance'
@@ -10,12 +11,15 @@ import { ContextMenu, ContextMenuOption, globalContext } from '@/components/cont
 import { TransactionPanel } from '@/components/transaction-panel'
 import { FluentAppBarButton } from '@sagemodeninja/fluent-command-bar-component'
 import axios from 'axios'
-import { AccountService } from '@/services'
+import { AccountService, WalletService } from '@/services'
 import { AccountCard } from '@/components/account-card'
+import { WalletCard } from '@/components'
 import { ResponsePayload } from '@/classes/response-payload'
 import { toCurrency } from '@/classes/currency'
 
-// class DashboardView {
+class DashboardView {
+    private readonly _walletService: WalletService
+    private readonly _body: HTMLDivElement
 //     private body: HTMLDivElement;
 //     private refreshCommand: FluentAppBarButton;
 //     private toggleCommand: FluentAppBarButton;
@@ -27,10 +31,11 @@ import { toCurrency } from '@/classes/currency'
 //     private isShowClosed: boolean;
 //     private closedAccounts: any[];
 
-//     constructor() {
+    constructor() {
 //         useNavigation();
     
-//         this.body = document.querySelector('#layout_body');
+        this._walletService = new WalletService()
+        this._body = document.querySelector('#layout_body')
 //         this.refreshCommand = document.querySelector('#refresh_command');
 //         this.toggleCommand = document.querySelector('#toggle_closed_command');
 //         this.transactionPanel = document.querySelector('#transaction_panel');
@@ -45,11 +50,11 @@ import { toCurrency } from '@/classes/currency'
 
 //         this.initContextMenu();
 //         this.addEventListeners();
-//     }
+    }
 
-//     public refresh() {
-//         this.refreshAccounts();
-//     }
+    public async refresh() {
+        await this.refreshWallets();
+    }
 
 //     private initContextMenu() {
 //         this.contextMenu = globalContext.addMenu('accounts_card', this.body);
@@ -102,8 +107,18 @@ import { toCurrency } from '@/classes/currency'
 //         this.refreshCommand?.addEventListener('click', this.refreshAccounts.bind(this));
 //         this.toggleCommand?.addEventListener('click', this.onToggleClick.bind(this));
 //     }
+
+    private async refreshWallets() {
+        const wallets = await this._walletService.get()
+        const cards = wallets.map(w => {
+            const card = document.createElement('wallet-card') as WalletCard
+            card.name = w.name
+            return card
+        })
+        this._body.replaceChildren(...cards)
+    }
     
-//     refreshAccounts() {
+// refreshAccounts() {
 //         this.body.innerHTML = '<p style="text-align: center;">Fetching Accounts...</p>';
     
 //         axios.get("account/crud/read_categorized.php")
@@ -135,7 +150,7 @@ import { toCurrency } from '@/classes/currency'
 //              .catch(error => {
 //                  console.dir(error);
 //              });
-//     }
+// }
     
 //     refreshBalances(categories, categorized) {
 //         categorized.forEach((accounts, _category) => {
@@ -253,12 +268,9 @@ import { toCurrency } from '@/classes/currency'
 
 //         this.isShowClosed = !this.isShowClosed;
 //     }
-// }
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // const view = new DashboardView();
-    // view.refresh();
-    const accountService = new AccountService()
-    const accounts = await accountService.get(1)
-    console.log(accounts)
+    const view = new DashboardView()
+    await view.refresh()
 })

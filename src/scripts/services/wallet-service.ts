@@ -16,13 +16,13 @@ export class WalletService extends ServiceBase {
     }
 
     async update(id: number, data: Partial<Wallet>) {
-        const endpoint = this.endpoint(`patch.php?id=${id}`)
-        const {data: payload} = await this._connection.patch(endpoint, data)
+        const endpoint = this.endpoint('patch.php')
+        const {data: payload} = await this._connection.patch(endpoint, data, {params:{id}})
         return payload as Wallet
     }
 
     async remove(id: number) {
-        const endpoint = this.endpoint(`delete.php?id=${id}`)
-        await this._connection.delete(endpoint);
+        const endpoint = this.endpoint('delete.php')
+        await this._connection.delete(endpoint, {params:{id}});
     }
 }

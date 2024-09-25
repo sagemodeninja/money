@@ -1,7 +1,10 @@
 import { CustomComponent, customComponent, property, query } from '@sagemodeninja/custom-component'
+import styles from './wallet-card.component.scss'
 
 @customComponent('wallet-card')
 export class WalletCard extends CustomComponent {
+    static styles = styles.toString()
+
     @query('.name')
     private _nameSpan: HTMLSpanElement
 
