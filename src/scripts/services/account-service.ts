@@ -1,14 +1,17 @@
-import { ResponsePayload } from '@/classes/response-payload';
-import { service, ServiceBase } from './service-base';
-import { Account } from '@/entities/account';
+import { service, ServiceBase } from './service-base'
+import { Account } from '@/entities'
+import { ResponsePayload } from '@/classes/response-payload'
+import { AccountType } from '@/enums'
 
-@service('/account/crud')
+@service('/api/account')
 export class AccountService extends ServiceBase {
-    async get() {
-        const endpoint = this.endpoint('read.php');
-        const {data} = await this._connection.get(endpoint);
-
-        return data as ResponsePayload<Account[]>;
+    async get(type: AccountType) {
+        const endpoint = this.endpoint('get.php')
+        const {data} = await this._connection.get(
+            endpoint,
+            {params:{type}}
+        )
+        return data as Account[]
     }
 
     async create(data: FormData) {

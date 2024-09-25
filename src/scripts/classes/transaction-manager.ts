@@ -131,13 +131,13 @@ export class TransactionManager {
     loadCard() {
         const account = this.account;
 
-        this.card.title = account.Title;
-        this.card.number = account.AccountNumber;
-        this.card.category = account.Category;
+        this.card.title = account.name;
+        // this.card.number = account.AccountNumber;
+        // this.card.category = account.Category;
     }
     
     loadBalances() {
-        const data = { accountId: this.account.Id };
+        const data = { accountId: this.account.id };
         const balances = this.card.querySelectorAll("card-balance") as NodeListOf<CardBalance>;
 
         axios.get("account/balance.php", { params: data })
@@ -160,7 +160,7 @@ export class TransactionManager {
     }
     
     loadTransactions() {
-        const data = { AccountId: this.account.Id };
+        const data = { AccountId: this.account.id };
         
         axios.get("transaction/read.php", { params: data })
             .then(response => {
@@ -402,7 +402,7 @@ export class TransactionManager {
         // TODO: Refactor
         let form = this.editor.querySelector("form");
         let data = new FormData(form);
-        data.append("AccountId", this.account.Id.toString());
+        data.append("AccountId", this.account.id.toString());
         let trans = Object.fromEntries(data.entries());
 
         axios

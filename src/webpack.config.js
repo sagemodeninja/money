@@ -4,7 +4,6 @@ module.exports = {
     entry: {
         'wallet': './scripts/views/wallet-view.ts',
         'account': './scripts/views/account-view.ts',
-        'category': './scripts/views/category-view.ts',
         'dashboard': './scripts/views/dashboard-view.ts',
         'lab': './scripts/views/lab-view.ts',
         'user': './scripts/views/user-view.ts',

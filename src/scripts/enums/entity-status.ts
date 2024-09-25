@@ -1,4 +1,4 @@
 export enum EntityStatus {
-    Closed,
+    Deleted,
     Active
 }
