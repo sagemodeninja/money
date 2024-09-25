@@ -5,8 +5,14 @@ import { AccountType } from '@/enums'
 
 @service('/api/account')
 export class AccountService extends ServiceBase {
-    async get(type: AccountType) {
+    async getAll() {
         const endpoint = this.endpoint('get.php')
+        const {data} = await this._connection.get(endpoint)
+        return data as Account[]
+    }
+
+    async getForType(type: AccountType) {
+        const endpoint = this.endpoint('get_for_type.php')
         const {data} = await this._connection.get(
             endpoint,
             {params:{type}}

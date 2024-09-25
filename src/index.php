@@ -12,7 +12,10 @@
     <title>Money</title>
 </head>
 <body>
-    <div id="layout_body"></div>
+    <div id="wallet_body"></div>
+    
+    <transaction-panel id="transaction_panel">
+    </transaction-panel>
 
     <form-dialog id="ledger_form">
         <input type="datetime-local" name="record_date" placeholder="Date"/>

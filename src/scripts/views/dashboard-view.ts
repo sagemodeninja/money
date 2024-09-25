@@ -1,29 +1,19 @@
-import '@sagemodeninja/fluent-icon-element-component'
-import '@sagemodeninja/fluent-command-bar-component'
 import '@/components'
-import '@/components/account-card'
-import '@/components/action-button'
-import '@/components/card-balance'
-import '@/components/transaction-panel'
-import useNavigation from '@/classes/navigation'
-import { TransactionManager } from '@/classes/transaction-manager'
-import { ContextMenu, ContextMenuOption, globalContext } from '@/components/context-menu'
-import { TransactionPanel } from '@/components/transaction-panel'
-import { FluentAppBarButton } from '@sagemodeninja/fluent-command-bar-component'
-import axios from 'axios'
-import { AccountService, LedgerService, WalletService } from '@/services'
-import { AccountCard } from '@/components/account-card'
-import { FormDialog, WalletCard } from '@/components'
-import { ResponsePayload } from '@/classes/response-payload'
-import { toCurrency } from '@/classes/currency'
+import { LedgerService, WalletService } from '@/services'
+import { WalletCard, TransactionPanel } from '@/components'
 import { LedgerForm } from '@/classes/forms'
+import { RecordType } from '@/enums'
 
 class DashboardView {
     private readonly _walletService: WalletService
     private readonly _ledgerService: LedgerService
+
     private readonly _body: HTMLDivElement
+    private readonly _transactionPnl: TransactionPanel
     private readonly _form: LedgerForm
-//     private body: HTMLDivElement;
+
+    private _walletId: number
+
 //     private refreshCommand: FluentAppBarButton;
 //     private toggleCommand: FluentAppBarButton;
 //     private transactionPanel: TransactionPanel;
@@ -35,11 +25,11 @@ class DashboardView {
 //     private closedAccounts: any[];
 
     constructor() {
-//         useNavigation();
-    
         this._walletService = new WalletService()
         this._ledgerService = new LedgerService()
-        this._body = document.querySelector('#layout_body')
+
+        this._body = document.querySelector('#wallet_body')
+        this._transactionPnl = document.querySelector('#transaction_panel')
         this._form = new LedgerForm('#ledger_form')
 
 //         this.refreshCommand = document.querySelector('#refresh_command');
@@ -55,7 +45,7 @@ class DashboardView {
 //         this.transaction.editor = document.querySelector("#editor_dialog");
 
 //         this.initContextMenu();
-//         this.addEventListeners();
+        this.addEventListeners()
     }
 
     public async refresh() {
@@ -109,10 +99,13 @@ class DashboardView {
 //         this.contextMenu.addOptions(closeOption, deleteOption);
 //     }
 
-//     private addEventListeners() {
-//         this.refreshCommand?.addEventListener('click', this.refreshAccounts.bind(this));
-//         this.toggleCommand?.addEventListener('click', this.onToggleClick.bind(this));
-//     }
+    private addEventListeners() {
+        this._transactionPnl.addEventListener('action', async (e: CustomEvent) => {
+            await this._form.open(this._walletId, e.detail)
+        })
+        // this.refreshCommand?.addEventListener('click', this.refreshAccounts.bind(this));
+        // this.toggleCommand?.addEventListener('click', this.onToggleClick.bind(this));
+    }
 
     private async refreshWallets() {
         const wallets = await this._walletService.get()
@@ -128,7 +121,7 @@ class DashboardView {
     private async refreshWalletLedgers(id: number) {
         const ledgers = await this._ledgerService.getForWallet(id)
         console.log(ledgers)
-        this._form.open(id)
+        this._walletId = id
     }
     
 // refreshAccounts() {
