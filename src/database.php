@@ -18,7 +18,7 @@ class Database {
         $statement->execute($args);
         $result = $statement->fetchAll();
 
-        return self::rowsToModel($this->_model, $result);
+        return $result;
     }
 
     public function whereAll(string $filter, array $args = null)
