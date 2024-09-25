@@ -11,6 +11,16 @@ class Database {
         $this->_connection = self::connect();
     }
 
+    public function query(string $query, array $args = null)
+    {
+        $statement = $this->_connection->prepare($query);
+
+        $statement->execute($args);
+        $result = $statement->fetchAll();
+
+        return self::rowsToModel($this->_model, $result);
+    }
+
     public function whereAll(string $filter, array $args = null)
     {
         $query = "SELECT * FROM `$this->_table` WHERE $filter";
@@ -30,7 +40,9 @@ class Database {
         $statement->execute($args);
         $result = $statement->fetch();
 
-        return self::rowToModel($this->_model, $result);
+        return $result
+            ? self::rowToModel($this->_model, $result)
+            : null;
     }
 
     public function delete(int $id) {
