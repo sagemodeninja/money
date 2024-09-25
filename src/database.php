@@ -45,13 +45,7 @@ class Database {
             : null;
     }
 
-    public function delete(int $id) {
-        $query = "UPDATE $this->_table SET `status` = 0 WHERE `id` = :id";
-        $statement = $this->_connection->prepare($query);
-        $statement->execute([':id' => $id]);
-    }
-
-    public function insert(mixed $model) {
+    public function insert(mixed $model): int {
         $fields = [];
         $params = [];
 
@@ -72,6 +66,8 @@ class Database {
         $statement = $this->_connection->prepare($query);
 
         $statement->execute($params);
+
+        return $this->_connection->lastInsertId();
     }
 
     public function update(int $id, mixed $model) {
@@ -97,6 +93,12 @@ class Database {
         $statement = $this->_connection->prepare($query);
 
         $statement->execute($params);
+    }
+
+    public function delete(int $id) {
+        $query = "UPDATE $this->_table SET `status` = 0 WHERE `id` = :id";
+        $statement = $this->_connection->prepare($query);
+        $statement->execute([':id' => $id]);
     }
 
     private static function connect()

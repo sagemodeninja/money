@@ -20,7 +20,7 @@ HttpRequest::handle('POST', function (HttpRequest $request) {
     $model->description = $body['description'];
     
     $connection = new Database('ledger', LedgerModel::class);
-    $connection->insert($model);
+    $model->id = $connection->insert($model);
     
     return new HttpResponse(201, $model);
 });

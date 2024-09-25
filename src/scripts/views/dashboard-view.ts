@@ -11,15 +11,18 @@ import { ContextMenu, ContextMenuOption, globalContext } from '@/components/cont
 import { TransactionPanel } from '@/components/transaction-panel'
 import { FluentAppBarButton } from '@sagemodeninja/fluent-command-bar-component'
 import axios from 'axios'
-import { AccountService, WalletService } from '@/services'
+import { AccountService, LedgerService, WalletService } from '@/services'
 import { AccountCard } from '@/components/account-card'
-import { WalletCard } from '@/components'
+import { FormDialog, WalletCard } from '@/components'
 import { ResponsePayload } from '@/classes/response-payload'
 import { toCurrency } from '@/classes/currency'
+import { LedgerForm } from '@/classes/forms'
 
 class DashboardView {
     private readonly _walletService: WalletService
+    private readonly _ledgerService: LedgerService
     private readonly _body: HTMLDivElement
+    private readonly _form: LedgerForm
 //     private body: HTMLDivElement;
 //     private refreshCommand: FluentAppBarButton;
 //     private toggleCommand: FluentAppBarButton;
@@ -35,7 +38,10 @@ class DashboardView {
 //         useNavigation();
     
         this._walletService = new WalletService()
+        this._ledgerService = new LedgerService()
         this._body = document.querySelector('#layout_body')
+        this._form = new LedgerForm('#ledger_form')
+
 //         this.refreshCommand = document.querySelector('#refresh_command');
 //         this.toggleCommand = document.querySelector('#toggle_closed_command');
 //         this.transactionPanel = document.querySelector('#transaction_panel');
@@ -113,9 +119,16 @@ class DashboardView {
         const cards = wallets.map(w => {
             const card = document.createElement('wallet-card') as WalletCard
             card.name = w.name
+            card.onclick = () => this.refreshWalletLedgers(w.id)
             return card
         })
         this._body.replaceChildren(...cards)
+    }
+
+    private async refreshWalletLedgers(id: number) {
+        const ledgers = await this._ledgerService.getForWallet(id)
+        console.log(ledgers)
+        this._form.open(id)
     }
     
 // refreshAccounts() {
