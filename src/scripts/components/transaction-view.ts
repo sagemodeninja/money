@@ -1,5 +1,6 @@
 import { LedgerService } from '@/services'
 import { customComponent, CustomComponent, query, queryAll } from '@sagemodeninja/custom-component'
+import { WalletCard } from './wallet-card'
 import styles from './transaction-view.component.scss'
 
 // TODO: Think of another name for this panel
@@ -11,6 +12,9 @@ export class TransactionView extends CustomComponent {
 
     @query('.control')
     private _control: HTMLDialogElement
+
+    @query('.card')
+    private _card: WalletCard
 
     @queryAll('.action-button')
     private _actionBtns: HTMLButtonElement[]
@@ -28,10 +32,11 @@ export class TransactionView extends CustomComponent {
     public render() {
         return `
             <dialog class="control">
-                <div></div>
                 <div>
+                   <wallet-card class="card"></wallet-card> 
+                </div>
+                <div class="actions">
                     <button class="action-button" data-action="0">Deposit</button>
-                    <button class="action-button" data-action="1">Withdraw</button>
                     <button class="action-button" data-action="2">Transfer</button>
                 </div>
                 <div class="ledger-list"></div>
@@ -45,6 +50,7 @@ export class TransactionView extends CustomComponent {
 
     public async open(id: number) {
         this._id = id
+        this._card.name = 'Hello World!'
         this._control.showModal()
         await this.refreshLedgers()
     }
