@@ -9,13 +9,14 @@
     <?php include_once "includes/layouts/common_head_items.php" ?>
     <link rel="stylesheet" href="assets/minified/styles/dashboard.min.css">
     <link rel="stylesheet" href="assets/fonts/geist/geist-variable.css">
+    <link rel="stylesheet" href="assets/styles/dashboard-view.css">
     <title>Money</title>
 </head>
 <body>
     <div id="wallet_body"></div>
     
-    <transaction-panel id="transaction_panel">
-    </transaction-panel>
+    <transaction-view id="transaction_view">
+    </transaction-view>
 
     <form-dialog id="ledger_form">
         <input type="datetime-local" name="record_date" placeholder="Date"/>
@@ -28,6 +29,6 @@
     <!-- SCRIPTS -->
     <?php include_once "includes/layouts/common_scripts.php"; ?>
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-    <script src="assets/scripts/dashboard.js"></script>
+    <script src="assets/scripts/dashboard-view.js"></script>
 </body>
 </html>

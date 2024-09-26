@@ -1,15 +1,15 @@
 import '@/components'
-import { LedgerService, WalletService } from '@/services'
-import { WalletCard, TransactionPanel } from '@/components'
+import '@styles/home-view.scss'
+
+import { WalletService } from '@/services'
+import { WalletCard, TransactionView } from '@/components'
 import { LedgerForm } from '@/classes/forms'
-import { RecordType } from '@/enums'
 
 class DashboardView {
     private readonly _walletService: WalletService
-    private readonly _ledgerService: LedgerService
 
     private readonly _body: HTMLDivElement
-    private readonly _transactionPnl: TransactionPanel
+    private readonly _transactionPnl: TransactionView
     private readonly _form: LedgerForm
 
     private _walletId: number
@@ -26,10 +26,9 @@ class DashboardView {
 
     constructor() {
         this._walletService = new WalletService()
-        this._ledgerService = new LedgerService()
 
         this._body = document.querySelector('#wallet_body')
-        this._transactionPnl = document.querySelector('#transaction_panel')
+        this._transactionPnl = document.querySelector('#transaction_view')
         this._form = new LedgerForm('#ledger_form')
 
 //         this.refreshCommand = document.querySelector('#refresh_command');
@@ -119,9 +118,8 @@ class DashboardView {
     }
 
     private async refreshWalletLedgers(id: number) {
-        const ledgers = await this._ledgerService.getForWallet(id)
-        console.log(ledgers)
         this._walletId = id
+        await this._transactionPnl.open(id)
     }
     
 // refreshAccounts() {

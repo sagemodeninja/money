@@ -1,16 +1,13 @@
-const path = require('path');
+const path = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     entry: {
-        'wallet': './scripts/views/wallet-view.ts',
-        'account': './scripts/views/account-view.ts',
-        'dashboard': './scripts/views/dashboard-view.ts',
-        'lab': './scripts/views/lab-view.ts',
-        'user': './scripts/views/user-view.ts',
+        'dashboard-view': './scripts/views/dashboard-view.ts'
     },
     output: {
-        path: path.resolve(__dirname, 'assets/scripts'),
-        filename: '[name].js'
+        path: path.resolve(__dirname, 'assets'),
+        filename: 'scripts/[name].js'
     },
     module: {
         rules: [
@@ -26,13 +23,29 @@ module.exports = {
                     'css-loader',
                     'sass-loader',
                 ],
+            },
+            {
+                // For *.scss
+                test: /\.s[ac]ss$/,
+                exclude: /\.component\.s[ac]ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader',
+                ],
             }
         ]
     },
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'styles/[name].css'
+        })
+    ],
     resolve: {
         extensions: ['.ts', '.js'],
         alias: {
             '@': path.resolve(__dirname, 'scripts'),
+            '@styles': path.resolve(__dirname, 'styles'),
         }
     },
     devtool: 'inline-source-map'
