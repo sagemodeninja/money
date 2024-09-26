@@ -1,0 +1,57 @@
+$easing: cubic-bezier(0.190, 1.000, 0.220, 1.000);
+
+.control[open] {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.control[open]::backdrop {
+    opacity: 1;
+}
+
+.control {
+    background-color: white;
+    border: solid 1px rgba(0, 0, 0, 25%);
+    border-radius: 12px;
+    height: 80%;
+    opacity: 0;
+    transform: scale(0.8);
+    transition:
+        opacity 300ms $easing,
+        transform 300ms $easing,
+        overlay 300ms $easing allow-discrete,
+        display 300ms $easing allow-discrete;
+    width: 350px;
+}
+
+.control::backdrop {
+    background-color: rgba(0, 0, 0, 10%);
+    opacity: 0;
+    transition:
+        opacity 300ms $easing,
+        overlay 300ms $easing allow-discrete,
+        display 300ms $easing allow-discrete;
+}
+
+@starting-style {
+    .control[open] {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    .control[open]::backdrop {
+        opacity: 0;
+    }
+}
+
+.action-button {
+    background-color: rgb(121, 224, 121);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Geist Variable', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    font-variation-settings: 'wght' 500;
+    outline: none;
+    padding: 8px 12px;
+}

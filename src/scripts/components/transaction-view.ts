@@ -1,16 +1,22 @@
 import { LedgerService } from '@/services'
 import { customComponent, CustomComponent, query, queryAll } from '@sagemodeninja/custom-component'
+import styles from './transaction-view.component.scss'
 
 // TODO: Think of another name for this panel
 @customComponent('transaction-view')
 export class TransactionView extends CustomComponent {
+    static styles = styles.toString()
+
     private readonly _ledgerService: LedgerService
 
+    @query('.control')
+    private _control: HTMLDialogElement
+
     @queryAll('.action-button')
-    private readonly _actionBtns: HTMLButtonElement[]
+    private _actionBtns: HTMLButtonElement[]
 
     @query('.ledger-list')
-    private readonly _ledgerList: HTMLDivElement
+    private _ledgerList: HTMLDivElement
 
     private _id: number
 
@@ -21,13 +27,15 @@ export class TransactionView extends CustomComponent {
 
     public render() {
         return `
-            <div></div>
-            <div>
-                <button class="action-button" data-action="0">Deposit</button>
-                <button class="action-button" data-action="1">Withdraw</button>
-                <button class="action-button" data-action="2">Transfer</button>
-            </div>
-            <div class="ledger-list"></div>
+            <dialog class="control">
+                <div></div>
+                <div>
+                    <button class="action-button" data-action="0">Deposit</button>
+                    <button class="action-button" data-action="1">Withdraw</button>
+                    <button class="action-button" data-action="2">Transfer</button>
+                </div>
+                <div class="ledger-list"></div>
+            </dialog>
         `
     }
 
@@ -37,11 +45,13 @@ export class TransactionView extends CustomComponent {
 
     public async open(id: number) {
         this._id = id
+        this._control.showModal()
         await this.refreshLedgers()
     }
 
     public clear() {
         this._id = undefined
+        this._control.close()
     }
 
     private addEventListeners() {

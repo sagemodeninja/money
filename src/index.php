@@ -13,8 +13,10 @@
     <title>Money</title>
 </head>
 <body>
-    <div id="wallet_body"></div>
-    
+    <div id="content">
+        <div id="wallet_body"></div>
+    </div>
+
     <transaction-view id="transaction_view">
     </transaction-view>
 

@@ -3,5 +3,9 @@
         "**/.github": true,
         "**/mysql-data": true,
         "**/vendor": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.ts": "${basename}.component.scss"
     }
 }
