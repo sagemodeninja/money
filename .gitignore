@@ -1,2 +1,5 @@
+# SQLite database file
+*.db
+
 # macOS
 .DS_Store

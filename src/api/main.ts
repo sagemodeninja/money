@@ -1,20 +1,45 @@
-import { parseArgs } from './utils/args.ts'
-import { Router } from './router.ts'
+import { Hono } from 'hono'
+import { parseArgs } from "@std/cli/parse-args";
+import { DB } from "https://deno.land/x/sqlite/mod.ts";
+import { createDb } from "./utils/db.ts";
+
+const app = new Hono()
 
 const args = parseArgs(Deno.args)
 
-if (!args.success) {
-    const  { code, message } = args.error
-    console.error(`${code}: ${message}`)
-    Deno.exit(1)
-}
+if (!args.db)
+    throw new Error('Database path is required. Use --db <path> to specify it.')
 
-const router = new Router()
+const db = new DB(args.db)
 
-router.get('/login', async () => {
-    return new Response(JSON.stringify({ data: 'Hello World!' }), {
-        headers: { 'Content-Type': 'application/json' }
+app.post('/db/create', (c) => {
+    const result = createDb(db);
+    return result.success
+        ? c.json(result)
+        : c.json(result, 500);
+})
+
+app.get('/debug', c => {
+    let filePassword: string | undefined = undefined;
+
+    try {
+        const row = db.query("SELECT value FROM config WHERE key = 'file_password'");
+        for (const [value] of row) {
+            // If value is a Uint8Array, convert to string
+            if (value instanceof Uint8Array) {
+                filePassword = new TextDecoder().decode(value);
+            } else {
+                filePassword = String(value);
+            }
+        }
+    } catch (e) {
+        filePassword = `Error: ${e}`;
+    }
+
+    return c.json({
+        message: 'Debug endpoint',
+        filePassword
     });
-});
+})
 
-Deno.serve(router.handler)
+Deno.serve(app.fetch)
