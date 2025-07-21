@@ -8,17 +8,21 @@ export interface ErrorResult<E> {
     error: E;
 }
 
+// Union types
+
+export type EmptyResult<E> = SuccessResult<null> | ErrorResult<E>;
+
 export type Result<T, E> = SuccessResult<T> | ErrorResult<E>;
 
-// Utility functions to create results
+// Utility functions
 
 export function success<T>(data?: T): SuccessResult<T> {
     return { success: true, data };
 }
 
-export function fromError(error: unknown): ErrorResult<string> {
+export function failed(error: unknown): ErrorResult<Error> {
     return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: error instanceof Error ? error : new Error(String(error))
     };
 }

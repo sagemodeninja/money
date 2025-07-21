@@ -1,7 +1,9 @@
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
-import { fromError, success, Result } from "./result.ts";
+import { CreateDbRequest } from "../data/requests/create-db-request.ts";
+import { success, failed, Result, EmptyResult } from "./result.ts";
+import { hash } from "./password.ts";
 
-function scaffoldDatabase(db: DB): Result<null, string> {
+function scaffoldDatabase(db: DB): EmptyResult<Error> {
     try {
         db.execute(`
             CREATE TABLE IF NOT EXISTS config (
@@ -12,28 +14,38 @@ function scaffoldDatabase(db: DB): Result<null, string> {
 
         return success();
     } catch (error) {
-        return fromError(error);
+        return failed(error);
     }
 }
 
-function seedDatabase(db: DB, password: string): Result<null, string> {
+async function seedDatabase(db: DB, password: string): Promise<EmptyResult<Error>> {
     try {
+        const hashed = await hash(password);
+
+        if (!hashed.success)
+            return hashed;
+
         db.query(
             `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
-            ['auth_password', password]
+            ['auth_password', hashed.data]
         );
+
+        db.query(
+            `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
+            ['master_enc_key', hashed.data]
+        );
+
         return success();
     } catch (error) {
-        return fromError(error);
+        return failed(error);
     }
 }
 
-export function createDb(db: DB): Result<string, string> {
+export async function createDb(db: DB, options: CreateDbRequest): Promise<Result<string, Error>> {
     const scaffold = scaffoldDatabase(db);
     if (!scaffold.success) return scaffold;
 
-    // For demonstration, use a placeholder password. Replace as needed.
-    const seed = seedDatabase(db, 'your_password_here');
+    const seed = await seedDatabase(db, options.password);
     if (!seed.success) return seed;
 
     return success('Database created successfully');

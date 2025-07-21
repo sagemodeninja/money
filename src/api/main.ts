@@ -2,44 +2,39 @@ import { Hono } from 'hono'
 import { parseArgs } from "@std/cli/parse-args";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { createDb } from "./utils/db.ts";
+import { verify } from "./utils/password.ts";
+import { CreateDbRequest } from "./data/requests/create-db-request.ts";
 
 const app = new Hono()
 
 const args = parseArgs(Deno.args)
 
 if (!args.db)
-    throw new Error('Database path is required. Use --db <path> to specify it.')
+    throw new Error('Database path is required. Use --db <path> to specify.')
 
 const db = new DB(args.db)
 
-app.post('/db/create', (c) => {
-    const result = createDb(db);
+app.post('/db/create', async c => {
+    const body = await c.req.json() as CreateDbRequest;
+    const result = await createDb(db, body);
     return result.success
         ? c.json(result)
-        : c.json(result, 500);
+        : c.json({
+            success: false,
+            error: result.error.message
+        }, 500);
 })
 
-app.get('/debug', c => {
-    let filePassword: string | undefined = undefined;
-
-    try {
-        const row = db.query("SELECT value FROM config WHERE key = 'file_password'");
-        for (const [value] of row) {
-            // If value is a Uint8Array, convert to string
-            if (value instanceof Uint8Array) {
-                filePassword = new TextDecoder().decode(value);
-            } else {
-                filePassword = String(value);
-            }
-        }
-    } catch (e) {
-        filePassword = `Error: ${e}`;
-    }
-
-    return c.json({
-        message: 'Debug endpoint',
-        filePassword
-    });
-})
+app.post('/debug', async (c) => {
+    const body = await c.req.json() as CreateDbRequest;
+    const [first] = db.query("SELECT value FROM config WHERE key = 'auth_password'");
+    const result = await verify(body.password, first[0] as Uint8Array);
+    return result.success
+        ? c.json(result)
+        : c.json({
+            success: false,
+            error: result.error.message
+        }, 500);
+});
 
 Deno.serve(app.fetch)
