@@ -1,9 +1,9 @@
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { CreateDbRequest } from "../data/requests/create-db-request.ts";
-import { success, failed, Result, EmptyResult } from "./result.ts";
-import { deriveKey, hash } from "./crypto/password.ts";
-import { pack } from "./byte.ts";
-import { generateKey, importKey, wrapKey } from "./crypto/aes/key.ts";
+import { success, failed, Result, EmptyResult } from "@utils/result.ts";
+import { deriveKey, hash } from "@utils/crypto/password.ts";
+import { generateKey, importKey, wrapKey } from "@utils/crypto/aes/key.ts";
+import * as byte from "@utils/byte.ts";
 
 function scaffoldDatabase(db: DB): EmptyResult {
     try {
@@ -33,7 +33,7 @@ async function seedDatabase(db: DB, password: string): Promise<EmptyResult> {
         const masterKey = await generateKey();
         const wrappingKey = await importKey(key, ["wrapKey"]);
         const wrapped = await wrapKey(iv, masterKey, wrappingKey);
-        const packed = pack(salt, iv, wrapped);
+        const packed = byte.pack(salt, iv, wrapped);
 
         db.query(
             `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,

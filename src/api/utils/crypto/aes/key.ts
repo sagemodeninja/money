@@ -21,3 +21,23 @@ export async function wrapKey(iv: Uint8Array, key: CryptoKey, wrappingKey: Crypt
     );
     return new Uint8Array(wrapped);
 }
+
+/**
+ * Unwraps a wrapped key using a wrapping key.
+ * @param key The key to be unwrapped, packed as [IV, wrappedKey].
+ * @param wrappingKey The key used to unwrap the wrapped key.
+ * @param usages The key usages for the unwrapped key.
+ * @returns A promise that resolves to the unwrapped key.
+ */
+export function unwrapKey(key: Uint8Array[], wrappingKey: CryptoKey, usages: KeyUsage[]): Promise<CryptoKey> {
+    const [iv, wrappedKey] = key;
+    return crypto.subtle.unwrapKey(
+        "raw",
+        wrappedKey,
+        wrappingKey,
+        { name: "AES-GCM", iv },
+        { name: "AES-GCM" },
+        true,
+        usages
+    );
+}

@@ -34,3 +34,14 @@ export function unpack(packed: Uint8Array): Uint8Array[] {
 
     return bytes;
 }
+
+/**
+ * Generates a random Uint8Array of the specified size.
+ * @param size The size of the Uint8Array to generate.
+ * @return A Uint8Array filled with random values.
+ */
+export function random(size: number): Uint8Array {
+    const array = new Uint8Array(size);
+    crypto.getRandomValues(array);
+    return array;
+}

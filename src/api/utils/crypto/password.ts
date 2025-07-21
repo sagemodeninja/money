@@ -1,10 +1,12 @@
 import { scrypt } from "node:crypto";
 import { timingSafeEqual } from "jsr:@std/crypto";
-import { success, failed, EmptyResult, Result } from "../result.ts";
-import { pack, unpack } from "../byte.ts";
+import { success, failed, EmptyResult, Result } from "@utils/result.ts";
+import * as byte from "@utils/byte.ts";
 
 /**
  * Hash a password.
+ * 
+ * _NOTE: Output is packed as [salt, hash]._
  * @param password The password to hash.
  * @returns A promise that resolves to the hashed password.
  */
@@ -14,7 +16,7 @@ export function hash(password: string): Promise<Result<Uint8Array>> {
             const salt = crypto.getRandomValues(new Uint8Array(16));
             scrypt(password, salt, 32, (err, derivedKey) => {
                 if (err) throw err;
-                const result = pack(salt, derivedKey);
+                const result = byte.pack(salt, derivedKey);
                 resolve(success(result));
             });
         } catch (error) {
@@ -25,14 +27,16 @@ export function hash(password: string): Promise<Result<Uint8Array>> {
 
 /**
  * Verify a password against a hashed value.
+ * 
+ * _NOTE: Input hash must be packed as [salt, hash]._
  * @param password The password to verify.
- * @param hashed The hashed password to compare against.
+ * @param hash The hashed password to compare against.
  * @returns A promise that resolves to an EmptyResult indicating success or failure.
  */
-export function verify(password: string, hashed: Uint8Array): Promise<EmptyResult> {
+export function verify(password: string, hash: Uint8Array): Promise<EmptyResult> {
     return new Promise(resolve => {
         try {
-            const [salt, data] = unpack(hashed);
+            const [salt, data] = byte.unpack(hash);
             scrypt(password, salt, 32, (err, derivedKey) => {
                 if (err) throw err;
                 const equal = timingSafeEqual(derivedKey, data);

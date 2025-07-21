@@ -1,11 +1,12 @@
 import { Hono } from 'hono'
 import { parseArgs } from "@std/cli/parse-args";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
-import { createDb } from "./utils/db.ts";
-import { deriveKeyWithSalt, verify } from "./utils/crypto/password.ts";
+import { createDb } from "@utils/db.ts";
+import { deriveKeyWithSalt, verify } from "@utils/crypto/password.ts";
 import { CreateDbRequest } from "./data/requests/create-db-request.ts";
-import { unpack } from "./utils/byte.ts";
-import { importKey } from "./utils/crypto/aes/key.ts";
+import { unpack } from "@utils/byte.ts";
+import { importKey, unwrapKey } from "@utils/crypto/aes/key.ts";
+import { decrypt, encrypt } from "@utils/crypto/aes/index.ts";
 
 const app = new Hono()
 
@@ -45,30 +46,16 @@ app.post('/debug/encrypt', async (c) => {
         const [first] = db.query("SELECT value FROM config WHERE key = 'master_enc_key'");
 
         const storedWrappedMasterKey = first[0] as Uint8Array;
-        const [salt, iv, wrappedKey] = unpack(storedWrappedMasterKey);
+        const [salt, ...wrappedKey] = unpack(storedWrappedMasterKey);
         const derive = await deriveKeyWithSalt(body.password, salt);
 
         if (!derive.success)
             throw derive.error;
 
-        const { key } = derive.data!;
-        const wrappingKey = await importKey(key, ["unwrapKey"]);
-
-        const unwrapped = await crypto.subtle.unwrapKey(
-            "raw",
-            wrappedKey,
-            wrappingKey,
-            { name: "AES-GCM", iv },
-            { name: "AES-GCM" },
-            true,
-            ["encrypt"]
-        );
-
-        const encrypted = await crypto.subtle.encrypt(
-            { name: "AES-GCM", iv },
-            unwrapped,
-            new TextEncoder().encode(body.data),
-        );
+        const wrappingKey = await importKey(derive.data!.key, ["unwrapKey"]);
+        const unwrapped = await unwrapKey(wrappedKey, wrappingKey, ["encrypt"]);
+        const plaintext = new TextEncoder().encode(body.data);
+        const encrypted = await encrypt(plaintext, unwrapped);
 
         return c.json({
             success: true,
@@ -88,35 +75,20 @@ app.post('/debug/decrypt', async (c) => {
         const [first] = db.query("SELECT value FROM config WHERE key = 'master_enc_key'");
 
         const storedWrappedMasterKey = first[0] as Uint8Array;
-        const [salt, iv, wrappedKey] = unpack(storedWrappedMasterKey);
+        const [salt, ...wrappedKey] = unpack(storedWrappedMasterKey);
         const derive = await deriveKeyWithSalt(body.password, salt);
 
         if (!derive.success)
             throw derive.error;
 
-        const { key } = derive.data!;
-        const wrappingKey = await importKey(key, ["unwrapKey"]);
-
-        const unwrapped = await crypto.subtle.unwrapKey(
-            "raw",
-            wrappedKey,
-            wrappingKey,
-            { name: "AES-GCM", iv },
-            { name: "AES-GCM" },
-            true,
-            ["decrypt"]
-        );
-
-        const encryptedBytes = Uint8Array.from(atob(body.data), c => c.charCodeAt(0));
-        const decrypted = await crypto.subtle.decrypt(
-            { name: "AES-GCM", iv },
-            unwrapped,
-            encryptedBytes,
-        );
+        const wrappingKey = await importKey(derive.data!.key, ["unwrapKey"]);
+        const unwrapped = await unwrapKey(wrappedKey, wrappingKey, ["decrypt"]);
+        const encrypted = Uint8Array.from(atob(body.data), c => c.charCodeAt(0));
+        const plaintext = await decrypt(encrypted, unwrapped);
 
         return c.json({
             success: true,
-            data: new TextDecoder().decode(decrypted)
+            data: new TextDecoder().decode(plaintext)
         });
     } catch (error) {
         return c.json({
