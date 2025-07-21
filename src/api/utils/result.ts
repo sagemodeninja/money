@@ -1,26 +1,25 @@
+// Structure
 export interface SuccessResult<T> {
     success: true;
     data?: T;
 }
 
-export interface ErrorResult<E> {
+export interface ErrorResult {
     success: false;
-    error: E;
+    error: Error;
 }
 
-// Union types
+// Types
+export type EmptyResult = SuccessResult<null> | ErrorResult;
 
-export type EmptyResult<E> = SuccessResult<null> | ErrorResult<E>;
+export type Result<T> = SuccessResult<T> | ErrorResult;
 
-export type Result<T, E> = SuccessResult<T> | ErrorResult<E>;
-
-// Utility functions
-
+// Utility
 export function success<T>(data?: T): SuccessResult<T> {
     return { success: true, data };
 }
 
-export function failed(error: unknown): ErrorResult<Error> {
+export function failed(error: unknown): ErrorResult {
     return {
         success: false,
         error: error instanceof Error ? error : new Error(String(error))
