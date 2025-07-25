@@ -61,7 +61,7 @@ export interface DerivedKey {
  * @param password The password to derive a key from.
  * @returns A promise that resolves to the derived key.
  */
-export function deriveKey(password: string): Promise<Result<DerivedKey>> {
+export function deriveKey(password: string): Promise<DerivedKey> {
     const salt = crypto.getRandomValues(new Uint8Array(32));
     return deriveKeyWithSalt(password, salt);
 }
@@ -72,16 +72,15 @@ export function deriveKey(password: string): Promise<Result<DerivedKey>> {
  * @param salt The salt to use for key derivation.
  * @returns A promise that resolves to the derived key.
  */
-export function deriveKeyWithSalt(password: string, salt: Uint8Array): Promise<Result<DerivedKey>> {
-    return new Promise<Result<DerivedKey>>(resolve => {
+export function deriveKeyWithSalt(password: string, salt: Uint8Array): Promise<DerivedKey> {
+    return new Promise<DerivedKey>((resolve, reject) => {
         try {
             scrypt(password, salt, 32, (err, key) => {
                 if (err) throw err;
-                const result = success({ salt, key });
-                resolve(result);
+                resolve({ salt, key });
             });
         } catch (error) {
-            resolve(failed(error));
+            reject(error);
         }
     });
 }

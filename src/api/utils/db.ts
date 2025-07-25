@@ -25,15 +25,11 @@ async function seedDatabase(db: DB, password: string): Promise<EmptyResult> {
         const hashed = await hash(password);
         if (!hashed.success) return hashed;
 
-        const derived = await deriveKey(password);
-        if (!derived.success) return derived;
-
-        const { salt, key } = derived.data!;
-        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const { salt, key } = await deriveKey(password);
         const masterKey = await generateKey();
         const wrappingKey = await importKey(key, ["wrapKey"]);
-        const wrapped = await wrapKey(iv, masterKey, wrappingKey);
-        const packed = byte.pack(salt, iv, wrapped);
+        const wrapped = await wrapKey(masterKey, wrappingKey);
+        const packed = byte.prepend(wrapped, salt);
 
         db.query(
             `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
