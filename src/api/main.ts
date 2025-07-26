@@ -1,13 +1,17 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
+import { JwtVariables } from "hono/jwt";
 import { parseArgs } from "@std/cli/parse-args";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
-import { createDb } from "@utils/db.ts";
-import { verify } from "@utils/crypto/password.ts";
-import { CreateDbRequest } from "./data/requests/create-db-request.ts";
-import { unwrapKeyWithPassword } from "@utils/crypto/aes/key.ts";
-import * as aes from "@utils/crypto/aes/index.ts";
 
-const app = new Hono()
+import { createDb } from "@utils/db.ts";
+import * as password from "@utils/crypto/password.ts";
+import * as aes from "@utils/crypto/aes/index.ts";
+import { jwt, AuthSession } from "@utils/auth/index.ts";
+import * as response from "@utils/http-response.ts";
+
+import { CreateDbRequest, LoginRequest } from "./data/requests/index.ts";
+
+const app = new Hono<{ Variables: JwtVariables }>()
 
 const args = parseArgs(Deno.args)
 
@@ -16,28 +20,25 @@ if (!args.db)
 
 const db = new DB(args.db)
 
+app.use('/debug/*', jwt);
+
 app.post('/db/create', async c => {
-    const body = await c.req.json() as CreateDbRequest;
-    const result = await createDb(db, body);
-    return result.success
-        ? c.json(result)
-        : c.json({
-            success: false,
-            error: result.error.message
-        }, 500);
+    const request = await c.req.json() as CreateDbRequest;
+    const result = await createDb(db, request);
+    return response.fromResult(c, result);
 })
 
-app.post('/debug', async (c) => {
-    const body = await c.req.json() as CreateDbRequest;
+app.post('/login', async (c) => {
+    const request = await c.req.json() as LoginRequest;
     const [first] = db.query("SELECT value FROM config WHERE key = 'auth_password'");
-    const result = await verify(body.password, first[0] as Uint8Array);
-    return result.success
-        ? c.json(result)
-        : c.json({
-            success: false,
-            error: result.error.message
-        }, 500);
-});
+    const verify = await password.verify(request.password, first[0] as Uint8Array);
+
+    if (!verify.success)
+        return response.unauthorized(c, "Password is incorrect.");
+
+    const session = await AuthSession.start();
+    return response.fromResult(c, session);
+})
 
 app.post('/debug/encrypt', async (c) => {
     try {
@@ -45,7 +46,7 @@ app.post('/debug/encrypt', async (c) => {
         const [first] = db.query("SELECT value FROM config WHERE key = 'master_enc_key'");
 
         const wrapped = first[0] as Uint8Array;
-        const unwrapped = await unwrapKeyWithPassword(wrapped, body.password, ["encrypt"]);
+        const unwrapped = await aes.unwrapKeyWithPassword(wrapped, body.password, ["encrypt"]);
         const plaintext = new TextEncoder().encode(body.data);
         const encrypted = await aes.encrypt(plaintext, unwrapped);
 
@@ -67,7 +68,7 @@ app.post('/debug/decrypt', async (c) => {
         const [first] = db.query("SELECT value FROM config WHERE key = 'master_enc_key'");
 
         const wrapped = first[0] as Uint8Array;
-        const unwrapped = await unwrapKeyWithPassword(wrapped, body.password, ["encrypt"]);
+        const unwrapped = await aes.unwrapKeyWithPassword(wrapped, body.password, ["decrypt"]);
         const encrypted = Uint8Array.from(atob(body.data), c => c.charCodeAt(0));
         const plaintext = await aes.decrypt(encrypted, unwrapped);
 

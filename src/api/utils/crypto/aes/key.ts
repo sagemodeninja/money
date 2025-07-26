@@ -1,7 +1,7 @@
 // Wrappers for AES key management functions.
 
 import * as byte from "@utils/byte.ts";
-import { deriveKeyWithSalt } from "@utils/crypto/password.ts";
+import { deriveKey, deriveKeyWithSalt } from "@utils/crypto/password.ts";
 
 export function generateKey(): Promise<CryptoKey> {
     return crypto.subtle.generateKey(
@@ -39,6 +39,21 @@ export async function wrapKey(key: CryptoKey, wrappingKey: CryptoKey): Promise<U
         { name: "AES-GCM", iv }
     );
     return byte.pack(iv, new Uint8Array(wrapped));
+}
+
+/**
+ * Wraps a key with a password.
+ * 
+ * _NOTE: Output is packed as [salt, IV, wrappedKey]._
+ * @param key The key to wrap.
+ * @param password The password to use for wrapping.
+ * @returns A promise that resolves to the wrapped key.
+ */
+export async function wrapKeyWithPassword(key: CryptoKey, password: string): Promise<Uint8Array> {
+    const { salt, key: derived } = await deriveKey(password);
+    const wrapper = await importKey(derived, ["wrapKey"]);
+    const wrapped = await wrapKey(key, wrapper);
+    return byte.prepend(wrapped, salt);
 }
 
 /**

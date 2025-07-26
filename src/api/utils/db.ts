@@ -1,9 +1,8 @@
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 import { CreateDbRequest } from "../data/requests/create-db-request.ts";
 import { success, failed, Result, EmptyResult } from "@utils/result.ts";
-import { deriveKey, hash } from "@utils/crypto/password.ts";
-import { generateKey, importKey, wrapKey } from "@utils/crypto/aes/key.ts";
-import * as byte from "@utils/byte.ts";
+import { hash } from "@utils/crypto/password.ts";
+import { generateKey, wrapKeyWithPassword } from "@utils/crypto/aes/key.ts";
 
 function scaffoldDatabase(db: DB): EmptyResult {
     try {
@@ -25,11 +24,8 @@ async function seedDatabase(db: DB, password: string): Promise<EmptyResult> {
         const hashed = await hash(password);
         if (!hashed.success) return hashed;
 
-        const { salt, key } = await deriveKey(password);
-        const masterKey = await generateKey();
-        const wrappingKey = await importKey(key, ["wrapKey"]);
-        const wrapped = await wrapKey(masterKey, wrappingKey);
-        const packed = byte.prepend(wrapped, salt);
+        const master = await generateKey();
+        const wrapped = await wrapKeyWithPassword(master, password);
 
         db.query(
             `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
@@ -38,7 +34,7 @@ async function seedDatabase(db: DB, password: string): Promise<EmptyResult> {
 
         db.query(
             `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
-            ['master_enc_key', packed]
+            ['master_enc_key', wrapped]
         );
 
         return success();
@@ -47,11 +43,11 @@ async function seedDatabase(db: DB, password: string): Promise<EmptyResult> {
     }
 }
 
-export async function createDb(db: DB, options: CreateDbRequest): Promise<Result<string>> {
+export async function createDb(db: DB, request: CreateDbRequest): Promise<Result<string>> {
     const scaffold = scaffoldDatabase(db);
     if (!scaffold.success) return scaffold;
 
-    const seed = await seedDatabase(db, options.password);
+    const seed = await seedDatabase(db, request.password);
     if (!seed.success) return seed;
 
     return success('Database created successfully');
