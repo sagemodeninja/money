@@ -5,6 +5,7 @@
     "jsr:@hono/hono@^4.8.5": "4.8.5",
     "jsr:@std/cli@^1.0.20": "1.0.20",
     "jsr:@std/crypto@*": "1.0.5",
+    "jsr:@std/text@*": "1.0.15",
     "npm:@types/node@*": "22.13.10",
     "npm:jose@6.0.12": "6.0.12"
   },
@@ -17,6 +18,9 @@
     },
     "@std/crypto@1.0.5": {
       "integrity": "0dcfbb319fe0bba1bd3af904ceb4f948cde1b92979ec1614528380ed308a3b40"
+    },
+    "@std/text@1.0.15": {
+      "integrity": "91f5cc1e12779a3d95f1be34e763f9c28a75a078b7360e6fcaef0d8d9b1e3e7f"
     }
   },
   "npm": {

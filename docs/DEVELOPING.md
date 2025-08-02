@@ -1,5 +1,9 @@
 # Development Guide
 
+## Concepts
+
+See concepts [here](./CONCEPTS.md).
+
 ## API
 
 ### Runtime
