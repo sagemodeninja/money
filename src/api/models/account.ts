@@ -1,4 +1,4 @@
-import { model, Model } from "@utils/_db/model.ts";
+import { model, Model } from "@utils/db/model.ts";
 import { Account } from "@entities/account.ts";
 
 @model("account")

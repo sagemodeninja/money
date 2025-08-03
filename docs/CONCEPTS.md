@@ -12,12 +12,6 @@ A `wallet` represents an arbitrary collection of transactions within the applica
 
 > A wallet can group transactions from multiple accounts.
 
-## Categories
-
-A `category` represents an additional layer of classification for transactions. 
-
-They help organize transactions into meaningful groups, such as "Expenses", "Utilities", or "Entertainment".
-
 ## Transactions
 
 A `transaction` represents a chronological record of financial activies. Each transaction is tied to a specific `account` and `wallet`, ensuring proper tracking and categorization.
@@ -25,6 +19,12 @@ A `transaction` represents a chronological record of financial activies. Each tr
 ### Lines
 
 A `line` represents the breakdown of a `transaction`. Each transaction contains at least one line. An example of a line is the actual amount and associated fees.
+
+## Tags
+
+A `tag` represents an arbitrary category that can be assigned to a transaction. 
+
+They help organize transactions into meaningful groups, such as "Expenses", "Utilities", or "Entertainment".
 
 ### Attachments
 

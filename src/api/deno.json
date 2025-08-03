@@ -4,9 +4,10 @@
     "hono": "jsr:@hono/hono@^4.8.5",
     "@data/": "./data/",
     "@utils/": "./utils/",
-    "@db/": "./utils/_db/",
+    "@db/": "./utils/db/",
     "@routes/": "./routes/",
-    "@entities/": "./entities/"
+    "@entities/": "./entities/",
+    "@models/": "./models/"
   },
   "tasks": {
     "start": "deno run --allow-net main.ts"

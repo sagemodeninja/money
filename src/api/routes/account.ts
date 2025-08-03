@@ -1,6 +1,6 @@
 import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
 import { Hono } from "https://jsr.io/@hono/hono/4.8.5/src/hono.ts";
-import { AccountModel } from "../models/account.ts";
+import { AccountModel } from "@models/account.ts";
 import { ok, bad, failed } from "@utils/http-response.ts";
 import { jwt } from "@utils/auth/jwt.ts";
 
@@ -11,6 +11,7 @@ function route(db: DB) {
     hono.use('*', jwt);
 
     hono.get('/', (c) => {
+        model.where(a => a.eq("active", true));
         return c.json(model.all());
     });
     
@@ -34,7 +35,7 @@ function route(db: DB) {
     hono.patch('/:id', async (c) => {
         try {
             const id = c.req.param('id');
-            const acct = model.where(a => a.eq('id', id)).first();
+            const acct = model.where(a => a.eq('id', id).and(a.eq("active", true))).first();
 
             if (!acct)
                 return failed(c, `Account with ID ${id} not found.`, 400);
@@ -46,6 +47,24 @@ function route(db: DB) {
 
             model.save();
             return ok(c, 'Account successfully updated.');
+        } catch (error) {
+            return bad(c, error);
+        }
+    });
+
+
+    hono.delete('/:id', (c) => {
+        try {
+            const id = c.req.param('id');
+            const acct = model.where(a => a.eq('id', id).and(a.eq("active", true))).first();
+
+            if (!acct)
+                return failed(c, `Account with ID ${id} not found.`, 400);
+
+            acct.active = false;
+            model.save();
+
+            return ok(c, 'Account successfully deleted.');
         } catch (error) {
             return bad(c, error);
         }
