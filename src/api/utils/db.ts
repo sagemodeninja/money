@@ -8,8 +8,15 @@ function scaffoldDatabase(db: DB): EmptyResult {
     try {
         db.execute(`
             CREATE TABLE IF NOT EXISTS config (
-                key TEXT PRIMARY KEY,
+                key VARCHAR(50) PRIMARY KEY,
                 value BLOB
+            );
+        `);
+
+        db.execute(`
+            CREATE TABLE IF NOT EXISTS account (
+                id VARCHAR(36) PRIMARY KEY,
+                name VARCHAR(64)
             );
         `);
 

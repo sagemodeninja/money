@@ -1,5 +1,4 @@
-import { toSnakeCase } from "jsr:@std/text/to-snake-case";
-import { IQueryParam } from "@db/query/params.ts";
+import { resolveParam } from "@db/query/params.ts";
 import { IExpression, IExpressionBuilder } from "@db/query/expression/builder.ts";
 
 export type LogicalOperator = "AND" | "OR";
@@ -20,22 +19,9 @@ export class ComparisonOperationExpression<T> implements IOperationExpression {
     }
 
     public build(params: Record<string, number>): IExpression {
-        const param = this.resolveParam(params, this._field, this._value);
+        const param = resolveParam("w", this._field, this._value, params);
         const clause = [this._field, this._operator, `:${param.name}`].join(" ");
         return { clause, params: [param] };
-    }
-
-    // deno-lint-ignore no-explicit-any
-    private resolveParam(params: Record<string, number>, field: string, value: any): IQueryParam {
-        const count = params[field] ?? 0;
-        const name = ["w", toSnakeCase(field), count].join("_");
-        
-        params[field] = count + 1;
-
-        return {
-            name: name,
-            value
-        };
     }
 }
 
@@ -143,4 +129,4 @@ export class WhereExpressionBuilder<T> implements IExpressionBuilder {
     }
 }
 
-export type WhereExpressionCallback<T> = (builder: WhereExpressionBuilder<T>) => void;
+export type WhereExpressionCallback<T> = (builder: WhereExpressionBuilder<T>) => WhereExpressionBuilder<T>;

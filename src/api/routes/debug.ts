@@ -3,8 +3,7 @@ import { Hono } from "https://jsr.io/@hono/hono/4.8.5/src/hono.ts";
 import { CreateDbRequest } from "@data/requests/create-db-request.ts";
 import * as aes from "@utils/crypto/aes/index.ts";
 import { jwt } from "@utils/auth/jwt.ts";
-import { Model } from "@utils/_db/model.ts";
-import { Account } from "@entities/account.ts";
+import { AccountModel } from "../models/account.ts";
 
 function route(db: DB) {
     const debug = new Hono();
@@ -12,8 +11,12 @@ function route(db: DB) {
     debug.use('*', jwt);
 
     debug.post('/query', (c) => {
-        const model = new Model<Account>();
-        model.where(acc => acc.eq('id', '123').and(acc.ne('id', '124')));
+        const model = new AccountModel(db);
+        model
+            .where(acc => acc.eq("id", "123").and(acc.ne('id', '124')))
+            .top(10)
+            .skip(5)
+            .orderBy("name", "DESC");
         return c.json(model.all());
     });
 
