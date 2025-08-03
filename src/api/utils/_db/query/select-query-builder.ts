@@ -36,6 +36,9 @@ export class SelectQueryBuilder implements IQueryBuilder {
             query.push(...pagination);
         }
 
+        // Clear the expressions after building the query...
+        this._expressions.length = 0;
+
         return {
             query: query.join(" "),
             params: params.reduce(
