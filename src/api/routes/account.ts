@@ -1,5 +1,5 @@
 import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
-import { Hono } from "https://jsr.io/@hono/hono/4.8.5/src/hono.ts";
+import { Hono } from "hono";
 import { AccountModel } from "@models/account.ts";
 import { ok, bad, failed } from "@utils/http-response.ts";
 import { jwt } from "@utils/auth/jwt.ts";
@@ -8,14 +8,14 @@ function route(db: DB) {
     const hono = new Hono();
     const model = new AccountModel(db);
 
-    hono.use('*', jwt);
+    hono.use("*", jwt);
 
-    hono.get('/', (c) => {
+    hono.get("/", (c) => {
         model.where(a => a.eq("active", true));
         return c.json(model.all());
     });
-    
-    hono.post('/', async (c) => {
+
+    hono.post("/", async (c) => {
         try {
             const body = await c.req.json();
 
@@ -26,37 +26,34 @@ function route(db: DB) {
 
             model.save();
 
-            return ok(c, 'Account successfully created.');
+            return ok(c, "Account successfully created.");
         } catch (error) {
             return bad(c, error);
         }
     });
-    
-    hono.patch('/:id', async (c) => {
+
+    hono.patch("/:id", async (c) => {
         try {
-            const id = c.req.param('id');
-            const acct = model.where(a => a.eq('id', id).and(a.eq("active", true))).first();
+            const id = c.req.param("id");
+            const acct = model.where(a => a.eq("id", id).and(a.eq("active", true))).first();
 
             if (!acct)
                 return failed(c, `Account with ID ${id} not found.`, 400);
-
-            console.log(acct);
 
             const updated = await c.req.json();
             acct.name = updated.name;
 
             model.save();
-            return ok(c, 'Account successfully updated.');
+            return ok(c, "Account successfully updated.");
         } catch (error) {
             return bad(c, error);
         }
     });
 
-
-    hono.delete('/:id', (c) => {
+    hono.delete("/:id", (c) => {
         try {
-            const id = c.req.param('id');
-            const acct = model.where(a => a.eq('id', id).and(a.eq("active", true))).first();
+            const id = c.req.param("id");
+            const acct = model.where(a => a.eq("id", id).and(a.eq("active", true))).first();
 
             if (!acct)
                 return failed(c, `Account with ID ${id} not found.`, 400);
@@ -64,7 +61,7 @@ function route(db: DB) {
             acct.active = false;
             model.save();
 
-            return ok(c, 'Account successfully deleted.');
+            return ok(c, "Account successfully deleted.");
         } catch (error) {
             return bad(c, error);
         }

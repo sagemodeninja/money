@@ -1,5 +1,5 @@
 import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
-import { Hono } from "https://jsr.io/@hono/hono/4.8.5/src/hono.ts";
+import { Hono } from "hono";
 import { CreateDbRequest } from "@data/requests/create-db-request.ts";
 import * as aes from "@utils/crypto/aes/index.ts";
 import { jwt } from "@utils/auth/jwt.ts";
