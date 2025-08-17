@@ -5,11 +5,11 @@ import { utils, auth, account, wallet, debug } from "@routes/index.ts";
 
 const args = parseArgs(Deno.args)
 
-if (!args.db)
-    throw new Error('Database path is required. Use --db <path> to specify.');
+if (!args.vault)
+    throw new Error('Vault path is required. Use --vault <path> to specify.');
 
 const api = new Hono();
-const db = new DB(args.db);
+const db = new DB(args.vault);
 
 api.route('/utils', utils.route(db));
 api.route('/auth', auth.route(db));

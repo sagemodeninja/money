@@ -1,4 +1,4 @@
-import { OpenDialogOptions } from "electron";
+import { OpenDialogOptions, SaveDialogOptions } from "electron";
 import { SystemPathNames } from "@/enums/system-path-names";
 
 export const KEY = "file-handler";
@@ -28,15 +28,19 @@ export class FileHandler {
     public static async showOpenDialog(options: OpenDialogOptions) {
         return window[KEY].showOpenDialog(options);
     }
+
+    public static async showSaveDialog(options: SaveDialogOptions) {
+        return window[KEY].showSaveDialog(options);
+    }
     
     // Renderer
-    public static getOpenDialogRecent(id: string) {
-        const key = ["open-dialog", id].join("-");
-        return window.localStorage.getItem(key);
+    public static getRecentDirectory(id: string) {
+        const key = ["recent-dir", id].join("-");
+        return window.localStorage.getItem(key) ?? undefined;
     }
 
-    public static setOpenDialogRecent(id: string, path: string) {
-        const key = ["open-dialog", id].join("-");
+    public static setRecentDirectory(id: string, path: string) {
+        const key = ["recent-dir", id].join("-");
         window.localStorage.setItem(key, path);
         return path;
     }

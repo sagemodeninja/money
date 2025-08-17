@@ -17,22 +17,37 @@ class LauncherView {
     }
 
     private addEventListeners() {
-        this._createBtn.onclick = () => window.app.sendCommand("open-create-wizard");
+        this._createBtn.onclick = this.createVault.bind(this);
         this._openBtn.onclick = this.openVault.bind(this);
         this._closeBtn.onclick = () => window.app.sendCommand("close-launcher");
+    }
+
+    private async createVault() {
+        const result = await FileHandler.showSaveDialog({
+            title: "Create vault",
+            filters: [{ name: "eMoney Vault", extensions: ["vault"] }],
+            defaultPath: FileHandler.getRecentDirectory("vault"),
+            buttonLabel: "Create",
+            properties: ["createDirectory"]
+        });
+
+        if (result.canceled) return;
+
+        const location = FileHandler.setRecentDirectory("vault", result.filePath);
+        window.app.sendCommand("create-vault", location);
     }
 
     private async openVault() {
         const result = await FileHandler.showOpenDialog({
             title: "Open vault",
-            message: "Select the vault to open.",
-            defaultPath: FileHandler.getOpenDialogRecent("save-location") ?? undefined,
+            filters: [{ name: "eMoney Vault", extensions: ["vault"] }],
+            defaultPath: FileHandler.getRecentDirectory("vault"),
             properties: ["openFile"]
         });
 
         if (result.canceled) return;
 
-        const location = FileHandler.setOpenDialogRecent("save-location", result.filePaths[0]);
+        const location = FileHandler.setRecentDirectory("vault", result.filePaths[0]);
         window.app.sendCommand("open-vault", location);
     }
 }

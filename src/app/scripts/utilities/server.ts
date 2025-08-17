@@ -10,12 +10,12 @@ export class ServerService extends EventEmitter {
     private _isRunning: boolean;
     private _process: ChildProcessWithoutNullStreams;
 
-    public start() {
+    public start(vault: string) {
         if (this._isRunning)
             return;
 
         log.log("Starting server...");
-        this.startServer();
+        this.startServer(vault);
     }
 
     public stop() {
@@ -26,10 +26,10 @@ export class ServerService extends EventEmitter {
         this._process.kill();
     }
 
-    private startServer() {
+    private startServer(vault: string) {
         this._process = spawn(
             SERVER_PATH,
-            ["--db=./store.db"],
+            [`--vault=${vault}`],
         );
         this.observe();
     }

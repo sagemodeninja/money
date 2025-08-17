@@ -3,9 +3,7 @@ import { AppIpcMessages } from "@/enums/ipc-messages";
 import { MenuManager } from "@/utilities/menu";
 import { WindowManager } from "@/utilities/window";
 import { ServerService } from "@/utilities/server";
-import { FileHandlerBridge } from "@/utilities/file-handler.main";
-import { CreateVaultOptions } from "@/data-objects";
-import { Vault } from "@/classes";
+import { FileHandler, FileHandlerBridge } from "@/utilities/file-handler.main";
 
 export class MainApplication {
     private readonly _menu: MenuManager;
@@ -40,17 +38,8 @@ export class MainApplication {
 
     private async handleCommands(command: string, ...args: any[]) {
         switch (command) {
-            case "open-create-wizard":
-                this._windows.show("create-wizard");
-                this._windows.hide("launcher");
-                break;
-            case "close-create-wizard":
-                this._windows.show("launcher");
-                this._windows.close("create-wizard");
-                break;
             case "create-vault":
-                const options = args[0] as CreateVaultOptions;
-                await this.createVault(options);
+                await this.createVault(args[0]);
                 break;
             case "open-vault":
                 this.openVault(args[0]);
@@ -64,14 +53,13 @@ export class MainApplication {
         }
     }
 
-    private async createVault(options: CreateVaultOptions) {
-        const vault = await Vault.create(options);
-        this._windows.close("create-wizard");
+    private async createVault(vault: string) {
+        await FileHandler.writeFile(vault, "");
         this.openVault(vault);
     }
 
     private openVault(vault: string) {
-        this._server.start();
+        this._server.start(vault);
 
         const window = this._windows.show("vault");
         window.on("close", this.closeVault.bind(this));

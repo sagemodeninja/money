@@ -1,4 +1,4 @@
-import { app, ipcMain, dialog, OpenDialogOptions } from "electron";
+import { app, ipcMain, dialog, OpenDialogOptions, SaveDialogOptions } from "electron";
 import { writeFile } from "fs/promises";
 import { FileIpcMessages, SystemPathNames } from "@/enums";
 
@@ -13,6 +13,10 @@ export class FileHandler {
 
     public static async showOpenDialog(options: OpenDialogOptions) {
         return dialog.showOpenDialog(options);
+    }
+
+    public static async showSaveDialog(options: SaveDialogOptions) {
+        return dialog.showSaveDialog(options);
     }
 }
 
@@ -31,6 +35,11 @@ export class FileHandlerBridge {
         ipcMain.handle(
             FileIpcMessages.SHOW_OPEN_DIALOG,
             async (_, options) => FileHandler.showOpenDialog(options)
+        );
+
+        ipcMain.handle(
+            FileIpcMessages.SHOW_SAVE_DIALOG,
+            async (_, options) => FileHandler.showSaveDialog(options)
         );
     }
 }

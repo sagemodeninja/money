@@ -34,13 +34,13 @@ export class FilePicker extends LitElement {
         const result = await FileHandler.showOpenDialog({
             title: this.title,
             message: this.title,
-            defaultPath: FileHandler.getOpenDialogRecent(this.id) ?? undefined,
+            defaultPath: FileHandler.getRecentDirectory(this.id) ?? undefined,
             properties: this.properties()
         });
 
         if (result.canceled) return;
 
         this.value = result.filePaths[0];
-        FileHandler.setOpenDialogRecent(this.id, this.value);
+        FileHandler.setRecentDirectory(this.id, this.value);
     }
 }
