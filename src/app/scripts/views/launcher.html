@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher</title>
+</head>
+<body>
+    <div id="drag-target"></div>
+    <button id="close-btn" class="no-drag">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18.935 18.595"><path fill="#fff" fill-opacity=".85" d="M16.792.327.302 16.815c-.398.398-.41 1.078 0 1.476.41.399 1.09.399 1.489 0L18.28 1.803c.398-.398.41-1.078 0-1.476a1.043 1.043 0 0 0-1.489 0m1.488 16.488L1.792.327c-.399-.41-1.09-.422-1.489 0a1.06 1.06 0 0 0 0 1.476l16.489 16.489c.398.398 1.09.41 1.488 0a1.06 1.06 0 0 0 0-1.477"/></svg>
+    </button>
+    <main>
+        <div id="branding">
+            <h1 id="app-name" class="alpha">eMoney</h1>
+            <p id="app-version">Version 0.1</p>
+        </div>
+        <div id="actions">
+            <launcher-button id="create-btn" class="no-drag">
+                <svg slot="icon" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2" viewBox="0 0 24 24"><path d="m16.202.977 5.669 5.771c.823.844.977 1.42.977 2.747v9.341c0 2.14-1.06 3.22-3.189 3.22h-7.551a6.1 6.1 0 0 0 .68-1.656h6.789c1.069 0 1.615-.566 1.615-1.595V9.567h-5.864c-1.286 0-1.934-.638-1.934-1.934V1.656H8.816c-1.07 0-1.615.587-1.615 1.605v8.935a5.6 5.6 0 0 0-.823-.057q-.425-.001-.833.059V3.23C5.545 1.09 6.615 0 8.734 0h4.886c1.152 0 1.801.175 2.582.977m-1.255 6.461c0 .411.155.576.566.576h5.36l-5.926-6.039zm-3.343 11.336c0 2.85-2.397 5.226-5.226 5.226-2.87 0-5.226-2.356-5.226-5.226s2.356-5.226 5.226-5.226 5.226 2.356 5.226 5.226M5.751 16.13v2.006H3.734c-.37 0-.627.257-.627.638s.257.628.627.628h2.017v2.016c0 .37.246.627.627.627s.628-.257.628-.627v-2.016h2.006c.38 0 .637-.247.637-.628s-.257-.638-.637-.638H7.006V16.13c0-.37-.247-.627-.628-.627s-.627.257-.627.627" style="fill-opacity:.85"/></svg>
+                Create New
+            </launcher-button>
+            <launcher-button id="open-btn" class="no-drag">
+                <svg slot="icon" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2" viewBox="0 0 24 24"><path d="M3.318 21.67h17.681c1.891 0 3.001-1.099 3.001-3.276V7.54c0-2.177-1.12-3.276-3.318-3.276H10.536c-.718 0-1.152-.169-1.68-.623l-.645-.529c-.697-.592-1.236-.782-2.282-.782H2.917C1.067 2.33 0 3.387 0 5.511v12.883c0 2.187 1.11 3.276 3.318 3.276m.021-1.702c-1.056 0-1.638-.56-1.638-1.659V5.606c0-1.046.55-1.585 1.565-1.585h2.229c.698 0 1.121.18 1.66.634l.644.539c.687.571 1.247.772 2.293.772H20.65c1.046 0 1.649.57 1.649 1.669V18.32c0 1.088-.603 1.648-1.649 1.648zM3.012 8.925h17.966V8.28c0-.676-.339-1.004-1.047-1.004H4.058c-.708 0-1.046.328-1.046 1.004z" style="fill-opacity:.85;fill-rule:nonzero"/></svg>
+                Open Existing
+            </launcher-button>
+        </div>
+    </main>
+</body>
+</html>

@@ -17,4 +17,6 @@ api.route('/account', account.route(db));
 api.route('/wallet', wallet.route(db));
 api.route('/debug', debug.route(db));
 
-Deno.serve(api.fetch);
+Deno.serve({
+    onListen: add => console.log(`Listening on http://localhost:${add.port}`),
+}, api.fetch);

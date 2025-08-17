@@ -1,3 +1,12 @@
 {
-    "files.exclude": {}
+    "explorer.fileNesting.patterns": {
+        "*.html": "${basename}.ts,${basename}.scss",
+        "*.ts": "${basename}.main.ts,${basename}.component.scss,${basename}.scss",
+        ".env": ".env.sample"
+    },
+    "files.exclude": {
+        "**/build": true,
+        "**/out": true,
+        "**/node_modules": true
+    }
 }

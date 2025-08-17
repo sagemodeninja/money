@@ -1,0 +1,16 @@
+[
+    {
+        "id": "launcher",
+        "width": 500,
+        "height": 500,
+        "resizable": false,
+        "preload": "launcher.js"
+    },
+    {
+        "id": "create-wizard",
+        "width": 500,
+        "height": 500,
+        "resizable": false,
+        "preload": "launcher.js"
+    }
+]
