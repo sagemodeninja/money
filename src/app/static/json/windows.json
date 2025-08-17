@@ -12,5 +12,15 @@
         "height": 500,
         "resizable": false,
         "preload": "launcher.js"
+    },
+    {
+        "id": "vault",
+        "width": 1080,
+        "height": 820,
+        "trafficLightPosition": { "x": 20, "y": 17 },
+        "titleBarStyle": "hidden",
+        "titleBarOverlay": { "height": 48 },
+        "preload": "main.js"
     }
 ]
+

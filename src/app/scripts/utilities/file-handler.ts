@@ -20,6 +20,10 @@ export class FileHandler {
     public static async getSystemPath(name: SystemPathNames) {
         return window[KEY].getSystemPath(name);
     }
+    
+    public static async writeFile(path: string, content: string) {
+        return window[KEY].writeFile(path, content)
+    }
 
     public static async showOpenDialog(options: OpenDialogOptions) {
         return window[KEY].showOpenDialog(options);

@@ -1,0 +1,19 @@
+:host {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+
+    #browse-button {
+        align-items: center;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        padding: 1px 0;
+
+        svg {
+            fill: #fff;
+            height: 13px;
+            width: 13px;
+        }
+    }
+}

@@ -18,14 +18,14 @@ class LauncherView {
 
     private addEventListeners() {
         this._createBtn.onclick = () => window.app.sendCommand("open-create-wizard");
-        this._openBtn.onclick = this.openFile.bind(this);
+        this._openBtn.onclick = this.openVault.bind(this);
         this._closeBtn.onclick = () => window.app.sendCommand("close-launcher");
     }
 
-    private async openFile() {
+    private async openVault() {
         const result = await FileHandler.showOpenDialog({
-            title: "Open File",
-            message: "Select the file to open.",
+            title: "Open vault",
+            message: "Select the vault to open.",
             defaultPath: FileHandler.getOpenDialogRecent("save-location") ?? undefined,
             properties: ["openFile"]
         });
@@ -33,7 +33,7 @@ class LauncherView {
         if (result.canceled) return;
 
         const location = FileHandler.setOpenDialogRecent("save-location", result.filePaths[0]);
-        window.app.sendCommand("open-file", location);
+        window.app.sendCommand("open-vault", location);
     }
 }
 
