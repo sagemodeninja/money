@@ -1,4 +1,4 @@
-export * from "./utils.ts";
+export * from "./vault.ts";
 export * from "./auth.ts";
 export * from "./account.ts";
 export * from "./wallet.ts";

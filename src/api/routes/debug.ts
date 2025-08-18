@@ -1,6 +1,6 @@
 import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
 import { Hono } from "hono";
-import { CreateDbRequest } from "@data/requests/create-db-request.ts";
+import { InitVaultRequest } from "../data/requests/init-vault-request.ts";
 import * as aes from "@utils/crypto/aes/index.ts";
 import { jwt } from "@utils/auth/jwt.ts";
 import { AccountModel } from "../models/account.ts";
@@ -22,7 +22,7 @@ function route(db: DB) {
 
     debug.post('/encrypt', async (c) => {
         try {
-            const body = await c.req.json() as CreateDbRequest & { data: string };
+            const body = await c.req.json() as InitVaultRequest & { data: string };
             const [first] = db.query("SELECT value FROM config WHERE key = 'master_enc_key'");
 
             const wrapped = first[0] as Uint8Array;
@@ -44,7 +44,7 @@ function route(db: DB) {
 
     debug.post('/decrypt', async (c) => {
         try {
-            const body = await c.req.json() as CreateDbRequest & { data: string };
+            const body = await c.req.json() as InitVaultRequest & { data: string };
             const [first] = db.query("SELECT value FROM config WHERE key = 'master_enc_key'");
 
             const wrapped = first[0] as Uint8Array;

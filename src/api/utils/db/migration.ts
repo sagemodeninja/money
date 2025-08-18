@@ -1,6 +1,6 @@
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
-import { CreateDbRequest } from "../../data/requests/create-db-request.ts";
-import { success, failed, Result, EmptyResult } from "@utils/result.ts";
+import { InitVaultRequest } from "../../data/requests/init-vault-request.ts";
+import { success, failed, EmptyResult, ErrorResult } from "@utils/result.ts";
 import { hash } from "@utils/crypto/password.ts";
 import { generateKey, wrapKeyWithPassword } from "@utils/crypto/aes/key.ts";
 
@@ -30,19 +30,21 @@ function scaffoldDatabase(db: DB): EmptyResult {
 async function seedDatabase(db: DB, password: string): Promise<EmptyResult> {
     try {
         const hashed = await hash(password);
-        if (!hashed.success) return hashed;
+
+        if (!hashed.success)
+            return hashed as ErrorResult;
+
+        db.query(
+            `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
+            ["auth_password", hashed.data]
+        );
 
         const master = await generateKey();
         const wrapped = await wrapKeyWithPassword(master, password);
 
         db.query(
             `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
-            ['auth_password', hashed.data]
-        );
-
-        db.query(
-            `INSERT OR IGNORE INTO config (key, value) VALUES (?, ?)`,
-            ['master_enc_key', wrapped]
+            ["master_enc_key", wrapped]
         );
 
         return success();
@@ -51,12 +53,12 @@ async function seedDatabase(db: DB, password: string): Promise<EmptyResult> {
     }
 }
 
-export async function migrate(db: DB, request: CreateDbRequest): Promise<Result<string>> {
+export async function migrate(db: DB, request: InitVaultRequest): Promise<EmptyResult> {
     const scaffold = scaffoldDatabase(db);
     if (!scaffold.success) return scaffold;
 
     const seed = await seedDatabase(db, request.password);
     if (!seed.success) return seed;
 
-    return success('Database created successfully');
+    return success();
 }
